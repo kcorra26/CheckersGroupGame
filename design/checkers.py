@@ -260,12 +260,11 @@ class Empty:
     """
     raise NotImplementedError
 
-
     def is_empty(self):
         """
         Determines if an Empty object is empty or not. 
-            Args:
-                None
+        Args:
+            None
             Returns:
                 boolean: an Empty object always means an unoccupied space so 
                 this will always return True
@@ -281,6 +280,18 @@ class Empty:
                 return False
             """
             raise NotImplementedError
+    
+    def can_move(self, new_pos):
+        '''
+        Determines if Empty can move to the new position, based on the rules of checkers for
+        a Empty (e.g. Empty can only move forward)
+
+        Args: 
+            new_pos (tuple): a tuple representing the new position
+
+        Returns (bool): as Empty cannot move will always return false
+        '''
+        raise NotImplementedError
 
 
 

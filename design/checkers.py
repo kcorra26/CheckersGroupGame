@@ -1,7 +1,7 @@
 """
 Examples:
     1) Make a new board: :
-        board = Board()
+        board = Board(8)
 
     2) Check whether a given move is feasible: :  
         board.can_move((0, 1)) 
@@ -330,7 +330,7 @@ class Piece():
         # Color of the space that the Piece is on; by the rules, must always be 
         # on a dark space, so raises an AssertionError if this doesn't happen as
         # an additional verifier
-        if self.x_pos + self.y_pos % 2 == 1:
+        if (self.x_pos + self.y_pos) % 2 == 1:
             self.space_color = 'dark'
         else:
             self.space_color = 'light'

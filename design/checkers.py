@@ -65,13 +65,13 @@ class Board:
         Initializes an empty board, represented by a list of lists where every 
         cell is filled with an Empty object
 
-        Arg: None
+        Args: None
 
         Returns: a board (list of lists) populated with Empty objects
         """
         raise NotImplementedError
 
-    def _str_(self):
+    def __str__(self):
         """
         Returns a string representation of the board.
 
@@ -252,6 +252,15 @@ class Empty:
         else:
             self.space_color = 'light'
     
+    def __str__(self):
+        """
+        Returns a string representation of the empty space.
+
+        Parameters: None
+        Returns: str
+        """
+        raise NotImplementedError
+    
     def update_position(self, pos):
         """
         Changes the x and y positions of the piece. Does not check if the new 
@@ -335,7 +344,15 @@ class Piece():
         else:
             self.space_color = 'light'
         assert self.space_color is 'dark'
+    
+    def __str__(self):
+        """
+        Returns a string representation of the piece.
 
+        Parameters: None
+        Returns: str
+        """
+        raise NotImplementedError
 
     def update_position(self, pos):
         """
@@ -413,6 +430,15 @@ class King():
             self.space_color = 'light'
         assert self.space_color is 'dark'
 
+    def __str__(self):
+        """
+        Returns a string representation of the king piece.
+
+        Parameters: None
+        Returns: str
+        """
+        raise NotImplementedError
+    
     def update_position(self, pos):
         """
         Changes the x and y positions of the piece. Does not check if the new

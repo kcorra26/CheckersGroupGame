@@ -4,13 +4,16 @@ Examples:
         board = Board()
 
     2) Check whether a given move is feasible: :  
-        board.can_move((0, 1)) # if they want to just check to see if it can move at all
-        board.is_valid_move((0, 1), (1, 2)) # if they want to check if they can move to a certain place
+        board.can_move((0, 1)) 
+        # if they want to just check to see if it can move at all
+        board.is_valid_move((0, 1), (1, 2)) 
+        #if they want to check if they can move to a certain place
 
     3) How to obtain all the valid moves for a piece at a given position: :
         board.list_moves((0, 1))
 
-    4) How to obtain the list of all possible moves a player can make on the board
+    4) How to obtain the list of all possible moves a player can make on the 
+        board
         board.all_team_moves(team)
 
     5) How to check whether there is a winner and, if so, who the winner is
@@ -231,7 +234,7 @@ class Empty:
         
         Returns: None
         """
-        # Empty's position represented by an (int, int) tuple with (x,y) position
+        #Empty's position represented by an (int, int) tuple with (x,y) position
         self.pos = pos
 
         # Empty's x position
@@ -254,8 +257,8 @@ class Empty:
         Changes the x and y positions of the piece. Does not check if the new 
         position is valid or not.
         Args:
-            pos(tuple) - a tuple with two values, representing the new position of
-            the Piece object
+            pos(tuple) - a tuple with two values, representing the new position 
+            of the Piece object
         Returns: None
     """
         raise NotImplementedError
@@ -283,8 +286,8 @@ class Empty:
     
     def can_move(self, new_pos):
         '''
-        Determines if Empty can move to the new position, based on the rules of checkers for
-        a Empty (e.g. Empty can only move forward)
+        Determines if Empty can move to the new position, based on the rules of 
+        checkers for a Empty (e.g. Empty can only move forward)
 
         Args: 
             new_pos (tuple): a tuple representing the new position
@@ -301,9 +304,9 @@ class Piece():
     """
     def __init__(self, pos, team_color):
         """
-        Constructor for the Piece class. Utilizes the x and y positions of the Piece
-        to calculate the space color and if the color is not dark, will notify that
-        this Piece cannot be placed at this location.
+        Constructor for the Piece class. Utilizes the x and y positions of the 
+        Piece to calculate the space color and if the color is not dark, will 
+        notify that this Piece cannot be placed at this location.
 
         Args: 
             pos(tuple) - a tuple with two values, representing the position of
@@ -312,7 +315,7 @@ class Piece():
 
         Returns: None
         """
-        # Piece's position represented by an (int, int) tuple with (x,y) position
+        #Piece's position represented by an (int, int) tuple with (x,y) position
         self.pos = pos
 
         # Piece's x position
@@ -339,8 +342,8 @@ class Piece():
         Changes the x and y positions of the piece. Does not check if the new 
         position is valid or not.
         Args:
-            pos(tuple) - a tuple with two values, representing the new position of
-            the Piece object
+            pos(tuple) - a tuple with two values, representing the new position 
+            of the Piece object
         Returns: None
         """
         raise NotImplementedError
@@ -363,14 +366,15 @@ class Piece():
 
     def can_move(self, new_pos):
         '''
-        Determines if Piece can move to the new position, based on the rules of checkers for
-        a Piece (e.g. Pieces can only move forward)
+        Determines if Piece can move to the new position, based on the rules of 
+        checkers for a Piece (e.g. Pieces can only move forward)
 
         Args: 
             new_pos (tuple): a tuple representing the new position
 
-        Returns (bool): whether the Piece can move to that position. Note that this does not take
-        into account whether another Piece is in new_position, which is handled by the board method
+        Returns (bool): whether the Piece can move to that position. Note that 
+        this does not take into account whether another Piece is in new_position
+        , which is handled by the board method
         '''
         raise NotImplementedError
 
@@ -414,8 +418,8 @@ class King():
         Changes the x and y positions of the piece. Does not check if the new
         position is valid or not.
         Args:
-            pos(tuple) - a tuple with two values, representing the new position of
-            the King object
+            pos(tuple) - a tuple with two values, representing the new position 
+            of the King object
         Returns: None
         """
         raise NotImplementedError

@@ -258,7 +258,7 @@ class Empty:
             the Piece object
         Returns: None
     """
-    raise NotImplementedError
+        raise NotImplementedError
 
     def is_empty(self):
         """
@@ -322,7 +322,7 @@ class Piece():
         self.y_pos = pos[1]
 
         # TeamColor enum representing the Piece's team
-        self.team = team
+        self.team = team_color
 
         # Color of the space that the Piece is on; by the rules, must always be 
         # on a dark space, so raises an AssertionError if this doesn't happen as

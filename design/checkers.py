@@ -283,6 +283,7 @@ class Empty:
             raise NotImplementedError
 
 
+
 class Piece(): 
     """
     Class representing playable pieces on the board that are not kings
@@ -349,6 +350,19 @@ class Piece():
         """
         raise NotImplementedError
 
+    def can_move(self, new_pos):
+        '''
+        Determines if Piece can move to the new position, based on the rules of checkers for
+        a Piece (e.g. Pieces can only move forward)
+
+        Args: 
+            new_pos (tuple): a tuple representing the new position
+
+        Returns (bool): whether the Piece can move to that position. Note that this does not take
+        into account whether another Piece is in new_position, which is handled by the board method
+        '''
+        raise NotImplementedError
+
 
 class King():
     """
@@ -409,4 +423,17 @@ class King():
         Determines if a King object is a king or not
         Returns (bool): a King object is always a king so this will return True
         """
+        raise NotImplementedError
+    
+    def can_move(self, new_pos):
+        '''
+        Determines if King can move to the new position, based on the rules of checkers for
+        a King (e.g. King can only in any direction)
+
+        Args: 
+            new_pos (tuple): a tuple representing the new position
+
+        Returns (bool): whether the King can move to that position. Note that this does not take
+        into account whether another Piece is in new_position, which is handled by the board method
+        '''
         raise NotImplementedError

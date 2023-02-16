@@ -1,9 +1,5 @@
 from enum import Enum
-<<<<<<< HEAD
 TeamColor = Enum("TeamColor",  ["RED", "BLACK", "EMPTY"]) 
-=======
-TeamColor = Enum(“TeamColor”,  [“RED”, “BLACK”, “EMPTY”]) #red moves 0 to 2n+1 and black moves 2n+1 to 0
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
 
 class Board:
     """
@@ -19,7 +15,6 @@ class Board:
         Note: board is a square, and size is determined by 2n + 2
         """
         # Color on board determined by even/odd position of x and y
-<<<<<<< HEAD
         # n: number of rows of pieces; board length and width is calculated 
         # as 2n + 2
 
@@ -40,16 +35,6 @@ class Board:
         self._create_board()
 
         # Starts the game of checkers and places all pieces
-=======
-        # n: number of rows of pieces; board length and width is calculated as 2n + 2
-        self.red_pieces = set()
-        self.black_pieces = set()
-
-        self.n = n 
-        self.width = (2 * n) + 2
-        self._num_rows = n
-        self._create_board()
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
         self._initialize_checkers()
     
     def _create_board(self): 
@@ -61,20 +46,8 @@ class Board:
 
         Returns: a board (list of lists) populated with Empty objects
         """
-<<<<<<< HEAD
         raise NotImplementedError
 
-=======
-        board = []
-        for r in range(self.width): # row
-            row = []
-            for c in range(self.width):
-                row.append(Empty(r, c))
-            self.board.append(row)
-        return board # will have to delete this code before submitting and save
-        # it somewhere else
-    
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
     def _str_(self):
         """
         Returns a string representation of the board.
@@ -130,11 +103,7 @@ class Board:
             Team (TeamColor): the team to get moves for
         Returns: 
             dict{tup(int, int): [tup(int, int)]} : dict mapping positions to 
-<<<<<<< HEAD
             possible next positions for the piece at each position
-=======
-            possible next positions
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
             
         """
         raise NotImplementedError
@@ -148,55 +117,31 @@ class Board:
 
         Returns (bool): whether the specified team is a winner
         """
-<<<<<<< HEAD
         raise NotImplementedError
 
     def can_move(self, pos):
         """
         Determines if the piece at position specified by pos has available 
         moves.
-=======
-        # returns the name of the winning team if a team has won
-        raise NotImplementedError
-
-    # methods that we moved from Piece Class
-
-    def can_move(self, pos):
-        """
-        Determines if the piece at position specified by pos has available 
-        moves. *
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
 
         Args: 
             pos (tuple) - a tuple representing the position of the Piece
 
         Return (bool) whether the piece at given position has available moves
         """
-<<<<<<< HEAD
-=======
-        #checks if the piece at an x and y position is surrounded/has available moves
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
         raise NotImplementedError
     
     def list_moves(self, pos):
         """
         Determines the list of moves that a piece at a given position 
-<<<<<<< HEAD
         specified by pos can make.
-=======
-        specified by pos can make **.
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
         
         Args:
             pos(tuple) - a tuple representing the position of the Piece 
 
         Returns:
-<<<<<<< HEAD
             lst(tup(int,int)): all possible move locations for the Piece at the 
             given position
-=======
-            Possible moves (list)
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
         """
         raise NotImplementedError
     
@@ -208,10 +153,6 @@ class Board:
         Args:
             curr_pos (tup(int, int)): the current position
         """
-<<<<<<< HEAD
-=======
-        #checks if piece at curr_x, curr_y position  can move to a new position at new_x, new_y 
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
         raise NotImplementedError
     
     def resign(self, team): 
@@ -259,11 +200,7 @@ class Empty:
 
     """
     
-<<<<<<< HEAD
     def __init__ (self, pos)
-=======
-    def _init (self, pos)
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
         """
         constructor for the Empty class
 
@@ -273,7 +210,6 @@ class Empty:
         
         Returns: None
         """
-<<<<<<< HEAD
         # Empty's position represented by an (int, int) tuple with (x,y) position
         self.pos = pos
 
@@ -305,15 +241,6 @@ class Empty:
 
 
     def is_empty(self):
-=======
-        self.pos = pos
-        self.x_pos =  self.pos[0]
-        self.y_pos  =  self.pos[1]
-        self.team = TeamColor.EMPTY 
-        self.space_color = "dark" if (self.x_pos + self. y_pos) % 2 == 1 else "light"
-    
-    def _is_empty(self):
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5
         """
         Determines if an Empty object is empty or not. 
             Args:
@@ -324,7 +251,6 @@ class Empty:
         """
         raise NotImplementedError
 
-<<<<<<< HEAD
     def is_king(self)
             """
             Determines if an Empty object is a king or not
@@ -463,15 +389,3 @@ class King():
         Returns (bool): a King object is always a king so this will return True
     """
     raise NotImplementedError
-
-
-=======
-def is_king(self)
-        """
-        Determines if an Empty object is a king or not
-            Args: 
-                None
-            Returns (bool): a Empty object is not a king so this will return False
-        """
-        raise NotImplementedError
->>>>>>> f3dace55eb602524f3e6e27f0796927a2cfe6dc5

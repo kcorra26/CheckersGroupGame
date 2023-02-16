@@ -92,7 +92,7 @@ class Board:
         """
         raise NotImplementedError
 
-    def _remove_piece(self, pos)
+    def _remove_piece(self, pos):
         """
         Removes a piece at a specific position. 
 
@@ -221,7 +221,7 @@ class Empty:
 
     """
     
-    def __init__ (self, pos)
+    def __init__ (self, pos):
         """
         constructor for the Empty class
 
@@ -249,14 +249,14 @@ class Empty:
         else:
             self.space_color = 'light'
     
-    def update_position(self, pos)
-    """
-    Changes the x and y positions of the piece. Does not check if the new 
-    position is valid or not.
-    Args:
-        pos(tuple) - a tuple with two values, representing the new position of
-        the Piece object
-    Returns: None
+    def update_position(self, pos):
+        """
+        Changes the x and y positions of the piece. Does not check if the new 
+        position is valid or not.
+        Args:
+            pos(tuple) - a tuple with two values, representing the new position of
+            the Piece object
+        Returns: None
     """
     raise NotImplementedError
 
@@ -272,7 +272,7 @@ class Empty:
         """
         raise NotImplementedError
 
-    def is_king(self)
+    def is_king(self):
             """
             Determines if an Empty object is a king or not
                 Args: 
@@ -284,22 +284,22 @@ class Empty:
 
 
 class Piece(): 
-"""
-Class representing playable pieces on the board that are not kings
-"""
+    """
+    Class representing playable pieces on the board that are not kings
+    """
     def __init__(self, pos, team_color):
-    """
-    Constructor for the Piece class. Utilizes the x and y positions of the Piece
-    to calculate the space color and if the color is not dark, will notify that
-    this Piece cannot be placed at this location.
+        """
+        Constructor for the Piece class. Utilizes the x and y positions of the Piece
+        to calculate the space color and if the color is not dark, will notify that
+        this Piece cannot be placed at this location.
 
-    Args: 
-        pos(tuple) - a tuple with two values, representing the position of
-        the Piece object
-        team(TeamColor) - the team the Piece is on
+        Args: 
+            pos(tuple) - a tuple with two values, representing the position of
+            the Piece object
+            team(TeamColor) - the team the Piece is on
 
-    Returns: None
-    """
+        Returns: None
+        """
         # Piece's position represented by an (int, int) tuple with (x,y) position
         self.pos = pos
 
@@ -322,32 +322,32 @@ Class representing playable pieces on the board that are not kings
         assert self.space_color is 'dark'
 
 
-    def update_position(self, pos)
-    """
-    Changes the x and y positions of the piece. Does not check if the new 
-    position is valid or not.
-    Args:
-        pos(tuple) - a tuple with two values, representing the new position of
-        the Piece object
-    Returns: None
-    """
-    raise NotImplementedError
+    def update_position(self, pos):
+        """
+        Changes the x and y positions of the piece. Does not check if the new 
+        position is valid or not.
+        Args:
+            pos(tuple) - a tuple with two values, representing the new position of
+            the Piece object
+        Returns: None
+        """
+        raise NotImplementedError
 
     def is_empty(self):
-    """
-    Determines if a Piece object is empty or not. 
+        """
+        Determines if a Piece object is empty or not. 
         Returns:
             bool: a Piece object always means an occupied space so
             this will always return False
-    """
-    raise NotImplementedError
+        """
+        raise NotImplementedError
 
-    def is_king(self)
-    """
-    Determines if a Piece object is a king or not
+    def is_king(self):
+        """
+        Determines if a Piece object is a king or not
         Returns (bool): a Piece object is always a king so this will return True
-    """
-    raise NotImplementedError
+        """
+        raise NotImplementedError
 
 
 class King():
@@ -384,29 +384,29 @@ class King():
             self.space_color = 'light'
         assert self.space_color is 'dark'
 
-    def update_position(self, pos)
-    """
-    Changes the x and y positions of the piece. Does not check if the new
-    position is valid or not.
-    Args:
-        pos(tuple) - a tuple with two values, representing the new position of
-        the King object
-    Returns: None
-    """
-    Raise NotImplementedError
+    def update_position(self, pos):
+        """
+        Changes the x and y positions of the piece. Does not check if the new
+        position is valid or not.
+        Args:
+            pos(tuple) - a tuple with two values, representing the new position of
+            the King object
+        Returns: None
+        """
+        raise NotImplementedError
 
     def is_empty(self):
-    """
-    Determines if a King object is empty or not. 
+        """
+        Determines if a King object is empty or not. 
         Returns:
             bool: a King object always means an occupied space so
             this will always return False
-    """
-    raise NotImplementedError
+        """
+        raise NotImplementedError
 
-    def is_king(self)
-    """
-    Determines if a King object is a king or not
+    def is_king(self):
+        """
+        Determines if a King object is a king or not
         Returns (bool): a King object is always a king so this will return True
-    """
-    raise NotImplementedError
+        """
+        raise NotImplementedError

@@ -60,7 +60,7 @@ class Board:
 
         # Runs the create board function, creating a list of lists (grid) with
         # Empty objects at each position in the grid
-        self._create_board()
+        self.board = self._create_board()
 
         # Starts the game of checkers and places all pieces
         self._initialize_checkers()
@@ -70,9 +70,8 @@ class Board:
         Initializes an empty board, represented by a list of lists where every 
         cell is filled with an Empty object
 
-        Args: None
-
-        Returns: a board (list of lists) populated with Empty objects
+        Returns: 
+            lst(lst(Empty)): a list of lists with Empty objects at each index
         """
         raise NotImplementedError
 
@@ -80,7 +79,6 @@ class Board:
         """
         Returns a string representation of the board.
 
-        Parameters: None
         Returns: str
         """
         raise NotImplementedError
@@ -92,7 +90,7 @@ class Board:
         if invalid. If the Piece reaches the end of the board, it changes into
         a King object. 
 
-        Parameters:
+        Args:
             old_pos: tuple(int, int)
             new_pos: tuple(int, int)
 
@@ -104,7 +102,7 @@ class Board:
         """
         Removes a piece at a specific position. 
 
-        Parameters: 
+        Args: 
             pos: tuple(int, int)
         Returns: None
         """
@@ -114,8 +112,6 @@ class Board:
         """
         Adds all the pieces to the board in starting positions and to the 
         respective team sets
-
-        Parameters: None
 
         Returns: None
         """
@@ -129,10 +125,10 @@ class Board:
 
         Args: 
             Team (TeamColor): the team to get moves for
+
         Returns: 
             dict{tup(int, int): [tup(int, int)]} : dict mapping positions to 
             possible next positions for the piece at each position
-            
         """
         raise NotImplementedError
 
@@ -141,9 +137,10 @@ class Board:
         Determines if the given team is the winner
 
         Args:
-            team(TeamColor) - the team who is being checked if it is winner
+            team(TeamColor: the team who is being checked if it is winner
 
-        Returns (bool): whether the specified team is a winner
+        Returns:
+            bool: whether the specified team is a winner
         """
         raise NotImplementedError
 
@@ -153,9 +150,10 @@ class Board:
         moves.
 
         Args: 
-            pos (tuple) - a tuple representing the position of the Piece
+            pos (tuple): a tuple representing the position of the Piece
 
-        Return (bool) whether the piece at given position has available moves
+        Returns: 
+            bool: whether the piece at given position has available moves
         """
         raise NotImplementedError
     
@@ -180,6 +178,11 @@ class Board:
         
         Args:
             curr_pos (tup(int, int)): the current position
+            new_pos (tup(int, int)): the position the piece is trying to move to
+
+        Returns: 
+            bool: True if piece at current position can legally move to the new
+            one, False otherwise
         """
         raise NotImplementedError
     
@@ -226,18 +229,14 @@ class Empty:
     """
     Class representing spaces on the board that are empty (positions without
     a playable piece on them)
-
     """
-    
     def __init__ (self, pos):
         """
         constructor for the Empty class
 
         Args: 
             pos(tuple) - a tuple with two values, representing the position 
-            of the Empty object
-        
-        Returns: None
+            of the Empty object        
         """
         #Empty's position represented by an (int, int) tuple with (x,y) position
         self.pos = pos
@@ -261,7 +260,6 @@ class Empty:
         """
         Returns a string representation of the empty space.
 
-        Parameters: None
         Returns: str
         """
         raise NotImplementedError
@@ -270,33 +268,33 @@ class Empty:
         """
         Changes the x and y positions of the piece. Does not check if the new 
         position is valid or not.
+
         Args:
             pos(tuple) - a tuple with two values, representing the new position 
             of the Piece object
+            
         Returns: None
-    """
+        """
         raise NotImplementedError
 
     def is_empty(self):
         """
         Determines if an Empty object is empty or not. 
-        Args:
-            None
-            Returns:
-                boolean: an Empty object always means an unoccupied space so 
-                this will always return True
+
+        Returns:
+            bool: an Empty object always means an unoccupied space so 
+            this will always return True
         """
         raise NotImplementedError
 
     def is_king(self):
-            """
-            Determines if an Empty object is a king or not
-                Args: 
-                    None
-                Returns (bool): a Empty object is not a king so this will
-                return False
-            """
-            raise NotImplementedError
+        """
+        Determines if an Empty object is a king or not
+
+        Returns:
+            bool: a Empty object is not a king so this will return False
+        """
+        raise NotImplementedError
     
     def can_move(self, new_pos):
         '''
@@ -306,13 +304,12 @@ class Empty:
         Args: 
             new_pos (tuple): a tuple representing the new position
 
-        Returns (bool): as Empty cannot move will always return false
+        Returns:
+            bool: as Empty cannot move will always return false
         '''
         raise NotImplementedError
 
-
-
-class Piece(): 
+class Piece: 
     """
     Class representing playable pieces on the board that are not kings
     """
@@ -326,8 +323,6 @@ class Piece():
             pos(tuple) - a tuple with two values, representing the position of
             the Piece object
             team(TeamColor) - the team the Piece is on
-
-        Returns: None
         """
         #Piece's position represented by an (int, int) tuple with (x,y) position
         self.pos = pos
@@ -354,7 +349,6 @@ class Piece():
         """
         Returns a string representation of the piece.
 
-        Parameters: None
         Returns: str
         """
         raise NotImplementedError
@@ -363,9 +357,11 @@ class Piece():
         """
         Changes the x and y positions of the piece. Does not check if the new 
         position is valid or not.
+
         Args:
             pos(tuple) - a tuple with two values, representing the new position 
             of the Piece object
+
         Returns: None
         """
         raise NotImplementedError
@@ -373,6 +369,7 @@ class Piece():
     def is_empty(self):
         """
         Determines if a Piece object is empty or not. 
+
         Returns:
             bool: a Piece object always means an occupied space so
             this will always return False
@@ -382,7 +379,9 @@ class Piece():
     def is_king(self):
         """
         Determines if a Piece object is a king or not
-        Returns (bool): a Piece object is always a king so this will return True
+
+        Returns:
+            bool: a Piece object is always a king so this will return True
         """
         raise NotImplementedError
 
@@ -394,14 +393,14 @@ class Piece():
         Args: 
             new_pos (tuple): a tuple representing the new position
 
-        Returns (bool): whether the Piece can move to that position. Note that 
-        this does not take into account whether another Piece is in new_position
-        , which is handled by the board method
+        Returns:
+            bool: whether the Piece can move to that position. Note that this
+            does not take into account whether another Piece is in new_position
+            which is handled by the board method
         '''
         raise NotImplementedError
 
-
-class King():
+class King:
     """
     Class representing pieces on the board that are kings 
     """
@@ -439,7 +438,6 @@ class King():
         """
         Returns a string representation of the king piece.
 
-        Parameters: None
         Returns: str
         """
         raise NotImplementedError
@@ -448,6 +446,7 @@ class King():
         """
         Changes the x and y positions of the piece. Does not check if the new
         position is valid or not.
+
         Args:
             pos(tuple) - a tuple with two values, representing the new position 
             of the King object
@@ -458,6 +457,7 @@ class King():
     def is_empty(self):
         """
         Determines if a King object is empty or not. 
+
         Returns:
             bool: a King object always means an occupied space so
             this will always return False
@@ -466,8 +466,10 @@ class King():
 
     def is_king(self):
         """
-        Determines if a King object is a king or not
-        Returns (bool): a King object is always a king so this will return True
+        Determines if a King object is a king or not.
+
+        Returns:
+            bool: a King object is always a king so this will return True
         """
         raise NotImplementedError
     
@@ -479,8 +481,9 @@ class King():
         Args: 
             new_pos (tuple): a tuple representing the new position
 
-        Returns (bool): whether the King can move to that position. Note that 
-        this does not take into account whether another Piece is in 
-        new_position, which is handled by the board method
+        Returns:
+            bool: whether the King can move to that position. Note that this
+            does not take into account whether another Piece is in new_position,
+            which is handled by the board method
         '''
         raise NotImplementedError

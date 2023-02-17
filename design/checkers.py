@@ -1,12 +1,7 @@
 """
 Examples:
-<<<<<<< HEAD
     1) Make a new board: :
-        board = Board(8)
-=======
-    1) Make a new board:
         board = Board()
->>>>>>> b188269c09d48f575d210b51f6ed53d2820da041
 
     2) Check whether a given move is feasible:
         board.can_move((0, 1))

@@ -1,22 +1,27 @@
 """
 Examples:
+<<<<<<< HEAD
     1) Make a new board: :
         board = Board(8)
+=======
+    1) Make a new board:
+        board = Board()
+>>>>>>> b188269c09d48f575d210b51f6ed53d2820da041
 
-    2) Check whether a given move is feasible: :  
-        board.can_move((0, 1)) 
+    2) Check whether a given move is feasible:
+        board.can_move((0, 1))
         # if they want to just check to see if it can move at all
-        board.is_valid_move((0, 1), (1, 2)) 
+        board.is_valid_move((0, 1), (1, 2))
         #if they want to check if they can move to a certain place
 
-    3) How to obtain all the valid moves for a piece at a given position: :
+    3) How to obtain all the valid moves for a piece at a given position:
         board.list_moves((0, 1))
 
     4) How to obtain the list of all possible moves a player can make on the 
-        board
+        board:
         board.all_team_moves(team)
 
-    5) How to check whether there is a winner and, if so, who the winner is
+    5) How to check whether there is a winner and, if so, who the winner is:
         board.is_winner(team)
 
 """
@@ -65,13 +70,13 @@ class Board:
         Initializes an empty board, represented by a list of lists where every 
         cell is filled with an Empty object
 
-        Arg: None
+        Args: None
 
         Returns: a board (list of lists) populated with Empty objects
         """
         raise NotImplementedError
 
-    def _str_(self):
+    def __str__(self):
         """
         Returns a string representation of the board.
 
@@ -252,6 +257,15 @@ class Empty:
         else:
             self.space_color = 'light'
     
+    def __str__(self):
+        """
+        Returns a string representation of the empty space.
+
+        Parameters: None
+        Returns: str
+        """
+        raise NotImplementedError
+    
     def update_position(self, pos):
         """
         Changes the x and y positions of the piece. Does not check if the new 
@@ -335,7 +349,15 @@ class Piece():
         else:
             self.space_color = 'light'
         assert self.space_color is 'dark'
+    
+    def __str__(self):
+        """
+        Returns a string representation of the piece.
 
+        Parameters: None
+        Returns: str
+        """
+        raise NotImplementedError
 
     def update_position(self, pos):
         """
@@ -407,12 +429,21 @@ class King():
         # Color of the space that the King is on; by the rules, must always be 
         # on a dark space, so raises an AssertionError if this doesn't happen as
         # an additional verifier
-        if self.x_pos + self.y_pos % 2 == 1:
+        if (self.x_pos + self.y_pos) % 2 == 1:
             self.space_color = 'dark'
         else:
             self.space_color = 'light'
         assert self.space_color is 'dark'
 
+    def __str__(self):
+        """
+        Returns a string representation of the king piece.
+
+        Parameters: None
+        Returns: str
+        """
+        raise NotImplementedError
+    
     def update_position(self, pos):
         """
         Changes the x and y positions of the piece. Does not check if the new

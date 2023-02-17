@@ -252,7 +252,7 @@ class Empty:
         self.team = TeamColor.EMPTY
 
         # Color of the space that the Empty is on based on coordinates
-        if self.x_pos + self.y_pos % 2 == 1:
+        if (self.x_pos + self.y_pos) % 2 == 1:
             self.space_color = 'dark'
         else:
             self.space_color = 'light'

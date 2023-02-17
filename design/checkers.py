@@ -2,7 +2,7 @@
 Examples:
 <<<<<<< HEAD
     1) Make a new board: :
-        board = Board(8)
+        board = Board()
 =======
     1) Make a new board:
         board = Board()

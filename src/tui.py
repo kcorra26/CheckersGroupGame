@@ -5,8 +5,8 @@ import time
 from typing import Union, Dict
 
 
-
-from checkers import TeamColor, Board, Empty, Piece, King
+#from checkers import TeamColor, Board, Empty, Piece, King
+from mocks import TeamColor, StubCheckerboard
 
 """
 Things that the TUI needs to do
@@ -25,3 +25,41 @@ commands it will need to support
 """
 
 
+
+def play_checkers(board):
+    """
+    This prints out/draws the board in its starting position for a game of 
+    checkers
+    
+    """
+    #black goes first
+    current = TeamColor.BLACK
+    width = board.width
+
+    #hard coded for regular checkerboard/n=2/width=8 right now
+    for row in range(width):
+        line = "["
+        for col in range(width):
+            #right now, the "top" rows will be red; might have to change
+            #this will need to be changed to if space is Empty/Piece and then check TeamColor
+            if row < (board.n):
+                line = line + (" " + "r" + " ")
+            elif row > board.n * 2 - 2:
+                line = line +  (" " + "b" + " ")
+            else:
+                line = line + ("   ")
+        line = line + "]"
+        print(line)
+
+
+
+        
+
+    #Play the game until there's a winner; should NOT be turned on right now
+    """while board.is_winner() is None:
+        print()
+        print(board)
+        print()
+    """
+
+    pass

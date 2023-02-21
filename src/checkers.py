@@ -242,11 +242,11 @@ class Game:
         """
         current_piece = self.game_board[pos[0]][pos[1]]
         if current_piece.is_king is False:
-            if len(self.list_moves_piece) > 0:
+            if len(self.list_moves_piece(pos,False)) > 0:
                 return True
             return False
         if current_piece.is_king is True:
-            if len(self.list_moves_king) > 0:
+            if len(self.list_moves_king(pos,False)) > 0:
                 return True
             return False
 
@@ -273,33 +273,79 @@ class Game:
         moves = []
         current_piece = self.game_board[pos[0]][pos[1]]
         assert current_piece.is_king is False
-        if self.is_valid_position(((pos[0] + current_piece.dir), pos[1] - 1 )):
-            if has_jumped is False:
-                if self.game_board[(pos[0] + current_piece.dir)][pos[1] - 1] == None:
+        if has_jumped is False:
+            if self.is_valid_position(((pos[0] + current_piece.dir), pos[1] - 1 )):
+                if (self.game_board[(pos[0] + current_piece.dir)][pos[1] - 1] == None):
                     moves.append(((pos[0] + current_piece.dir), pos[1] - 1 ))
                 elif (self.game_board[(pos[0] + current_piece.dir)][pos[1] - 1].team 
-                      != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] - 2 ))
-                      and self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] - 2] == None):
-                      moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] - 2 ), True)
-                if self.game_board[(pos[0] + current_piece.dir)][pos[1] + 1] is None:
+                      != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] - 2 ))):
+                    if self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] - 2] is None:
+                        moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] - 2 ), True)
+            if self.is_valid_position(((pos[0] + current_piece.dir), pos[1] + 1 )):
+                if (self.game_board[(pos[0] + current_piece.dir)][pos[1] + 1] is None):
                     moves.append(((pos[0] + current_piece.dir), pos[1] + 1 ))
                 elif (self.game_board[(pos[0] + current_piece.dir)][pos[1] + 1].team 
-                      != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] + 2 ))
-                      and self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] + 2] is None):
-                      moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] + 2 ), True)
-            if has_jumped is True:
-                if (self.game_board[(pos[0] + current_piece.dir)][pos[1] - 1].team 
-                    != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] - 2 ))
-                    and self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] - 2] is None):
-                    moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] - 2 ), True)
-                if (self.game_board[(pos[0] + current_piece.dir)][pos[1] + 1].team 
-                    != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] + 2 ))
-                    and self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] + 2] is None):
-                    moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] + 2 ), True)
-                moves += current_piece
+                    != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] + 2 ))):
+                    if self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] + 2] is None:
+                        moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] + 2 ), True)
+        if has_jumped is True:
+            if (self.is_valid_position(((pos[0] + current_piece.dir), pos[1] - 1 ))):
+                if (self.self.game_board[(pos[0] + current_piece.dir)][pos[1] - 1]
+                    is not None):
+                    if (self.game_board[(pos[0] + current_piece.dir)][pos[1] - 1].team 
+                        != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] - 2 ))):
+                        if self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] - 2] is None:
+                            moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] - 2 ), True)
+            if (self.is_valid_position(((pos[0] + current_piece.dir), pos[1] + 1 ))):
+                if (self.self.game_board[(pos[0] + current_piece.dir)][pos[1] + 1]
+                    is not None):
+                    if (self.game_board[(pos[0] + current_piece.dir)][pos[1] + 1].team 
+                        != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] + 2))):
+                        if self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] + 2] is None:
+                            moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] + 2 ), True)
+            moves += current_piece
         return moves
         
-        def list_moves_king(self, pos, has_jumped):
+    def list_moves_king(self, pos, has_jumped):
+        moves = []
+        current_piece = self.game_board[pos[0]][pos[1]]
+        assert current_piece.is_king is True
+        directions = [-1,1]
+        if has_jumped is False:
+            for i in directions:
+                if self.is_valid_position(((pos[0] + i), pos[1] - 1 )):
+                    if (self.game_board[(pos[0] + i)][pos[1] - 1] is None):
+                        moves.append(((pos[0] + i), pos[1] - 1 ))
+                    elif (self.game_board[(pos[0] + i)][pos[1] - 1].team 
+                        != current_piece.team and self.is_valid_position(((pos[0] + 2*i), pos[1] - 2 ))):
+                        if self.game_board[(pos[0] + 2*i)][pos[1] - 2] is None:
+                            moves += self.list_moves_king(((pos[0] + 2*i), pos[1] - 2 ), True)
+                if self.is_valid_position(((pos[0] + i), pos[1] + 1 )):
+                    if (self.game_board[(pos[0] + i)][pos[1] + 1] is None):
+                        moves.append(((pos[0] + i), pos[1] + 1 ))
+                    elif (self.game_board[(pos[0] + i)][pos[1] + 1].team 
+                        != current_piece.team and self.is_valid_position(((pos[0] + 2*i), pos[1] + 2 ))):
+                        if self.game_board[(pos[0] + 2*i)][pos[1] + 2] is None:
+                            moves += self.list_moves_king(((pos[0] + 2*i), pos[1] + 2 ), True)
+        if has_jumped is True:
+            for i in directions:
+                if (self.is_valid_position(((pos[0] + i), pos[1] - 1 ))):
+                    if (self.self.game_board[(pos[0] + i)][pos[1] - 1]
+                        is not None):
+                        if (self.game_board[(pos[0] + i)][pos[1] - 1].team 
+                            != current_piece.team and self.is_valid_position(((pos[0] + 2*i), pos[1] - 2 ))):
+                            if self.game_board[(pos[0] + 2*i)][pos[1] - 2] is None:
+                                moves += self.list_moves_king(((pos[0] + 2*i), pos[1] - 2 ), True)
+            if (self.is_valid_position(((pos[0] + i), pos[1] + 1 ))):
+                if (self.self.game_board[(pos[0] + i)][pos[1] + 1]
+                    is not None):
+                    if (self.game_board[(pos[0] + i)][pos[1] + 1].team 
+                        != current_piece.team and self.is_valid_position(((pos[0] + 2*i), pos[1] + 2))):
+                        if self.game_board[(pos[0] + 2*i)][pos[1] + 2] is None:
+                            moves += self.list_moves_king(((pos[0] + 2*i), pos[1] + 2 ), True)
+            moves += current_piece
+
+
 
                 
 
@@ -347,7 +393,7 @@ class Game:
             bool: return True if neither team has any possible moves to make 
             (the draw condition), False otherwise
         """
-        if self.all_team_moves("Red") == {} and self.all_team_moves("Black") = {}:
+        if self.all_team_moves("Red") == {} and self.all_team_moves("Black") == {}:
             return True
         return False
     def draw(self, team): 
@@ -396,10 +442,11 @@ class Piece():
         # TeamColor enum representing the Piece's team
         self.team = team_color
         self.is_king = is_king
-        
+        self.dir = None
         if self.team == "Red":
             self.dir = -1
-        self.dir = 1
+        else:
+            self.dir = 1
 
         # Color of the space that the Piece is on; by the rules, must always be 
         # on a dark space, so raises an AssertionError if this doesn't happen as
@@ -476,4 +523,5 @@ class Piece():
 
 
 board = Game(3)
-print(board)
+print(board.list_moves_piece((5,0),False))
+print(board.game_board[5][2])

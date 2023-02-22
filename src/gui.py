@@ -5,7 +5,7 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
-from mocks import StubCheckerboard, Piece
+from mocks import StubCheckerboard, Piece, TeamColor
 #from checkers import Board
 #from checkers import Board, TeamColor
 
@@ -57,6 +57,25 @@ class PieceSprite(pygame.sprite.Sprite):
         self.rect.x = self.sq_size * self.piece.pos[0]
         self.rect.y = self.sq_size * self.piece.pos[1]
 
+class PossibleMovesSprite():
+    '''
+    This class represents the moves that are possible for a certain sprite
+    '''
+    def __init__(self, pos, sq_size):
+        '''
+        constructor for a PossibleMovesSprite
+
+        Args:
+            pos(tuple): a touple representing the row, col 
+            sq_size(int): the size of the board squares 
+        '''
+        img_size = sq_size/2
+        self.image = pygame.Surface([img_size, img_size])
+        self.image.fill(WHITE)
+        self.image.set_colorkey(WHITE)
+        #pygame.draw.ellipse(self.image, YELLOW, [0, 0, img_size-img_size/2, img_size+img_size/2])
+    
+
 
 #draw board methods
 def __draw_empty_board(window, board, sq_size):
@@ -106,13 +125,8 @@ def init_sprites(board: StubCheckerboard):
 
     for piece in all_pieces:
         sprite = PieceSprite(piece, size)
-
-        #edits the location of the sprite based on piece position
-        sprite.rect.x = WIDTH//board.width * piece.pos[0]
-        sprite.rect.y = WIDTH//board.width * piece.pos[1]
-
         all_sprites_list.add(sprite)
-
+    all_sprites_list.update()
     return all_sprites_list
 
 
@@ -127,6 +141,7 @@ def play_checkers(board:StubCheckerboard):
     pygame.display.update()
 
     all_sprites_list = init_sprites(board)
+    curr_player = 'BLACK'
 
     run = True
     while run:
@@ -137,9 +152,9 @@ def play_checkers(board:StubCheckerboard):
                 pos = pygame.mouse.get_pos()
                 row = pos[1] // SQ_SIZE
                 col = pos[0] //SQ_SIZE
-                board.move_piece((col, row), (0,0))
+                board.move_piece((col, row), (0,0)) #need to allow user to decide where piece moves
                 all_sprites_list.update()
-                print('updated')
+            #need one to see possible locations
             draw_board(display, board, SQ_SIZE, all_sprites_list)
             pygame.display.update()
 

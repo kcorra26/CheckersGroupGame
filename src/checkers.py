@@ -185,11 +185,12 @@ class Game:
         Returns: None
         """
         for piece in self.black_pieces:
-            if piece.pos_x == pos[0] and piece.pos[y] == pos[1]:
+            if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
                 self.black_pieces.remove(piece)
         for piece in self.red_pieces:
-            if piece.pos_x == pos[0] and piece.pos[y] == pos[1]:
+            if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
                 self.red_pieces.remove(piece)
+        self.game_board[pos[0]][pos[1]] = None
         
     
     def _initialize_checkers(self):

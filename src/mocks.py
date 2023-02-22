@@ -22,6 +22,17 @@ class StubCheckerboard:
 
     def __str__(self):
         return("board")
+    
+    def move_piece(self, old_pos, new_pos:tuple = (0,0)):
+        col, row = old_pos
+        piece = self.get_piece(col, row)
+        piece.update_pos(new_pos)
+    
+    def get_piece(self, col, row):
+        for piece in self.red_pieces + self.black_pieces:
+            if piece.pos == (col,row):
+                print('found piece')
+                return piece
 
 class Piece:
     def __init__(self, team:TeamColor, pos:tuple = (0,0), is_king=False):
@@ -31,6 +42,9 @@ class Piece:
         self.team = team
         self.is_king = is_king
         self.pos = pos
+    
+    def update_pos(self, new_pos):
+        self.pos = new_pos
 
 class CheckersGameBotMock: # game mock?
     def __init__(self, n=3):

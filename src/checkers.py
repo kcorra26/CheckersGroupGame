@@ -25,10 +25,12 @@ from enum import Enum
 TeamColor = Enum("TeamColor",  ["RED", "BLACK", "EMPTY"]) 
 
 class Board:
-    def __init__(self, n=3):
+    def __init__(self, n=3, a=3):
         self.width = (2 * n) + 2
+        self._num_rows = (2 * n) + 2
+        self._num_columns = (2 * a) + 2
         self.board = self._create_board()
-        self._num_rows = n
+
 
     def _create_board(self): 
         """
@@ -40,9 +42,9 @@ class Board:
         Returns: a board (list of lists) populated with Empty objects
         """
         empty_board = []
-        for i in range(self.width):
+        for i in range(self._num_rows):
             one_row = []
-            for j in range(self.width):
+            for j in range(self._num_columns):
                 one_row.append(None)
             empty_board.append(one_row)
         return empty_board
@@ -112,9 +114,17 @@ class Game:
                     s += spot.__str__()
             s += "\n"    
         return s
+
+    def make_king(self):
+        for spot in self.board[0]:
+            if spot is not None and spot.is_king is False and spot.team == "Red":
+                spot.is_king = True
+        for spot in self.board[self.width - 1]:
+            if spot is not None and spot.is_king is False and spot.team == "Black":
+                spot.is_king = True
                     
     
-    def move_piece(self, old_pos, new_pos, team):
+    def move_piece(self, old_pos, new_pos):
         """
         Ensures the piece is in play, moves the piece at the old position to 
         the new position if the new position is valid, and notifies the player 
@@ -128,23 +138,41 @@ class Game:
         Returns: None
         """
         current_piece = self.game_board[old_pos[0]][old_pos[1]]
-        new_piece = self.game_board[new_pos[0]][new_pos[1]]
-        if (not self.can_move(old_pos) or not current_piece.can_move(new_pos) or
-            not self.is_valid_move(old_pos,new_pos)):
-            print("Invalid Move")
+        if new_pos in self.list_moves(old_pos):
+            if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1:
+                self.game_board[new_pos[0]][new_pos[1]] = current_piece
+                self.game_board[old_pos[0]][old_pos[1]] = None
+                current_piece.update_position(new_pos)
+                self.make_king()
+        
+    def jump_piece(self,old_pos,new_pos):
+        assert abs(new_pos[0] - old_pos[0]) == 2
+        assert abs(new_pos[1] - old_pos[1]) == 2
+        current_piece = self.game_board[old_pos[0]][old_pos[1]]
+        middle_pos = ((old_pos[0] + new_pos[0])/2,(old_pos[1] + new_pos[1])/2)
+        middle_spot = self.game_board[middle_pos[0]][middle_pos[1]]
+        new_spot = self.game_board[new_pos[0]][new_pos[1]]
+        if (new_spot is None and middle_spot is not None and current_piece.team
+            != middle_spot.team):
+            if current_piece.is_king is False:
+                if ((new_pos[0] - old_pos[0]) == 2 * current_piece.dir and
+                    abs(new_pos[1] - new_pos[0]) == 1):
+                    self.game_board[new_pos[0]][new_pos[1]] = current_piece
+                    self.game_board[old_pos[0]][old_pos[1]] = None
+                    self._remove_piece(middle_pos)
+                    current_piece.update_position(new_pos)
+                    self.make_king()
+            if current_piece.is_king is True:
+                self.game_board[new_pos[0]][new_pos[1]] = current_piece
+                self.game_board[old_pos[0]][old_pos[1]] = None
+                self._remove_piece(middle_pos)
+                current_piece.update_position(new_pos)
+                
 
-        
-        
-        new_piece = current_piece
-        new_piece.x_pos = new_pos[0]
-        new_piece.y_pos = new_pos[1]
-        current_piece = Empty((old_pos[0],old_pos[1]))
-        if abs(new_pos[1] - old_pos[1]) == 2:
-            middle_x = (old_pos[0] + new_pos[0])/2
-            middle_y = (old_pos[1] + new_pos[1])/2
-            if team == "Red":
-                    self.black_pieces.remove(self.game_board[middle_x][middle_y])
-            self.red_pieces.remove(self.game_board[middle_x][middle_y])
+
+                
+
+
             
             
 
@@ -157,11 +185,12 @@ class Game:
         Returns: None
         """
         for piece in self.black_pieces:
-            if piece.pos_x == pos[0] and piece.pos[y] == pos[1]:
+            if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
                 self.black_pieces.remove(piece)
         for piece in self.red_pieces:
-            if piece.pos_x == pos[0] and piece.pos[y] == pos[1]:
+            if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
                 self.red_pieces.remove(piece)
+        self.game_board[pos[0]][pos[1]] = None
         
     
     def _initialize_checkers(self):
@@ -202,11 +231,13 @@ class Game:
         team_moves ={}
         if team == "Red":
             for piece in self.red_pieces:
-                if self.can_move((piece.pos_x,piece.pos_y)):
-                    if piece.is_king is False:
-                        team_moves[piece] = self.list_moves_piece(piece)
-                    if piece.is_king is True:
-                        team_moves[piece] = self.list_moves_king(piece)
+                if self.can_move((piece.x_pos,piece.y_pos)):
+                    team_moves[(piece.x_pos,piece.y_pos)] = self.list_moves((piece.x_pos,piece.y_pos))
+        if team == "Black":
+            for piece in self.black_pieces:
+                if self.can_move((piece.x_pos,piece.y_pos)):
+                    team_moves[(piece.x_pos,piece.y_pos)] = self.list_moves((piece.x_pos,piece.y_pos))
+        
         return team_moves
 
                         
@@ -256,6 +287,15 @@ class Game:
         if 0 <= pos[0] <= self.width - 1 and 0 <= pos[1] <= self.width - 1:
             return True
         return False 
+
+    def list_moves(self,pos):
+        x_pos = pos[0]
+        y_pos = pos[1]
+        current_piece = self.game_board[x_pos][y_pos]
+        if current_piece.is_king is False:
+            return self.list_moves_piece(pos,False)
+        else:
+            return self.list_moves_king(pos,False)
         
     
     def list_moves_piece(self, pos, has_jumped):
@@ -303,7 +343,8 @@ class Game:
                         != current_piece.team and self.is_valid_position(((pos[0] + 2*current_piece.dir), pos[1] + 2))):
                         if self.game_board[(pos[0] + 2*current_piece.dir)][pos[1] + 2] is None:
                             moves += self.list_moves_piece(((pos[0] + 2*current_piece.dir), pos[1] + 2 ), True)
-            moves += current_piece
+            else:
+                moves.append(pos)
         return moves
         
     def list_moves_king(self, pos, has_jumped):
@@ -343,14 +384,24 @@ class Game:
                         != current_piece.team and self.is_valid_position(((pos[0] + 2*i), pos[1] + 2))):
                         if self.game_board[(pos[0] + 2*i)][pos[1] + 2] is None:
                             moves += self.list_moves_king(((pos[0] + 2*i), pos[1] + 2 ), True)
-            moves += current_piece
+            else:
+                moves.append(pos)
+        return moves
 
 
 
-                
+    def is_valid_move(self, curr_pos, new_pos):
 
-            
-            
+        current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
+        if current_piece.is_king is False:
+            if new_pos not in self.list_moves_piece(curr_pos):
+                return True
+            return False
+        if current_piece.is_king is True:
+            if new_pos not in self.list_moves_king(curr_pos):
+                return True
+            return False
+
 
     
     def is_valid_move(self, curr_pos, new_pos):
@@ -367,9 +418,6 @@ class Game:
 
 
         
-        
-        
-    
     def resign(self, team): 
         """
         Allows one team to resign and designates the other team as winner.
@@ -425,7 +473,7 @@ class Piece():
 
         Args: 
             pos(tuple) - a tuple with two values, representing the position of
-            the Piece object
+            the Piece object (row, col)
             team(TeamColor) - the team the Piece is on
 
         Returns: None
@@ -433,11 +481,11 @@ class Piece():
         #Piece's position represented by an (int, int) tuple with (x,y) position
         self.pos = pos
 
-        # Piece's x position
-        self.x_pos = pos[0]
+        # Piece's x position or col
+        self.x_pos = pos[1]
 
-        # Piece's y position
-        self.y_pos = pos[1]
+        # Piece's y position or row
+        self.y_pos = pos[0]
 
         # TeamColor enum representing the Piece's team
         self.team = team_color
@@ -483,8 +531,8 @@ class Piece():
             of the Piece object
         Returns: None
         """
-        self.pos_x = pos[0]
-        self.pos_y = pos[1]
+        self.x_pos = pos[0]
+        self.y_pos = pos[1]
         
 
     def is_king(self):
@@ -513,9 +561,7 @@ class Piece():
             if (abs(new_pos[1] - self.y_pos) == 1 and new_pos[0] - self.x_pos == 1):
                 return True
         return False
-        #Take into account eating chip!!!
-        #Recursive Function?
-            
+
         
 
 
@@ -523,5 +569,8 @@ class Piece():
 
 
 board = Game(3)
-print(board.list_moves_piece((5,0),False))
-print(board.game_board[5][2])
+print(board)
+
+print(board.all_team_moves("Red"))
+#print(board.game_board[5][2])
+#print(type(board.game_board[5][2]))

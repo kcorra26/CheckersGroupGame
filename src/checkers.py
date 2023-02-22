@@ -185,11 +185,12 @@ class Game:
         Returns: None
         """
         for piece in self.black_pieces:
-            if piece.pos_x == pos[0] and piece.pos[y] == pos[1]:
+            if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
                 self.black_pieces.remove(piece)
         for piece in self.red_pieces:
-            if piece.pos_x == pos[0] and piece.pos[y] == pos[1]:
+            if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
                 self.red_pieces.remove(piece)
+        self.game_board[pos[0]][pos[1]] = None
         
     
     def _initialize_checkers(self):
@@ -472,7 +473,7 @@ class Piece():
 
         Args: 
             pos(tuple) - a tuple with two values, representing the position of
-            the Piece object
+            the Piece object (row, col)
             team(TeamColor) - the team the Piece is on
 
         Returns: None
@@ -480,11 +481,11 @@ class Piece():
         #Piece's position represented by an (int, int) tuple with (x,y) position
         self.pos = pos
 
-        # Piece's x position
-        self.x_pos = pos[0]
+        # Piece's x position or col
+        self.x_pos = pos[1]
 
-        # Piece's y position
-        self.y_pos = pos[1]
+        # Piece's y position or row
+        self.y_pos = pos[0]
 
         # TeamColor enum representing the Piece's team
         self.team = team_color

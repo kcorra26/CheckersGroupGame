@@ -31,8 +31,11 @@ class StubCheckerboard:
     def get_piece(self, col, row):
         for piece in self.red_pieces + self.black_pieces:
             if piece.pos == (col,row):
-                print('found piece')
                 return piece
+        return None
+    
+    def list_moves(self, piece):
+        return [(0,0), (7,0), (3,4), (5,7)]
 
 class Piece:
     def __init__(self, team:TeamColor, pos:tuple = (0,0), is_king=False):

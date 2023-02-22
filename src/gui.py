@@ -57,7 +57,7 @@ class PieceSprite(pygame.sprite.Sprite):
         self.rect.x = self.sq_size * self.piece.pos[0]
         self.rect.y = self.sq_size * self.piece.pos[1]
 
-class PossibleMovesSprite():
+"""class PossibleMovesSprite():
     '''
     This class represents the moves that are possible for a certain sprite
     '''
@@ -73,12 +73,33 @@ class PossibleMovesSprite():
         self.image = pygame.Surface([img_size, img_size])
         self.image.fill(WHITE)
         self.image.set_colorkey(WHITE)
-        #pygame.draw.ellipse(self.image, YELLOW, [0, 0, img_size-img_size/2, img_size+img_size/2])
-    
+        pygame.draw.ellipse(self.image, YELLOW, [pos[1]*sq_size, pos[0]*sq_size, img_size-img_size/2, img_size+img_size/2])"""
+
+def calc_sq_size(board):
+    '''
+    calaculates square size
+
+    Args: 
+        board: the current board
+
+    Returns (float) the sq_size of the board
+    '''
+    sq_size = WIDTH // board.width
+    return sq_size
+
+def show_moves(board:StubCheckerboard, piece:Piece, window):
+    '''
+    generates sprites for all possible moves
+    '''
+    moves = board.list_moves(piece)
+    for loc in moves: #loc is (row, col)
+        x_pos = loc[1] * calc_sq_size(board)
+        y_pos = loc[0] * calc_sq_size(board)
+        pygame.draw.circle(window, YELLOW, )
 
 
 #draw board methods
-def __draw_empty_board(window, board, sq_size):
+def __draw_empty_board(window, board):
     '''
     Draws checkerboard without pieces
 
@@ -88,14 +109,14 @@ def __draw_empty_board(window, board, sq_size):
         sq_size: the size of every square
     '''
     ROWS = board.width
-    SQ_SIZE = sq_size
+    SQ_SIZE = calc_sq_size(board)
 
     window.fill(BLACK)
     for row in range(ROWS):
         for col in range(row%2, ROWS, 2):
             pygame.draw.rect(window, RED, (row*SQ_SIZE, col*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
-def draw_board (window, board, sq_size, sprite_list):
+def draw_board (window, board, sprite_list):
     '''
     draws checkerboard with sprites
 
@@ -105,7 +126,7 @@ def draw_board (window, board, sq_size, sprite_list):
         sq_size: the size of the squares
         sprite_list: current sprite list (at this time in game)
     '''
-    __draw_empty_board(window, board, sq_size)
+    __draw_empty_board(window, board)
     sprite_list.draw(window)
 
 
@@ -121,7 +142,7 @@ def init_sprites(board: StubCheckerboard):
     '''
     all_sprites_list = pygame.sprite.Group()
     all_pieces = board.red_pieces + board.black_pieces
-    size = WIDTH // board.width
+    size = calc_sq_size(board)
 
     for piece in all_pieces:
         sprite = PieceSprite(piece, size)
@@ -152,10 +173,21 @@ def play_checkers(board:StubCheckerboard):
                 pos = pygame.mouse.get_pos()
                 row = pos[1] // SQ_SIZE
                 col = pos[0] //SQ_SIZE
-                board.move_piece((col, row), (0,0)) #need to allow user to decide where piece moves
-                all_sprites_list.update()
+                piece = board.get_piece(col, row)
+                if piece.team == curr_player:
+                    show_moves(board, piece, SQ_SIZE, display)
+                #board.move_piece((col, row), (0,0)) #need to allow user to decide where piece moves
+                
             #need one to see possible locations
-            draw_board(display, board, SQ_SIZE, all_sprites_list)
+            
+            #switch current player
+            if curr_player == 'BLACK':
+                curr_player = 'RED'
+            else:
+                curr_player = "BLACK"
+
+            all_sprites_list.update()
+            draw_board(display, board, all_sprites_list)
             pygame.display.update()
 
     pygame.quit()

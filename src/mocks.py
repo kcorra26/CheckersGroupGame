@@ -42,13 +42,13 @@ class CheckersGameBotMock: # game mock?
         return "BOARD"
     
     def all_team_moves(self, team):
-        return {(1, 2) : [(2, 3), (2, 1)], (3, 2) : [(5, 3), (5, 0), (7, 0)], 
+        return {(1, 2) : [(2, 3), (2, 1)], (3, 2) : [(5, 3), (5, 0), (6, 0)], 
                 (6, 2) : [(7, 3), (7, 0)]} 
 
     def is_done(self):
         return False
     
-    def will_king(self, og_pos, end_pos): 
+    def will_king(self, og_pos, end_pos, team): 
         row, col = end_pos
         if row == self.width - 1:
             return True

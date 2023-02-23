@@ -85,3 +85,40 @@ class CheckersGameBotMock: # game mock?
         #if row == 6:
             #return True
         return False
+
+class MockGame:
+    def __init__(self, n=3):
+        self.board = MockCheckerboard(n)
+        self.n = n
+        self.width = 2*n + 2
+        pass
+    def __str__(self):
+        return "Game"
+    def is_valid_move(self, curr_pos, new_pos):
+        return True
+    def all_team_moves(self, team):
+        return {(3,3):[(4,5),(5,6)]}
+    
+
+
+class MockCheckerboard:
+
+    def __init__(self, n, kings=False):
+        self.grid=[[None, Piece('BLACK'), None, Piece('BLACK'), None,  Piece('BLACK'), None, Piece('BLACK')],
+                    [Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None ],
+                    [None, Piece('BLACK'), None, Piece('BLACK', True), None, Piece('BLACK'), None, Piece('BLACK')],
+                    [None, None, None, None, None, None, None, None],
+                    [None, None, None, None, None, None, None, None],
+                    [Piece('RED', True), None, Piece('RED'), None, Piece('RED'), None, Piece('RED', True), None],
+                    [None, Piece('RED'), None, Piece('RED'), None, Piece('RED'), None, Piece('RED')],
+                    [Piece('RED'), None, Piece('RED'), None, Piece('RED'), None, Piece('RED'), None]]
+        self.n = n
+        self.width = 2*n + 2
+
+class StubRandomBot:
+    def __init__(self):
+        pass
+
+class StubSmartBot:
+    def __init__(self):
+        pass

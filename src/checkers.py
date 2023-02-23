@@ -190,7 +190,7 @@ class Game:
     #check if winner at certain position (original,position,end_pos, team)
     # temporarily move piece
     #make an is_done function to check if game is done
-    def move_piece(self, old_pos, new_pos):
+    def move_piece(self, old_pos, new_pos,team):
         """
         Ensures the piece is in play, moves the piece at the old position to 
         the new position if the new position is valid, and notifies the player 
@@ -208,6 +208,15 @@ class Game:
             if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1:
                 self.game_board[new_pos[0]][new_pos[1]] = current_piece
                 self.game_board[old_pos[0]][old_pos[1]] = None
+                self.game_board[new_pos[0]][new_pos[1]].update_position(new_pos)
+                if team == "Red":
+                    for piece in self.red_pieces:
+                        if piece.x_pos == current_piece.x_pos and piece.y_pos == current_piece.y_pos:
+                            piece.update_position(new_pos)
+                if team == "Black":
+                    for piece in self.black_pieces:
+                        if piece.x_pos == current_piece.x_pos and piece.y_pos == current_piece.y_pos:
+                            piece.update_position(new_pos)
 
                 self.make_king()
 

@@ -157,7 +157,7 @@ def print_game(game:MockGame):
     Returns: None
     """
     board = game.board
-    width = game.board.width
+    width = game.width
     num_pairs = int(width/2)
     even_line_top = Fore.WHITE + ((TOP_ROW_LIGHT + TOP_ROW_DARK) * (num_pairs) + "\n")
     even_line_bottom = Fore.WHITE + (BOTTOM_ROW_LIGHT + BOTTOM_ROW_DARK) * (num_pairs) + "\n"
@@ -175,7 +175,7 @@ def print_game(game:MockGame):
                 wall = SIDE_WALL_LIGHT
             else:
                 wall = SIDE_WALL_DARK
-            space = board.board[row][col]
+            space = board[row][col]
             square_str = ""
 
             if space is None:

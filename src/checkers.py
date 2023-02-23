@@ -729,8 +729,8 @@ class Piece():
             of the Piece object
         Returns: None
         """
-        self.x_pos = pos[0]
-        self.y_pos = pos[1]
+        self.y_pos = pos[0]
+        self.x_pos = pos[1]
         
 
     def is_king(self):

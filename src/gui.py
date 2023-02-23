@@ -42,7 +42,7 @@ class GUIPlayer():
         self.ROWS = self.board.width
 
         #attributes for game play
-        self.curr_player = 'BLACK'
+        self.curr_player = 'Black'
         self.all_sprites_list = pygame.sprite.Group()
         self.window = None
         self.selected_piece = None
@@ -150,10 +150,10 @@ class GUIPlayer():
         switches the current player
         '''
         self.selected_piece = None
-        if self.curr_player == 'BLACK':
-            self.curr_player = 'RED'
+        if self.curr_player == 'Black':
+            self.curr_player = 'Red'
         else:
-            self.curr_player = "BLACK"
+            self.curr_player = "Black"
         return
 
     def play_checkers(self):

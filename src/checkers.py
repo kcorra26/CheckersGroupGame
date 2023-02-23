@@ -116,7 +116,7 @@ class Game:
         return s
 
     def make_king(self):
-        for spot in self.board[0]:
+        for spot in self.game_board[0]:
             if spot is not None and spot.is_king is False and spot.team == "Red":
                 spot.is_king = True
                 for piece in self.red_pieces:
@@ -124,7 +124,7 @@ class Game:
                         self.red_pieces.remove(piece)
                         self.red_pieces.add(spot)
 
-        for spot in self.board[self.width - 1]:
+        for spot in self.game_board[self.width - 1]:
             if spot is not None and spot.is_king is False and spot.team == "Black":
                 spot.is_king = True
                 for piece in self.black_pieces:
@@ -175,10 +175,10 @@ class Game:
                     self.black_pieces = original_set
                 return is_winner
         
-    def is_done(self):
-        if self.is_winner is not None:
-            return True
-        return False
+        def is_done(self):
+            if self.is_winner is not None:
+                return True
+            return False
 
 
                 
@@ -190,7 +190,7 @@ class Game:
     #check if winner at certain position (original,position,end_pos, team)
     # temporarily move piece
     #make an is_done function to check if game is done
-    def move_piece(self, old_pos, new_pos):
+    def move_piece(self, old_pos, new_pos,team):
         """
         Ensures the piece is in play, moves the piece at the old position to 
         the new position if the new position is valid, and notifies the player 
@@ -207,16 +207,18 @@ class Game:
         if new_pos in self.list_moves(old_pos):
             if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1:
                 self.game_board[new_pos[0]][new_pos[1]] = current_piece
+                self.game_board[new_pos[0]][new_pos[1]].update_position(new_pos)
                 self.game_board[old_pos[0]][old_pos[1]] = None
-                if current_piece.team == "Red":
-                    self.red_pieces.remove(current_piece)
-                    current_piece.update_position(new_pos)
-                    self.red_pieces.add(current_piece)
-                if current_piece.team == "Black":
-                    self.black_pieces.remove(current_piece)
-                    current_piece.update_position(new_pos)
-                    self.black_pieces.add(current_piece)
-                
+                if team == "Red":
+                    for piece in self.red_pieces:
+                        if piece.x_pos == old_pos[1] and piece.y_pos == old_pos[0]:
+                            self.red_pieces.remove(piece)
+                            self.red_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
+                if team == "Black":
+                    for piece in self.black_pieces:
+                        if piece.x_pos == old_pos[1] and piece.y_pos == old_pos[0]:
+                            self.black_pieces.remove(piece)
+                            self.black_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
 
                 self.make_king()
 
@@ -299,9 +301,8 @@ class Game:
                     self.red_pieces.add(Piece((i,j),"Red"))
     
     def reset_game(self):
-        for i in range(self.width):
-            for j in range(self.width):
-                self._remove_piece((i,j))
+        self.red_pieces = set()
+        self.black_pieces = set()
         self._initialize_checkers()
         
 
@@ -321,19 +322,18 @@ class Game:
             
         """
         team_moves ={}
-        #return team == TeamColor.1
-        if team == "Red": # figure out how to check ENUM
+        if team == "Red":
             for piece in self.red_pieces:
                 if self.can_move((piece.y_pos,piece.x_pos)):
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
-            return team_moves
-        elif team == "Black":
+        if team == "Black":
             for piece in self.black_pieces:
                 if self.can_move((piece.y_pos,piece.x_pos)):
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
-            return team_moves
-        return "None"
+        
+        return team_moves
 
+                        
 
     def is_winner(self, team): 
         """
@@ -347,10 +347,11 @@ class Game:
         if team == "Red":
             if len(self.black_pieces) == 0 and len(self.all_team_moves("Black")) == 0:
                 return True
+            return False
         if team == "Black":
             if len(self.red_pieces) == 0 and len(self.all_team_moves("Red")) == 0:
                 return True
-        return False
+            return False
 
 
     def can_move(self, pos):
@@ -367,10 +368,11 @@ class Game:
         if current_piece.is_king is False:
             if len(self.list_moves_piece(pos,False,[])) > 0:
                 return True
+            return False
         if current_piece.is_king is True:
             if len(self.list_moves_king(pos,False,[])) > 0:
                 return True
-        return False
+            return False
 
         
 
@@ -380,9 +382,7 @@ class Game:
         return False 
 
     def list_moves(self,pos):
-        x_pos = pos[0]
-        y_pos = pos[1]
-        current_piece = self.game_board[x_pos][y_pos]
+        current_piece = self.game_board[pos[0]][pos[1]]
         if current_piece.is_king is False:
             return self.list_moves_piece(pos,False,[])
         else:
@@ -392,30 +392,30 @@ class Game:
         current_piece = self.game_board[pos[0]][pos[1]]
         directions = [-1]
         if current_piece.is_king is False:
-            if self.is_valid_position(pos[0] + current_piece.dir, pos[1] + 1):
+            if self.is_valid_position((pos[0] + current_piece.dir, pos[1] + 1)):
                 if (self.game_board[pos[0] + current_piece.dir][pos[1] + 1] is not None
                     and self.game_board[pos[0] + current_piece.dir][pos[1] + 1].team != current_piece.team):
-                    if (self.is_valid_position(pos[0] + 2*current_piece.dir, pos[1] + 2) and
+                    if (self.is_valid_position((pos[0] + 2*current_piece.dir, pos[1] + 2)) and
                         self.game_board[pos[0] + 2*current_piece.dir][pos[1] + 2] is None):
                         return True
-            if self.is_valid_position(pos[0] + current_piece.dir, pos[1] - 1):
+            if self.is_valid_position((pos[0] + current_piece.dir, pos[1] - 1)):
                 if (self.game_board[pos[0] + current_piece.dir][pos[1] - 1] is not None
                     and self.game_board[pos[0] + current_piece.dir][pos[1] - 1].team != current_piece.team):
-                    if (self.is_valid_position(pos[0] + 2*current_piece.dir, pos[1] - 2) and
+                    if (self.is_valid_position((pos[0] + 2*current_piece.dir, pos[1] - 2)) and
                         self.game_board[pos[0] + 2*current_piece.dir][pos[1] - 2]  is None):
                         return True
         if current_piece.is_king is True:
             for i in directions:
-                if self.is_valid_position(pos[0] + i, pos[1] + 1):
+                if self.is_valid_position((pos[0] + i, pos[1] + 1)):
                     if (self.game_board[pos[0] + i][pos[1] + 1] is not None
                         and self.game_board[pos[0] + i][pos[1] + 1].team != current_piece.team):
-                        if (self.is_valid_position(pos[0] + 2*i, pos[1] + 2) and
+                        if (self.is_valid_position((pos[0] + 2*i, pos[1] + 2)) and
                             self.game_board[pos[0] + 2*i][pos[1] + 2]  is None):
                             return True
-                if self.is_valid_position(pos[0] + i, pos[1] - 1):
+                if self.is_valid_position((pos[0] + i, pos[1] - 1)):
                     if (self.game_board[pos[0] + i][pos[1] - 1] is not None
                         and self.game_board[pos[0] + i][pos[1] - 1].team != current_piece.team):
-                        if (self.is_valid_position(pos[0] + 2*i, pos[1] - 2) and
+                        if (self.is_valid_position((pos[0] + 2*i, pos[1] - 2))and
                             self.game_board[pos[0] + 2*i][pos[1] + 2] is None):
                             return True
         return False
@@ -594,18 +594,14 @@ class Game:
     def is_valid_move(self, curr_pos, new_pos):
 
         current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
-        if current_piece.is_king is False:
-            if new_pos not in self.list_moves_piece(curr_pos):
-                return True
-            return False
-        if current_piece.is_king is True:
-            if new_pos not in self.list_moves_king(curr_pos):
-                return True
-            return False
+        if new_pos not in self.list_moves(curr_pos):
+            return True
+        return False
 
-    """
+
+
     
-    def is_valid_move(self, curr_pos, new_pos):
+    """def is_valid_move(self, curr_pos, new_pos):
 
         current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
         if current_piece.is_king is False:
@@ -615,7 +611,7 @@ class Game:
         if current_piece.is_king is True:
             if new_pos not in self.list_moves_king(curr_pos):
                 return True
-            return False """
+            return False"""
 
 
         
@@ -704,7 +700,7 @@ class Piece():
             self.space_color = 'dark'
         else:
             self.space_color = 'light'
-        assert self.space_color == 'dark'
+        assert self.space_color is 'dark'
     
     def __str__(self):
         """
@@ -732,8 +728,8 @@ class Piece():
             of the Piece object
         Returns: None
         """
-        self.x_pos = pos[0]
-        self.y_pos = pos[1]
+        self.y_pos = pos[0]
+        self.x_pos = pos[1]
         
 
     def is_king(self):
@@ -777,10 +773,10 @@ class Piece():
 
 
 
-#board = Game(3)
-#print(board)
+board = Game(3)
+print(board)
 
 board.all_team_moves("Black")
 print(board.is_winner("Red"))
 #print(board.game_board[5][2])
-#print(type(board.game_board[5][2]))
+#print(type(board.game_board[5][2]))g

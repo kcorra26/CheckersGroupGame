@@ -75,6 +75,16 @@ class GUIPlayer():
             self.all_sprites_list.add(sprite)
         self.all_sprites_list.update()
         return 
+    
+    def update_sprites(self):
+        '''
+        
+        '''
+        pieces = self.board.red_pieces + self.board.black_pieces
+        for sprite in self.all_sprites_list:
+            if sprite not in pieces:
+                sprite.kill() #will kill sprites that were jumped over
+        self.all_sprites_list.update() #sets new pos for sprites that moved
 
     #draw board methods
     def __draw_empty_board(self):
@@ -139,8 +149,7 @@ class GUIPlayer():
         if (row, col) in pos_moves:
             print('move is possible')
             self.board.move_piece(self.selected_piece.pos, (row, col))
-            #need a kill function to kill pieces no longer on the board
-            self.all_sprites_list.update()
+            self.update_sprites() 
             self.switch_player()
         else:
             self.selected_piece = None
@@ -187,6 +196,11 @@ class GUIPlayer():
         pygame.quit()
         quit()
 
+'''
+way for game to end
+if certain peices cannot be moved
+kill sprites
+'''
 #sample board
 ex_board = StubCheckerboard()
 player = GUIPlayer(ex_board)

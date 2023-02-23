@@ -381,7 +381,7 @@ class Game:
         return False 
 
     def list_moves(self,pos):
-        current_piece = self.game_board[pos[0]][[0]]
+        current_piece = self.game_board[pos[0]][pos[1]]
         if current_piece.is_king is False:
             return self.list_moves_piece(pos,False,[])
         else:

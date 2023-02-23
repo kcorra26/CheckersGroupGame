@@ -175,10 +175,10 @@ class Game:
                     self.black_pieces = original_set
                 return is_winner
         
-    def is_done(self):
-        if self.is_winner is not None:
-            return True
-        return False
+        def is_done(self):
+            if self.is_winner is not None:
+                return True
+            return False
 
 
                 
@@ -321,19 +321,18 @@ class Game:
             
         """
         team_moves ={}
-        #return team == TeamColor.1
-        if team == "Red": # figure out how to check ENUM
+        if team == "Red":
             for piece in self.red_pieces:
                 if self.can_move((piece.y_pos,piece.x_pos)):
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
-            return team_moves
-        elif team == "Black":
+        if team == "Black":
             for piece in self.black_pieces:
                 if self.can_move((piece.y_pos,piece.x_pos)):
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
-            return team_moves
-        return "None"
+        
+        return team_moves
 
+                        
 
     def is_winner(self, team): 
         """
@@ -347,10 +346,11 @@ class Game:
         if team == "Red":
             if len(self.black_pieces) == 0 and len(self.all_team_moves("Black")) == 0:
                 return True
+            return False
         if team == "Black":
             if len(self.red_pieces) == 0 and len(self.all_team_moves("Red")) == 0:
                 return True
-        return False
+            return False
 
 
     def can_move(self, pos):
@@ -367,10 +367,11 @@ class Game:
         if current_piece.is_king is False:
             if len(self.list_moves_piece(pos,False,[])) > 0:
                 return True
+            return False
         if current_piece.is_king is True:
             if len(self.list_moves_king(pos,False,[])) > 0:
                 return True
-        return False
+            return False
 
         
 
@@ -380,9 +381,7 @@ class Game:
         return False 
 
     def list_moves(self,pos):
-        x_pos = pos[0]
-        y_pos = pos[1]
-        current_piece = self.game_board[x_pos][y_pos]
+        current_piece = self.game_board[pos[0]][[0]]
         if current_piece.is_king is False:
             return self.list_moves_piece(pos,False,[])
         else:
@@ -392,30 +391,30 @@ class Game:
         current_piece = self.game_board[pos[0]][pos[1]]
         directions = [-1]
         if current_piece.is_king is False:
-            if self.is_valid_position((pos[0] + current_piece.dir, pos[1] + 1)):
+            if self.is_valid_position(pos[0] + current_piece.dir, pos[1] + 1):
                 if (self.game_board[pos[0] + current_piece.dir][pos[1] + 1] is not None
                     and self.game_board[pos[0] + current_piece.dir][pos[1] + 1].team != current_piece.team):
-                    if (self.is_valid_position((pos[0] + 2*current_piece.dir, pos[1] + 2)) and
+                    if (self.is_valid_position(pos[0] + 2*current_piece.dir, pos[1] + 2) and
                         self.game_board[pos[0] + 2*current_piece.dir][pos[1] + 2] is None):
                         return True
-            if self.is_valid_position((pos[0] + current_piece.dir, pos[1] - 1)):
+            if self.is_valid_position(pos[0] + current_piece.dir, pos[1] - 1):
                 if (self.game_board[pos[0] + current_piece.dir][pos[1] - 1] is not None
                     and self.game_board[pos[0] + current_piece.dir][pos[1] - 1].team != current_piece.team):
-                    if (self.is_valid_position((pos[0] + 2*current_piece.dir, pos[1] - 2)) and
+                    if (self.is_valid_position(pos[0] + 2*current_piece.dir, pos[1] - 2) and
                         self.game_board[pos[0] + 2*current_piece.dir][pos[1] - 2]  is None):
                         return True
         if current_piece.is_king is True:
             for i in directions:
-                if self.is_valid_position((pos[0] + i, pos[1] + 1)):
+                if self.is_valid_position(pos[0] + i, pos[1] + 1):
                     if (self.game_board[pos[0] + i][pos[1] + 1] is not None
                         and self.game_board[pos[0] + i][pos[1] + 1].team != current_piece.team):
-                        if (self.is_valid_position((pos[0] + 2*i, pos[1] + 2)) and
+                        if (self.is_valid_position(pos[0] + 2*i, pos[1] + 2) and
                             self.game_board[pos[0] + 2*i][pos[1] + 2]  is None):
                             return True
-                if self.is_valid_position((pos[0] + i, pos[1] - 1)):
+                if self.is_valid_position(pos[0] + i, pos[1] - 1):
                     if (self.game_board[pos[0] + i][pos[1] - 1] is not None
                         and self.game_board[pos[0] + i][pos[1] - 1].team != current_piece.team):
-                        if (self.is_valid_position((pos[0] + 2*i, pos[1] - 2)) and
+                        if (self.is_valid_position(pos[0] + 2*i, pos[1] - 2) and
                             self.game_board[pos[0] + 2*i][pos[1] + 2] is None):
                             return True
         return False
@@ -594,18 +593,14 @@ class Game:
     def is_valid_move(self, curr_pos, new_pos):
 
         current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
-        if current_piece.is_king is False:
-            if new_pos not in self.list_moves_piece(curr_pos):
-                return True
-            return False
-        if current_piece.is_king is True:
-            if new_pos not in self.list_moves_king(curr_pos):
-                return True
-            return False
+        if new_pos not in self.list_moves(curr_pos):
+            return True
+        return False
 
-    """
+
+
     
-    def is_valid_move(self, curr_pos, new_pos):
+    """def is_valid_move(self, curr_pos, new_pos):
 
         current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
         if current_piece.is_king is False:
@@ -615,7 +610,7 @@ class Game:
         if current_piece.is_king is True:
             if new_pos not in self.list_moves_king(curr_pos):
                 return True
-            return False """
+            return False"""
 
 
         
@@ -704,7 +699,7 @@ class Piece():
             self.space_color = 'dark'
         else:
             self.space_color = 'light'
-        assert self.space_color == 'dark'
+        assert self.space_color is 'dark'
     
     def __str__(self):
         """
@@ -777,12 +772,10 @@ class Piece():
 
 
 
-#board = Game(3)
-#print(board)
+board = Game(3)
+print(board)
 
-#print(board.all_team_moves("Black"))
-#print(board.is_winner("Red"))
-# board.all_team_moves("Black")
-# print(board.is_winner("Red"))
+board.all_team_moves("Red")
+print(board.is_winner("Red"))
 #print(board.game_board[5][2])
-#print(type(board.game_board[5][2]))
+#print(type(board.game_board[5][2]))g

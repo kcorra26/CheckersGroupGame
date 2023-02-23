@@ -7,7 +7,7 @@ from typing import Union, Dict
 import click
 from colorama import Fore, Style
 
-#from checkers import Board, Game, Piece
+from checkers import Board, Game, Piece
 from mocks import MockGame, Piece, MockCheckerboard, StubRandomBot, StubSmartBot
 #from bot import RandomBot, SmartBot
 
@@ -23,6 +23,12 @@ TOP_ROW_DARK = Fore.WHITE + "\u250f" + "\u2501" + "\u2513"
 MIDDLE_ROW_DARK = Fore.WHITE + "\u2503" + " " + "\u2503"
 BOTTOM_ROW_DARK = Fore.WHITE + "\u2517" + "\u2501" + "\u251b"
 
+BLACK_KING = Fore.BLACK + Style.BRIGHT + "¤"
+RED_KING = Fore.RED + Style.BRIGHT + "¤"
+BLACK_PIECE = Fore.BLACK + "●"
+RED_PIECE = Fore.RED + "●"
+
+
 class TUIPlayer:
     """
     A class for storing information about a player using the TUI.
@@ -36,7 +42,7 @@ class TUIPlayer:
     color: str
     bot_delay: float
 
-    def __init__(self, n: int,  player_type: str, game: MockGame, 
+    def __init__(self, player_num: int,  player_type: str, game: MockGame, 
                 color: str, opponent_color: str, bot_delay: float):
         """
         Args:
@@ -48,19 +54,20 @@ class TUIPlayer:
             bot_delay: When playing as a bot, the artificial delay before making
                 the next move (in seconds)
         """
-        if player_type == "human":
-            self.name = f"Player {n}"
-            self.bot = None
-        if player_type == "random-bot":
-            self.name = f"Random Bot {n}"
-            self.bot = StubRandomBot(game, color, opponent_color)
-        elif player_type == "smart-bot":
-            self.name = f"Smart Bot {n}"
-            self.bot = StubSmartBot(game, color, opponent_color)
-        self.board = game.board
         self.game = game
+        self.board = game.board
         self.color = color
         self.bot_delay = bot_delay
+
+        if player_type == "human":
+            self.name = f"Player {player_num}"
+            self.bot = None
+        if player_type == "random-bot":
+            self.name = f"Random Bot {player_num}"
+            self.bot = StubRandomBot(game, color, opponent_color)
+        elif player_type == "smart-bot":
+            self.name = f"Smart Bot {player_num}"
+            self.bot = StubSmartBot(game, color, opponent_color)
 
 
     def get_move(self, team:str) -> int:
@@ -110,7 +117,7 @@ class TUIPlayer:
                         print(self.game.all_team_moves(team))
 
 
-    def _input_to_valid_move(self, game:MockGame, coord: str, dir:str, team:str) -> tuple(int,int):
+    def _input_to_valid_move(self, game:MockGame, coord: str, dir:str, team:str) -> tuple:
         """
         Turns the player input into a coordinate that can access the appropriate
         positions on the board. If player did not enter valid start/end coordinates,
@@ -126,23 +133,22 @@ class TUIPlayer:
         Raises:
             ValueError: if direction is not x or y
         """
+        coord = int(coord)
         if coord == "draw": 
             game.draw(team)
         if coord == "resign":
             game.resign(team)
         if dir == "x":
-            while not (len(coord) == 1 and 1 <= int(coord) <= self.board.width):
+            while not (len(coord) == 1 and 1 <= int(coord) <= self.board.width-1):
                 coord = input(Style.BRIGHT + f"{self.name}: Please enter a valid column >" + Style.RESET_ALL)
-            coord = int(coord) - 1
         elif dir == "y":
-            while not (len(coord) == 1 and 1 <= int(coord) <= self.board.width):
+            while not (len(coord) == 1 and 1 <= int(coord) <= self.board.width-1):
                 coord = input(Style.BRIGHT + f"{self.name}: Please enter a valid row >" + Style.RESET_ALL)
-            coord = self.board.width - int(coord)
         else:
             raise ValueError("Direction was not passed correctly")
         return coord
 
-def print_board(board:MockCheckerboard):
+def print_game(game:MockGame):
     """
     Prints the board out to the terminal screen.
     Args:
@@ -150,21 +156,16 @@ def print_board(board:MockCheckerboard):
 
     Returns: None
     """
-    width = board.width
+    board = game.board
+    width = game.board.width
     num_pairs = int(width/2)
     even_line_top = Fore.WHITE + ((TOP_ROW_LIGHT + TOP_ROW_DARK) * (num_pairs) + "\n")
     even_line_bottom = Fore.WHITE + (BOTTOM_ROW_LIGHT + BOTTOM_ROW_DARK) * (num_pairs) + "\n"
     odd_line_top = Fore.WHITE + (TOP_ROW_DARK + TOP_ROW_LIGHT) * (num_pairs) + "\n"
     odd_line_bottom = Fore.WHITE + (BOTTOM_ROW_DARK + BOTTOM_ROW_LIGHT) * (num_pairs) + "\n"
 
-    black_king = Fore.BLACK + Style.BRIGHT + "◎"
-    red_king = Fore.RED + Style.BRIGHT + "◎"
-    black_piece = Fore.BLACK + "●"
-    red_piece = Fore.RED + "●"
-
-
     for row in range(width):
-        idx = str(width-row)
+        idx = Style.RESET_ALL + str(row)
         if row % 2 == 0:
             line = " " + even_line_top
         else: 
@@ -179,21 +180,21 @@ def print_board(board:MockCheckerboard):
 
             if space is None:
                 square_str = (wall + " " + wall)
-            elif space.team == "BLACK":
+            elif space.team == "Black":
                 if space.is_king:
-                    square_str = (wall + black_king + wall)
+                    square_str = (wall + BLACK_KING + wall)
                 else:
-                    square_str = (wall + black_piece + wall)
-            elif space.team == "RED":
+                    square_str = (wall + BLACK_PIECE + wall)
+            elif space.team == "Red":
                 if space.is_king:
-                    square_str = (wall + red_king + wall)
+                    square_str = (wall + RED_KING + wall)
                 else:
-                    square_str = (wall+ red_piece +wall)
+                    square_str = (wall+ RED_PIECE +wall)
             if col == 0:
                 square_str = idx + square_str
             line = line + square_str
         if row % 2 == 0:
-            line = line + "\n " + (even_line_bottom)
+            line = line + "\n " + even_line_bottom
         else:
             line = line + "\n " + odd_line_bottom
         if row == width-1:
@@ -202,8 +203,8 @@ def print_board(board:MockCheckerboard):
             print(line)
     bottom_idx = " "
     for i in range(width):
-        bottom_idx = bottom_idx + " " + str((i+1)) + " "
-    print(bottom_idx)
+        bottom_idx = bottom_idx + " " + str((i)) + " "
+    print(Style.RESET_ALL +bottom_idx)
 
 def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
     """
@@ -217,10 +218,10 @@ def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
     #whichever player is on Black goes first
     current = players["Black"]
     #Play the game until there's a winner
-    while game.is_winner() is None:
+    while game.is_winner is None:
             # Print the board
             print()
-            print_board(game.board)
+            print_game(game)
             print()
 
             cur_space, new_space = current.get_move(current)
@@ -233,7 +234,7 @@ def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
                 current = players["Black"]
 
     print()
-    print_board(game.board)
+    print_game(game)
 
     winner = game.is_winner()
     if winner is not None:
@@ -260,18 +261,17 @@ def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
             default="human")
 @click.option('--bot-delay', type=click.FLOAT, default=0.5)
 
-def cmd(mode, num_pieces, player1, player2, bot_delay):
+def cmd(mode, num_piece_rows, player1, player2, bot_delay):
     if mode == "real":
-        game = Game(num_pieces)
+        game = Game(num_piece_rows)
     elif mode == "stub":
         print('stub')
-        board = CheckersGameBotMock()
-    #    board = GameStub(nrows=6, ncols=7, m=4)
+        game = MockCheckerboard(num_piece_rows)
     elif mode == "mock":
-        board = MockGame()
+        game = MockGame(num_piece_rows)
 
-    player1 = TUIPlayer(1, player1, board, "Black", "Red", bot_delay)
-    player2 = TUIPlayer(2, player2, board, "Red", "Black", bot_delay)
+    player1 = TUIPlayer(1, player1, game, "Black", "Red", bot_delay)
+    player2 = TUIPlayer(2, player2, game, "Red", "Black", bot_delay)
 
     players = {"Black": player1, "Red": player2}
 
@@ -281,3 +281,4 @@ def cmd(mode, num_pieces, player1, player2, bot_delay):
 if __name__ == "__main__":
     cmd()    
     pass
+

@@ -1,3 +1,4 @@
+from typing import Optional, List, Union
 
 class StubCheckerboard:
     def __init__(self, n=3):
@@ -5,6 +6,7 @@ class StubCheckerboard:
         self.width = 2*n + 2
         self.red_pieces = [Piece('Red', (1,0)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (4,6))]
         self.black_pieces = [Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))]
+        self.is_winner = None
 
         '''self.board=[[None, Piece('BLACK'), None, Piece('BLACK'), None,  Piece('BLACK'), None, Piece('BLACK')],
                     [Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None ],
@@ -31,9 +33,15 @@ class StubCheckerboard:
     
     def list_moves(self, piece):
         return [(0,0), (7,0), (3,4), (5,7), (3,6), (5,3), (0,3)]
+    
+    def set_winner(self, team):
+        self.is_winner = team
+    def is_winner(self):
+        return self.is_winner
+
 
 class Piece:
-    def __init__(self, team:str, pos:tuple = (0,0), is_king=False):
+    def __init__(self, team:str, pos:tuple, is_king: Optional[bool]=False):
         '''
         pos = (row, col) or (y,x) with (0,0) being in the top right
         '''
@@ -86,6 +94,7 @@ class MockGame:
         self.board = MockCheckerboard(n)
         self.n = n
         self.width = 2*n + 2
+        is_winner = None
         pass
     def __str__(self):
         return "Game"
@@ -93,22 +102,37 @@ class MockGame:
         return True
     def all_team_moves(self, team):
         return {(3,3):[(4,5),(5,6)]}
+    def _set_winner(self, team):
+        is_winner=team
     
 
 
 class MockCheckerboard:
 
     def __init__(self, n, kings=False):
-        self.grid=[[None, Piece('BLACK'), None, Piece('BLACK'), None,  Piece('BLACK'), None, Piece('BLACK')],
+        self.board = [[None, Piece("Black", (0,1)), None, Piece("Black",(0,3)), None, Piece("Black",(0,5))],
+                      [Piece("Black", (1,0)), None, Piece("Black",(1,2), is_king=True), None,Piece("Black", (1,4)), None],
+                      [None, None, None, None, None, None],
+                      [None, None, None, None, None, None],
+                      [None, Piece("Red", (4,1)), None, Piece('Red', (4,3)), None, Piece("Red", (4,5))],
+                      [Piece("Red", (5,0)), None, Piece("Red",(5,2), is_king=True), None, Piece("Red", (5,4)), None]]
+        """self.grid=[[None, Piece('BLACK'), None, Piece('BLACK'), None,  Piece('BLACK'), None, Piece('BLACK')],
                     [Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None ],
                     [None, Piece('BLACK'), None, Piece('BLACK', True), None, Piece('BLACK'), None, Piece('BLACK')],
                     [None, None, None, None, None, None, None, None],
                     [None, None, None, None, None, None, None, None],
                     [Piece('RED', True), None, Piece('RED'), None, Piece('RED'), None, Piece('RED', True), None],
                     [None, Piece('RED'), None, Piece('RED'), None, Piece('RED'), None, Piece('RED')],
-                    [Piece('RED'), None, Piece('RED'), None, Piece('RED'), None, Piece('RED'), None]]
-        self.n = n
-        self.width = 2*n + 2
+                    [Piece('RED'), None, Piece('RED'), None, Piece('RED'), None, Piece('RED'), None]]"""
+        self.is_winner = None
+        #self.n = n
+        #self.width = 2*n + 2
+        self.width = len(self.board)
+        self.n = int((self.width - 2) // 2)
+    def set_winner(self, team):
+        self.is_winner = team
+    def is_winner(self):
+        return is_winner
 
 class StubRandomBot:
     def __init__(self):

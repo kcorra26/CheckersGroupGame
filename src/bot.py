@@ -70,8 +70,8 @@ class SmartBot:
     _color: TeamColor
     _opponent_color: TeamColor
 
-    def __init__(self, game, color: TeamColor, 
-                opponent_color: TeamColor):
+    def __init__(self, game, color, 
+                opponent_color):
         """
         Constructor
 

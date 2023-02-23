@@ -175,10 +175,10 @@ class Game:
                     self.black_pieces = original_set
                 return is_winner
         
-        def is_done(self):
-            if self.is_winner is not None:
-                return True
-            return False
+    def is_done(self):
+        if self.is_winner is not None:
+            return True
+        return False
 
 
                 
@@ -321,18 +321,19 @@ class Game:
             
         """
         team_moves ={}
-        if team == "Red":
+        #return team == TeamColor.1
+        if team == "Red": # figure out how to check ENUM
             for piece in self.red_pieces:
                 if self.can_move((piece.y_pos,piece.x_pos)):
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
-        if team == "Black":
+            return team_moves
+        elif team == "Black":
             for piece in self.black_pieces:
                 if self.can_move((piece.y_pos,piece.x_pos)):
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
-        
-        return team_moves
+            return team_moves
+        return "None"
 
-                        
 
     def is_winner(self, team): 
         """
@@ -346,11 +347,10 @@ class Game:
         if team == "Red":
             if len(self.black_pieces) == 0 and len(self.all_team_moves("Black")) == 0:
                 return True
-            return False
         if team == "Black":
             if len(self.red_pieces) == 0 and len(self.all_team_moves("Red")) == 0:
                 return True
-            return False
+        return False
 
 
     def can_move(self, pos):
@@ -367,11 +367,10 @@ class Game:
         if current_piece.is_king is False:
             if len(self.list_moves_piece(pos,False,[])) > 0:
                 return True
-            return False
         if current_piece.is_king is True:
             if len(self.list_moves_king(pos,False,[])) > 0:
                 return True
-            return False
+        return False
 
         
 
@@ -604,7 +603,7 @@ class Game:
                 return True
             return False
 
-
+    """
     
     def is_valid_move(self, curr_pos, new_pos):
 
@@ -616,7 +615,7 @@ class Game:
         if current_piece.is_king is True:
             if new_pos not in self.list_moves_king(curr_pos):
                 return True
-            return False
+            return False """
 
 
         
@@ -705,7 +704,7 @@ class Piece():
             self.space_color = 'dark'
         else:
             self.space_color = 'light'
-        assert self.space_color is 'dark'
+        assert self.space_color == 'dark'
     
     def __str__(self):
         """
@@ -778,10 +777,10 @@ class Piece():
 
 
 
-board = Game(3)
-print(board)
+#board = Game(3)
+#print(board)
 
-print(board.all_team_moves("Black"))
-print(board.is_winner("Red"))
+#print(board.all_team_moves("Black"))
+#print(board.is_winner("Red"))
 #print(board.game_board[5][2])
 #print(type(board.game_board[5][2]))

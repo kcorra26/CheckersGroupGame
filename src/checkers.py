@@ -124,7 +124,7 @@ class Game:
                         self.red_pieces.remove(piece)
                         self.red_pieces.add(spot)
 
-        for spot in self.board[self.width - 1]:
+        for spot in self.game_board[self.width - 1]:
             if spot is not None and spot.is_king is False and spot.team == "Black":
                 spot.is_king = True
                 for piece in self.black_pieces:

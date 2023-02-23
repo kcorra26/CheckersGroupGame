@@ -15,7 +15,7 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
-from mocks import StubCheckerboard, Piece
+from mocks import Piece, MockCheckerboard, MockGame
 from sprites import PieceSprite
 #from checkers import Board, Game
 
@@ -30,19 +30,20 @@ GREEN = (75, 139, 59)
 
 class GUIPlayer():
 
-    def __init__(self, board):
+    def __init__(self, game:MockGame):
         """
         init function for GUI Player
 
         args: 
             board: the board being played
         """
-        self.board = board
-        self.sq_size = WIDTH // board.width
-        self.ROWS = self.board.width
+        self.game = game
+        self.board = game.board
+        self.ROWS = game.width
+        self.sq_size = WIDTH // game.width
 
         #attributes for game play
-        self.curr_player = 'BLACK'
+        self.curr_player = 'Black'
         self.all_sprites_list = pygame.sprite.Group()
         self.window = None
         self.selected_piece = None
@@ -68,13 +69,23 @@ class GUIPlayer():
         args: 
             None
         '''
-        all_pieces = self.board.red_pieces + self.board.black_pieces
+        all_pieces = self.game.red_pieces.union(self.game.black_pieces)
 
         for piece in all_pieces:
             sprite = PieceSprite(piece, self.sq_size)
             self.all_sprites_list.add(sprite)
         self.all_sprites_list.update()
         return 
+    
+    def update_sprites(self):
+        '''
+
+        '''
+        pieces = self.game.red_pieces.union(self.game.black_pieces)
+        for sprite in self.all_sprites_list:
+            if sprite.piece not in pieces:
+                sprite.kill() #will kill sprites that were jumped over
+        self.all_sprites_list.update() #sets new pos for sprites that moved
 
     #draw board methods
     def __draw_empty_board(self):
@@ -97,7 +108,7 @@ class GUIPlayer():
         Args:
             None
         '''
-        moves = self.board.list_moves(self.selected_piece)
+        moves = self.game.list_moves(self.selected_piece)
         for row in range(self.ROWS):
             for col in range(self.ROWS):
                 #highlights possible moves in yellow
@@ -134,13 +145,12 @@ class GUIPlayer():
             be moved to
 
         """
-        pos_moves = self.board.list_moves(self.selected_piece)
+        pos_moves = self.game.list_moves(self.selected_piece)
         print(pos_moves, row, col)
         if (row, col) in pos_moves:
             print('move is possible')
-            self.board.move_piece(self.selected_piece.pos, (row, col))
-            #need a kill function to kill pieces no longer on the board
-            self.all_sprites_list.update()
+            self.game.move_piece(self.selected_piece.pos, (row, col))
+            self.update_sprites() 
             self.switch_player()
         else:
             self.selected_piece = None
@@ -150,10 +160,10 @@ class GUIPlayer():
         switches the current player
         '''
         self.selected_piece = None
-        if self.curr_player == 'BLACK':
-            self.curr_player = 'RED'
+        if self.curr_player == 'Black':
+            self.curr_player = 'Red'
         else:
-            self.curr_player = "BLACK"
+            self.curr_player = "Black"
         return
 
     def play_checkers(self):
@@ -172,7 +182,7 @@ class GUIPlayer():
                     col = pos[0] //self.sq_size #x-pos
                     if self.selected_piece is None:
                         print('MOUSEDOWN')
-                        piece = self.board.get_piece(row, col)
+                        piece = self.game.get_piece(row, col)
                         if piece is None or piece.team != self.curr_player:
                             break
                         print('found a piece at MOUSE')
@@ -187,7 +197,12 @@ class GUIPlayer():
         pygame.quit()
         quit()
 
+'''
+way for game to end
+if certain peices cannot be moved
+kill sprites
+'''
 #sample board
-ex_board = StubCheckerboard()
+ex_board = MockGame()
 player = GUIPlayer(ex_board)
 player.play_checkers()

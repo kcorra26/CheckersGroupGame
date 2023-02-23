@@ -1,15 +1,10 @@
-from enum import Enum
-TeamColor = Enum("TeamColor",  ["RED", "BLACK", "EMPTY"]) 
-
-B = 'black'
-R = 'red'
 
 class StubCheckerboard:
     def __init__(self, n=3):
         self.n = n
         self.width = 2*n + 2
-        self.red_pieces = [Piece('RED', (1,0)), Piece('RED', (3,0), True), Piece('RED', (3,2)), Piece('RED', (4,6))]
-        self.black_pieces = [Piece('BLACK', (4,5), True), Piece('BLACK', (7,0)), Piece('BLACK', (2,3))]
+        self.red_pieces = [Piece('Red', (1,0)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (4,6))]
+        self.black_pieces = [Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))]
 
         '''self.board=[[None, Piece('BLACK'), None, Piece('BLACK'), None,  Piece('BLACK'), None, Piece('BLACK')],
                     [Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None ],
@@ -38,7 +33,7 @@ class StubCheckerboard:
         return [(0,0), (7,0), (3,4), (5,7), (3,6), (5,3), (0,3)]
 
 class Piece:
-    def __init__(self, team:TeamColor, pos:tuple = (0,0), is_king=False):
+    def __init__(self, team:str, pos:tuple = (0,0), is_king=False):
         '''
         pos = (row, col) or (y,x) with (0,0) being in the top right
         '''
@@ -85,3 +80,40 @@ class CheckersGameBotMock: # game mock?
         #if row == 6:
             #return True
         return False
+
+class MockGame:
+    def __init__(self, n=3):
+        self.board = MockCheckerboard(n)
+        self.n = n
+        self.width = 2*n + 2
+        pass
+    def __str__(self):
+        return "Game"
+    def is_valid_move(self, curr_pos, new_pos):
+        return True
+    def all_team_moves(self, team):
+        return {(3,3):[(4,5),(5,6)]}
+    
+
+
+class MockCheckerboard:
+
+    def __init__(self, n, kings=False):
+        self.grid=[[None, Piece('BLACK'), None, Piece('BLACK'), None,  Piece('BLACK'), None, Piece('BLACK')],
+                    [Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None, Piece('BLACK'), None ],
+                    [None, Piece('BLACK'), None, Piece('BLACK', True), None, Piece('BLACK'), None, Piece('BLACK')],
+                    [None, None, None, None, None, None, None, None],
+                    [None, None, None, None, None, None, None, None],
+                    [Piece('RED', True), None, Piece('RED'), None, Piece('RED'), None, Piece('RED', True), None],
+                    [None, Piece('RED'), None, Piece('RED'), None, Piece('RED'), None, Piece('RED')],
+                    [Piece('RED'), None, Piece('RED'), None, Piece('RED'), None, Piece('RED'), None]]
+        self.n = n
+        self.width = 2*n + 2
+
+class StubRandomBot:
+    def __init__(self):
+        pass
+
+class StubSmartBot:
+    def __init__(self):
+        pass

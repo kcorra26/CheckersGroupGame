@@ -212,12 +212,12 @@ class Game:
                 if team == "Red":
                     for piece in self.red_pieces:
                         if piece.x_pos == current_piece.x_pos and piece.y_pos == current_piece.y_pos:
-                            self.red_pieces.remove(current_piece)
+                            self.red_pieces.remove(piece)
                             self.red_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
                 if team == "Black":
                     for piece in self.black_pieces:
                         if piece.x_pos == current_piece.x_pos and piece.y_pos == current_piece.y_pos:
-                            self.black_pieces.remove(current_piece)
+                            self.black_pieces.remove(piece)
                             self.black_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
 
                 self.make_king()

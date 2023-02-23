@@ -8,7 +8,7 @@ class StubCheckerboard:
     def __init__(self, n=3):
         self.n = n
         self.width = 2*n + 2
-        self.red_pieces = [Piece('RED', (1,0)), Piece('RED', (3,0), True)]
+        self.red_pieces = [Piece('RED', (1,0)), Piece('RED', (3,0), True), Piece('RED', (3,2)), Piece('RED', (4,6))]
         self.black_pieces = [Piece('BLACK', (4,5), True), Piece('BLACK', (7,0)), Piece('BLACK', (2,3))]
 
         '''self.board=[[None, Piece('BLACK'), None, Piece('BLACK'), None,  Piece('BLACK'), None, Piece('BLACK')],
@@ -31,7 +31,6 @@ class StubCheckerboard:
     def get_piece(self, row, col):
         for piece in self.red_pieces + self.black_pieces:
             if piece.pos == (row, col):
-                print('found piece')
                 return piece
         return None
     

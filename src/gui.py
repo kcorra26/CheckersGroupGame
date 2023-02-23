@@ -5,12 +5,11 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
-from mocks import StubCheckerboard, Piece, TeamColor
-#from checkers import Board
-#from checkers import Board, TeamColor
+from mocks import StubCheckerboard, Piece
+from sprites import PieceSprite
+#from checkers import Board, Game
 
-WIDTH = 800
-HEIGHT = 800
+WIDTH = HEIGHT = 800
 
 #colors
 WHITE = (255, 255,255)
@@ -20,179 +19,152 @@ BLACK = (0,0,0)
 RED = (170,0,20)
 YELLOW = (255, 204, 0)
 
-class PieceSprite(pygame.sprite.Sprite):
-    '''
-    This class represents the sprites of all of the checkers pieces and derives from
-    Sprite class in pygame
-    '''
-    def __init__(self, piece: Piece, sq_size:float):
+class GUIPlayer():
+
+    def __init__(self, board):
+        """
+        init function for GUI Player
+
+        Args: 
+            board: the board being played
+        """
+        self.board = board
+        self.sq_size = WIDTH // board.width
+        self.curr_player = 'BLACK'
+        self.ROWS = self.board.width
+        self.all_sprites_list = pygame.sprite.Group()
+        self.window = None
+        self.selected_piece = None
+
+    def init_game (self):
         '''
-        initialization function for PieceSprite class
+        initializes the display for the game
+
+        Args: None
+        Returns None
+        '''
+        pygame.init()
+        display = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.window = display
+        pygame.display.set_caption('Checkers')
+        pygame.display.update()
+    
+    def init_sprites(self):
+        '''
+        this function initializes all Pieces and returns a list of all PieceSprites
+
+        args: 
+            board: a board/game which contains a list of all Pieces
+
+        retuns:
+            all_sprites_list: a list of all PieceSprites on the board
+        '''
+        all_pieces = self.board.red_pieces + self.board.black_pieces
+
+        for piece in all_pieces:
+            sprite = PieceSprite(piece, self.sq_size)
+            self.all_sprites_list.add(sprite)
+        self.all_sprites_list.update()
+        return 
+
+    #draw board methods
+    def __draw_empty_board(self):
+        '''
+        Draws checkerboard without pieces, helper function for draw_board()
 
         Args:
-            piece: the Piece object that is represented
-            size: the size of the sprites
+            None
         '''
-        pygame.sprite.Sprite.__init__(self)
-        self.piece = piece
-        self.team = piece.team 
-        self.is_king = piece.is_king
-        self.sq_size = sq_size
-        if self.team == "RED":
-            if self.is_king:
-                self.image = pygame.transform.scale(pygame.image.load('red_king.png'), (sq_size,sq_size))
-            else:
-                self.image = pygame.transform.scale(pygame.image.load('red.png'), (sq_size, sq_size))
+        self.window.fill(BLACK)
+        for row in range(self.ROWS):
+            for col in range(row%2, self.ROWS, 2):
+                pygame.draw.rect(self.window, RED, (row*self.sq_size, col*self.sq_size, self.sq_size, self.sq_size))
+
+    def __draw_highlighted_board(self):
+        '''
+        Draws checkerboard without pieces but with possible moves highlighted
+
+        Args:
+            None
+        '''
+        moves = self.board.list_moves(self.selected_piece)
+        for row in range(self.ROWS):
+            for col in range(self.ROWS):
+                if (row, col) in moves:
+                    pygame.draw.rect(self.window, YELLOW, (col*self.sq_size, row*self.sq_size, self.sq_size, self.sq_size))
+                #add a condition that will also highlight the current piece 
+    
+    def draw_board (self):
+        '''
+        draws checkerboard with sprites
+
+        Args: 
+            window: the pygame window where board is drawn
+            board: the board being represented
+            sq_size: the size of the squares
+            sprite_list: current sprite list (at this time in game)
+        '''
+        self.__draw_empty_board()
+        if self.selected_piece is not None:
+            self.__draw_highlighted_board()
+        self.all_sprites_list.draw(self.window)
+        pygame.display.update()
+        return
+
+    def move_selected_piece(self, row, col):
+        pos_moves = self.board.list_moves(self.selected_piece)
+        print(pos_moves, row, col)
+        if (row, col) in pos_moves:
+            print('move is possible')
+            self.board.move_piece(self.selected_piece.pos, (row, col))
+            #need a kill function to kill pieces no longer on the board
+            self.all_sprites_list.update()
+            self.switch_player()
         else:
-            if self.is_king:
-                self.image = pygame.transform.scale(pygame.image.load('black_king.png'), (sq_size, sq_size))
-            else:
-                self.image = pygame.transform.scale(pygame.image.load('black.png'), (sq_size,sq_size))
-        self.rect = self.image.get_rect()
+            self.selected_piece = None
 
-    def update(self):
+    def switch_player(self):
         '''
-        called in every frame - updates the position of the sprite
+        switches the current player
         '''
-        self.rect.x = self.sq_size * self.piece.pos[0]
-        self.rect.y = self.sq_size * self.piece.pos[1]
+        self.selected_piece = None
+        if self.curr_player == 'BLACK':
+            self.curr_player = 'RED'
+        else:
+            self.curr_player = "BLACK"
+        return
 
-"""class PossibleMovesSprite():
-    '''
-    This class represents the moves that are possible for a certain sprite
-    '''
-    def __init__(self, pos, sq_size):
-        '''
-        constructor for a PossibleMovesSprite
+    def play_checkers(self):
+        self.init_game()
+        self.init_sprites()
 
-        Args:
-            pos(tuple): a touple representing the row, col 
-            sq_size(int): the size of the board squares 
-        '''
-        img_size = sq_size/2
-        self.image = pygame.Surface([img_size, img_size])
-        self.image.fill(WHITE)
-        self.image.set_colorkey(WHITE)
-        pygame.draw.ellipse(self.image, YELLOW, [pos[1]*sq_size, pos[0]*sq_size, img_size-img_size/2, img_size+img_size/2])"""
-
-def calc_sq_size(board):
-    '''
-    calaculates square size
-
-    Args: 
-        board: the current board
-
-    Returns (float) the sq_size of the board
-    '''
-    sq_size = WIDTH // board.width
-    return sq_size
-
-def show_moves(board:StubCheckerboard, piece:Piece, window):
-    '''
-    generates sprites for all possible moves
-    '''
-    moves = board.list_moves(piece)
-    for loc in moves: #loc is (row, col)
-        x_pos = loc[1] * calc_sq_size(board)
-        y_pos = loc[0] * calc_sq_size(board)
-        pygame.draw.circle(window, YELLOW, )
-
-
-#draw board methods
-def __draw_empty_board(window, board):
-    '''
-    Draws checkerboard without pieces
-
-    Args:
-        window: the pygame window where the board is drawn
-        board: the board that is being represented
-        sq_size: the size of every square
-    '''
-    ROWS = board.width
-    SQ_SIZE = calc_sq_size(board)
-
-    window.fill(BLACK)
-    for row in range(ROWS):
-        for col in range(row%2, ROWS, 2):
-            pygame.draw.rect(window, RED, (row*SQ_SIZE, col*SQ_SIZE, SQ_SIZE, SQ_SIZE))
-
-def draw_board (window, board, sprite_list):
-    '''
-    draws checkerboard with sprites
-
-    Args: 
-        window: the pygame window where board is drawn
-        board: the board being represented
-        sq_size: the size of the squares
-        sprite_list: current sprite list (at this time in game)
-    '''
-    __draw_empty_board(window, board)
-    sprite_list.draw(window)
-
-
-def init_sprites(board: StubCheckerboard):
-    '''
-    this function initializes all Pieces and returns a list of all PieceSprites
-
-    args: 
-        board: a board/game which contains a list of all Pieces
-
-    retuns:
-        all_sprites_list: a list of all PieceSprites on the board
-    '''
-    all_sprites_list = pygame.sprite.Group()
-    all_pieces = board.red_pieces + board.black_pieces
-    size = calc_sq_size(board)
-
-    for piece in all_pieces:
-        sprite = PieceSprite(piece, size)
-        all_sprites_list.add(sprite)
-    all_sprites_list.update()
-    return all_sprites_list
-
-
-
-def play_checkers(board:StubCheckerboard):
-
-    ROWS = board.width
-    SQ_SIZE = WIDTH // ROWS
-    pygame.init()
-    display = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption('Checkers')
-    pygame.display.update()
-
-    all_sprites_list = init_sprites(board)
-    curr_player = 'BLACK'
-
-    run = True
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                row = pos[1] // SQ_SIZE
-                col = pos[0] //SQ_SIZE
-                piece = board.get_piece(col, row)
-                if piece.team == curr_player:
-                    show_moves(board, piece, SQ_SIZE, display)
-                #board.move_piece((col, row), (0,0)) #need to allow user to decide where piece moves
-                
-            #need one to see possible locations
-            
-            #switch current player
-            if curr_player == 'BLACK':
-                curr_player = 'RED'
-            else:
-                curr_player = "BLACK"
-
-            all_sprites_list.update()
-            draw_board(display, board, all_sprites_list)
-            pygame.display.update()
-
-    pygame.quit()
-    quit()
+        run = True
+        while run:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos() #this pos in in (x,y)
+                    row = pos[1] // self.sq_size #y-pos
+                    col = pos[0] //self.sq_size #x-pos
+                    if self.selected_piece is None:
+                        print('MOUSEDOWN')
+                        piece = self.board.get_piece(row, col)
+                        if piece is None or piece.team != self.curr_player:
+                            break
+                        print('found a piece at MOUSE')
+                        self.selected_piece = piece
+                        print('set a selected piece')
+                        self.draw_board() #draws possible moves
+                    else:
+                        print('there is a selected piece')
+                        self.move_selected_piece(row, col)
+                else:
+                    self.draw_board()
+        pygame.quit()
+        quit()
 
 #sample board
 ex_board = StubCheckerboard()
-play_checkers(ex_board)
+player = GUIPlayer(ex_board)
+player.play_checkers()

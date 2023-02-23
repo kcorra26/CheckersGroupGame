@@ -89,129 +89,153 @@ class SmartBot:
         """
         Suggests a move
 
-        Returns: None???
+        Returns: tup(tup(int, int), tup(int, int)) -- suggested move
         """
-        # returns tuple w/ origin position, end position
-        # if there are just a bunch with one move, pick one at random
 
         """
         https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win 
-        - if you have the chance to jump more than one way, jump toward the
-        center. 
-            - if you have the choice between moving or jumping to the side
-            or the center, go toward the center (bc a centrallized piece has
-            two moves)
+        - if you have the chance to move more than one way, move toward the
+        center. (a centrallized spot has two moves, while an edge has one)
         - protect the king row by advancing two of the four back pieces
         * or half, depending on the size of the board?
             - for Color1, pos (0, 2) and (0, 6)
             - for Color2, pos (width-1, 1) and (width-1, 5) *not 100% sure
-        - try not to separate pieces??
-            - give preference to the decisions that keep pieces close 
-            to eachother
-            - but avoid a triangle situation that would make it easy for the 
-            other team to jump
-        - consider opportunities for jumping (thinking ahead to see if a jump 
-        is possible, then further to see if a jump on that one is possible)
+        - consider and prioritize opportunities for jumping 
             - maybe have a jump counter? for each move
             - idk how to label the moves
         
         https://www.thesprucecrafts.com/how-to-win-at-checkers-411170 
-        - prioritize getting a checker to the end of the board
+        - prioritize getting a checker to the end of the board over how many 
+        jumps a move will get you
         """
         # assumming that when there is at least one opportunity to jump, 
         # all_team_moves consists only of those jumping moves
         move_dict = self._game.all_team_moves(self._color) 
 
-        center = self._game.width // 2
-
         # if there is just one move in the dictionary (ie if there is one 
         # key and that key just has one tuple in its list):
-        if self.one_move(move_dict) is not None:
+        if self._one_move(move_dict) is not None:
             # return the position of the key and the first (and only) value 
             # in the value list
-            return self.one_move(move_dict)
-            # WORKS
-        # TODO: make a helper function to check and return if there is only
+            return self._one_move(move_dict)
         
-        king_moves = {} # if there are no king moves, will be empty
-        consider = {} # if there are no jumps, will just be all moves
+        max_moves = {} 
+        king_moves = {} 
         max_jumps = 0
         centermost = {}
+        center = self._game.width // 2
         dist_from_center = center
-
-        for start_pos, list_moves in move_dict.items(): #nested loop ew
+    
+        # loops through the move options, checks if it is a winning move 
+        # (returns if so), and adds all the moves that will become a king to
+        # a new dict
+        for start_pos, list_moves in move_dict.items(): 
             for end_pos in list_moves:
                 row, col = end_pos
-                # if it's a winning move, do it
+        
                 if self._game.is_winning_move(start_pos, end_pos, self._color):
                     return (start_pos, end_pos)
-
-                # if the number of jumps is greater than the current max
-                if self._game.num_jumps(start_pos, end_pos) > max_jumps:
-                    max_jumps = self._game.num_jumps(start_pos, end_pos)
-                    consider = {start_pos : [end_pos]} # reset dict
-                # if the number of jumps is equal to the current max
-                elif self._game.num_jumps(start_pos, end_pos) == max_jumps:
-                    lst = consider.get((start_pos), [])
-                    lst.append(end_pos)
-                    consider[start_pos] = lst
-                # otherwise, stop considering it
-                else: 
+                
+                if self._game.is_winning_move(start_pos, end_pos, 
+                                            self._opponent_color):
                     continue
-        if self.one_move(consider) is not None:
-            return self.one_move(consider)
-        
-        for start_pos, list_moves in consider.items():
-            for end_pos in list_moves:
-                if self._game.will_king(start_pos, end_pos): # if moving a piece to this 
-                # position would make it a king
-                     # add the move to make_king_moves 
+                
+                if self._game.will_king(start_pos, end_pos, self._color): 
                     temp_lst = king_moves.get((start_pos), [])
                     temp_lst.append(end_pos)
                     king_moves[start_pos] = temp_lst
-        if self.one_move(king_moves) is not None:
-            return self.one_move(king_moves)
+
+        # if there is only one king move, take it
+        if self._one_move(king_moves) is not None:
+            return self._one_move(king_moves)
         elif king_moves == {}:
+            # considers the original list
+            consider = move_dict
+        else:
+            # considers the new list with multiple moves that will become king
+            consider = king_moves
+        
+        # loops through the consider dict to find the moves with the most jumps
+        for start_pos, list_moves in consider.items():
+            for end_pos in list_moves:
+                
+                # if the number of jumps is greater than the current max, 
+                # reset max_moves and the current max
+                if self._game.num_jumps(start_pos, end_pos) > max_jumps:
+                    max_jumps = self._game.num_jumps(start_pos, end_pos)
+                    max_moves = {start_pos : [end_pos]} # reset dict
+                
+                # if the number of jumps is equal to the current max, add it
+                # to max_moves
+                elif self._game.num_jumps(start_pos, end_pos) == max_jumps:
+                    lst = max_moves.get((start_pos), [])
+                    lst.append(end_pos)
+                    max_moves[start_pos] = lst
+                # if the number of jumps is fewer than the max, don't consider
+        
+        # if there is only one max move, take it
+        if self._one_move(max_moves) is not None:
+            return self._one_move(max_moves)
+        elif max_moves == {}: 
+            # new dict includes all king moves or all of move_dict
             consider2 = consider
         else:
-            consider2 = king_moves
+            # new dict includes only moves with the most jumps
+            consider2 = max_moves
 
+        # loops through consider2 dict to find moves towards the center
         for start_pos, list_moves in consider2.items():
             for end_pos in list_moves:
                 row, col = end_pos
+                
+                # if the distance from the center of the board is smaller 
+                # than the previous minimum, reset the minimum and the options
+                # dict
                 if abs(col - (self._game.width // 2)) < dist_from_center:
                     dist_from_center = abs(col - (self._game.width // 2))
                     centermost = {start_pos : [end_pos]}
+                # if the distance is equal ot the minimum, add it to the
+                # options dict
                 elif abs(col - (self._game.width // 2)) == dist_from_center:
                     centermost.get(start_pos, []).append(end_pos)
         
-        if self.one_move(centermost) is not None:
-            return self.one_move(centermost)
-        elif centermost != {}: # whether consider2 is 
-            og_pos = random.choice(list(centermost))
-            end_pos = random.choice(centermost[og_pos])
-            print("random from centermost")
-            return (og_pos, end_pos)
-        else: 
+        # if there is only one centermost move, take it
+        if self._one_move(centermost) is not None:
+            return self._one_move(centermost)
+        elif centermost == {}: 
+            # randomly pick from the max_jump move options 
             og_pos = random.choice(list(consider2))
             end_pos = random.choice(consider2[og_pos])
             print("random from either king or jumps, centermost empty")
             return (og_pos, end_pos)
+        else: 
+            # if there is more than one centermost move, randomly pick 
+            og_pos = random.choice(list(centermost))
+            end_pos = random.choice(centermost[og_pos])
+            print("random from centermost")
+            return (og_pos, end_pos)
+            
 
-        # is a dictionary a good way to implement this, considering I have to
-        # do a nested for loop?
-
-        # is it better to do multiple for loops?
-    def one_move(self, dic): # WORKS
+    def _one_move(self, dic): 
         """
         Returns the value in the given dic if there is only one value, other
         wise returns none. 
-        Learned to do this here: https://stackoverflow.com/questions/46042430/best-way-to-get-a-single-key-from-a-dictionary 
+
+        Args: 
+            dic (dict{tup(int, int)} : [tup(int, int)]) - the given dictionary
+        
+        Returns: 
+            (tup((int, int), (int, int) or None) - the key and value if there
+            is only one key in the dictionary and one item in the list of that
+            key value, otherwise None
+        
+        I found the syntax for this here: 
+        https://stackoverflow.com/questions/46042430/best-way-to-get-a-single-
+        key-from-a-dictionary 
         """
         if len(dic) == 1 and len(dic[next(iter(dic))]) == 1:
             return (next(iter(dic)), dic[next(iter(dic))][0])
         return None
-
                 
         
 class BotPlayer: # playing against each other
@@ -259,15 +283,14 @@ class BotPlayer: # playing against each other
         # CANT PLAY THIS UNTIL MOCK is_done() and 
         for _ in range(n):
             # Reset the board
-            # board.reset()
+            board.reset() #TODO
 
             # starting player 
-            #current = bots[TeamColor.COLOR1] idk what color goes first
+            current = bots[TeamColor.RED] #idk what color goes first
 
-            while not game.is_done(): # game class needs an is_done function
-                og_pos, new_pos = current.bot.suggest_move() # two tuples
-                game.move_piece(og_pos, new_pos, current.color) # need to pass
-                # team as a parameter
+            while not game.is_done(): # TODO OR there is a winner
+                og_pos, new_pos = current.bot.suggest_move() 
+                game.move_piece(og_pos, new_pos, current.color) 
 
                 # update the player 
                 if current.color == TeamColor.COLOR1: 
@@ -276,11 +299,9 @@ class BotPlayer: # playing against each other
                 elif current.color == TeamColor.COLOR2:
                     current = bots[TeamColor.COLOR1]
                 
-                winner = game.get_winner() # if we make a get_winner function
-                # otherwise, do 
-                # if winner = game.is_winner(TeamColor.COLOR1):
-                # elif winner = game.is_winner(TeamColor.Color2):
-                if winner is not None:
+                # if game.is_winner(TeamColor.COLOR1):
+                # elif game.is_winner(TeamColor.Color2):
+                # else:
                     bots[winner].wins += 1
                 
 @click.command(name="checkers-bot")

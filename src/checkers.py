@@ -330,7 +330,7 @@ class Game:
                 if self.can_move((piece.y_pos,piece.x_pos)):
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
         
-        print(team_moves)
+        return team_moves
 
                         
 

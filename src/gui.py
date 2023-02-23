@@ -201,19 +201,16 @@ class GUIPlayer():
                     self.selected_piece = self.game.get_piece(org_pos[0], org_pos[1])
                     self.move_selected_piece(new_pos[0], org_pos[1])
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos() #this pos in in (x,y)
+                    pos = pygame.mouse.get_pos() #this pos is in (x,y)
                     row = pos[1] // self.sq_size #y-pos
                     col = pos[0] //self.sq_size #x-pos
                     if self.selected_piece is None:
                         piece = self.game.get_piece(row, col)
                         if piece is None or piece.team != self.curr_player.color:
                             break
-                        print('found a piece at MOUSE')
                         self.selected_piece = piece
-                        print('set a selected piece')
                         self.draw_board() #draws possible moves
                     else:
-                        print('there is a selected piece')
                         self.move_selected_piece(row, col)
                 else:
                     self.draw_board()

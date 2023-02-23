@@ -36,7 +36,7 @@ class StubCheckerboard:
         return None
     
     def list_moves(self, piece):
-        return [(0,0), (7,0), (3,4), (5,7)]
+        return [(0,0), (7,0), (3,4), (5,7), (3,6), (5,3), (0,3)]
 
 class Piece:
     def __init__(self, team:TeamColor, pos:tuple = (0,0), is_king=False):

@@ -298,11 +298,11 @@ class Game:
                     self.game_board[i][j] = Piece((i,j),"Red")
                     self.red_pieces.add(Piece((i,j),"Red"))
     
-    def reset_game:
+    def reset_game(self):
         for i in range(self.width):
             for j in range(self.width):
-                self._remove_piece((i,j)
-        self._initialize_checkers
+                self._remove_piece((i,j))
+        self._initialize_checkers()
         
 
 
@@ -781,7 +781,7 @@ class Piece():
 board = Game(3)
 print(board)
 
-print(board.all_team_moves("Red"))
+print(board.all_team_moves("Black"))
 print(board.is_winner("Red"))
 #print(board.game_board[5][2])
 #print(type(board.game_board[5][2]))

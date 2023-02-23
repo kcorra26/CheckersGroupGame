@@ -116,7 +116,7 @@ class Game:
         return s
 
     def make_king(self):
-        for spot in self.board[0]:
+        for spot in self.game_board[0]:
             if spot is not None and spot.is_king is False and spot.team == "Red":
                 spot.is_king = True
                 for piece in self.red_pieces:

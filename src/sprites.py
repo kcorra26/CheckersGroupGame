@@ -1,7 +1,7 @@
 '''
 sprites
 
-for gui purposes
+a file to hold the sprite class, for gui purposes
 '''
 import pygame
 from mocks import Piece

@@ -301,9 +301,8 @@ class Game:
                     self.red_pieces.add(Piece((i,j),"Red"))
     
     def reset_game(self):
-        for i in range(self.width):
-            for j in range(self.width):
-                self._remove_piece((i,j))
+        self.red_pieces = set()
+        self.black_pieces = set()
         self._initialize_checkers()
         
 

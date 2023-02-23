@@ -119,11 +119,73 @@ class Game:
         for spot in self.board[0]:
             if spot is not None and spot.is_king is False and spot.team == "Red":
                 spot.is_king = True
+                for piece in self.red_pieces:
+                    if piece.x_pos == spot.x_pos and piece.y_pos == spot.y_pos:
+                        self.red_pieces.remove(piece)
+                        self.red_pieces.add(spot)
+
         for spot in self.board[self.width - 1]:
             if spot is not None and spot.is_king is False and spot.team == "Black":
                 spot.is_king = True
+                for piece in self.black_pieces:
+                    if piece.x_pos == spot.x_pos and piece.y_pos == spot.y_pos:
+                        self.black_pieces.remove(piece)
+                        self.blackpieces.add(spot)
     
     #will_king if it will become king (takes orignal position, end position, and team)
+    def will_king(self,old_pos,new_pos,team):
+        current_piece = self.game_board[old_pos[0]][old_pos[1]]
+        if self.is_valid_move(old_pos,new_pos):
+            if team == "Red" and current_piece.is_king is False and new_pos[0] == 0:
+                return True
+            if team == "Black" and current_piece.is_king is False and new_pos[0] == self.width - 1:
+                return True
+            return False
+    
+    def length_jump_sequence(self,old_pos,new_pos):
+        return len(self.find_correct_sequence(old_pos,new_pos)) - 1
+
+    def is_winning_move(self,old_pos,new_pos,team):
+        original_set = None
+        current_piece = self.game_board[old_pos[0]][old_pos[1]]
+        is_winner = None
+        if team == "Red":
+            original_set = self.red_pieces
+        if team == "Black":
+            original_set = self.black_pieces
+        if self.is_valid_move(old_pos,new_pos):
+            if current_piece.can_move(old_pos,new_pos):
+                self.move_piece(old_pos,new_pos)
+                is_winner = self.is_winner(team)
+                self.game_board[old_pos[0]][old_pos[1]] = self.game_board[new_pos[0]][new_pos[1]]
+                self.game_board[new_pos[0]][new_pos[1]] = None
+                if team == "Red":
+                    self.red_pieces = original_set
+                if team == "Black":
+                    self.black_pieces = original_set
+                return is_winner
+            if self.can_jump(old_pos):
+                self.jump_piece(old_pos,new_pos)
+                is_winner = self.is_winner(team)
+                self.game_board[old_pos[0]][old_pos[1]] = self.game_board[new_pos[0]][new_pos[1]]
+                self.game_board[new_pos[0]][new_pos[1]] = None
+                if team == "Red":
+                    self.red_pieces = original_set
+                if team == "Black":
+                    self.black_pieces = original_set
+                return is_winner
+        
+        def is_done(self):
+            if self.is_winner is not None:
+                return True
+            return False
+
+
+                
+
+
+            
+
     #length of jump sequence (origina)
     #check if winner at certain position (original,position,end_pos, team)
     # temporarily move piece
@@ -146,35 +208,58 @@ class Game:
             if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1:
                 self.game_board[new_pos[0]][new_pos[1]] = current_piece
                 self.game_board[old_pos[0]][old_pos[1]] = None
-                current_piece.update_position(new_pos)
+                if current_piece.team == "Red":
+                    self.red_pieces.remove(current_piece)
+                    current_piece.update_position(new_pos)
+                    self.red_pieces.add(current_piece)
+                if current_piece.team == "Black":
+                    self.black_pieces.remove(current_piece)
+                    current_piece.update_position(new_pos)
+                    self.black_pieces.add(current_piece)
+                
+
                 self.make_king()
+
+
+    def find_correct_sequence(self, old_pos,new_pos):
+        choose_sequence = None
+        current_piece = self.game_board[old_pos[0]][old_pos[1]]
+        if current_piece.is_king is False:
+            for sequence in self.jump_trail_piece(old_pos):
+                if choose_sequence == None and sequence[len(sequence) - 1] == new_pos:
+                    choose_sequence = sequence
+                elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
+                    if len(choose_sequence) < len(sequence):
+                        choose_sequence = sequence
+        if current_piece.is_king is True:
+            for sequence in self.jump_trail_king(old_pos):
+                if choose_sequence == None and sequence[len(sequence) - 1] == new_pos:
+                    choose_sequence = sequence
+                elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
+                    if len(choose_sequence) < len(sequence):
+                        choose_sequence = sequence
+
+        return choose_sequence
         
     def jump_piece(self,old_pos,new_pos):
         current_piece = self.game_board[old_pos[0]][old_pos[1]]
         if self.is_valid_move(old_pos,new_pos):
-            if current_piece.is_king is False:
-                for sequence in self.jump_trail_piece(pos):
-                    if new_pos == sequence[len(sequence) - 1]:
-                        for i in range(len(sequence) - 1):
-                            middle_pos = ((sequence[i][0] + sequence[i+1][0])/2,
-                            (sequence[i][1] + sequence[i+1][1])/2)
-                            self._remove_piece(middle_pos)
-                self.game_board[new_pos[0]][new_pos[1]] = current_piece
-                self.game_board[old_pos[0]][old_pos[1]] = None
+            for i in range(len(self.find_correct_sequence(old_pos,new_pos)) - 1):
+                middle_pos = ((sequence[i][0] + sequence[i+1][0])/2,
+                (sequence[i][1] + sequence[i+1][1])/2)
+                self._remove_piece(middle_pos)
+            self.game_board[new_pos[0]][new_pos[1]] = current_piece
+            self.game_board[old_pos[0]][old_pos[1]] = None
+            if current_piece.team == "Red":
+                self.red_pieces.remove(self.game_board[new_pos[0]][new_pos[1]])
                 self.game_board[new_pos[0]][new_pos[1]].update_position(new_pos)
-            if current_piece.is_king is True:
-                for sequence in self.jump_trail_king(pos):
-                    if new_pos == sequence[len(sequence) - 1]:
-                        for i in range(len(sequence) - 1):
-                            middle_pos = ((sequence[i][0] + sequence[i+1][0])/2,
-                            (sequence[i][1] + sequence[i+1][1])/2)
-                            self._remove_piece(middle_pos)
-                self.game_board[new_pos[0]][new_pos[1]] = current_piece
-                self.game_board[old_pos[0]][old_pos[1]] = None
+                self.red_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
+            if current_piece.team == "Black":
+                self.black_pieces.remove(self.game_board[new_pos[0]][new_pos[1]])
                 self.game_board[new_pos[0]][new_pos[1]].update_position(new_pos)
-
-
-                
+                self.black_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
+            self.make_king()
+        
 
     def _remove_piece(self, pos):
         """
@@ -212,6 +297,7 @@ class Game:
                 if (i + j) % 2 == 1:
                     self.game_board[i][j] = Piece((i,j),"Red")
                     self.red_pieces.add(Piece((i,j),"Red"))
+        
 
 
     
@@ -389,10 +475,6 @@ class Game:
                             self.jump_trail_piece(((pos[0] + 2*i),pos[1] - 2)))
         return trails
 
-
-
-        
-    
     def list_moves_piece(self, pos, has_jumped,already_moved):
         """
         Determines the list of moves that a piece at a given position 
@@ -668,13 +750,21 @@ class Piece():
         this does not take into account whether another Piece is in new_position
         , which is handled by the board method
         '''
-        if self.team == "Red":
-            if (abs(new_pos[1] - self.y_pos) == 1 and new_pos[0] - self.x_pos == -1):
+        if self.is_king is False:
+            if self.team == "Red":
+                if (abs(new_pos[1] - self.y_pos) == 1 and new_pos[0] - self.x_pos == -1):
+                    return True
+                return False
+                
+            if self.team == "Black":
+                if (abs(new_pos[1] - self.y_pos) == 1 and new_pos[0] - self.x_pos == 1):
+                    return True
+                return False    
+                
+        if self.is_king is True:
+            if (abs(new_pos[1] - self.y_pos) == 1 and abs(new_pos[0] - self.x_pos) == 1):
                 return True
-        if self.team == "Black":
-            if (abs(new_pos[1] - self.y_pos) == 1 and new_pos[0] - self.x_pos == 1):
-                return True
-        return False
+            return False
 
         
 
@@ -686,5 +776,6 @@ board = Game(3)
 print(board)
 
 print(board.all_team_moves("Red"))
+print(board.is_winner("Red"))
 #print(board.game_board[5][2])
 #print(type(board.game_board[5][2]))

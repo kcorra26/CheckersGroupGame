@@ -780,12 +780,7 @@ class Piece():
 #board = Game(3)
 #print(board)
 
-<<<<<<< HEAD
-#print(board.all_team_moves("Black"))
-#print(board.is_winner("Red"))
-=======
 board.all_team_moves("Black")
 print(board.is_winner("Red"))
->>>>>>> e2c3ce18f8beb5397edc4a5e51b8b3297df83e4e
 #print(board.game_board[5][2])
 #print(type(board.game_board[5][2]))

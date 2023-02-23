@@ -142,7 +142,7 @@ class Game:
                 return True
             return False
     
-    def length_jump_sequence(self,old_pos,new_pos):
+    def num_jumps(self,old_pos,new_pos):
         return len(self.find_correct_sequence(old_pos,new_pos)) - 1
 
     def is_winning_move(self,old_pos,new_pos,team):
@@ -297,6 +297,12 @@ class Game:
                 if (i + j) % 2 == 1:
                     self.game_board[i][j] = Piece((i,j),"Red")
                     self.red_pieces.add(Piece((i,j),"Red"))
+    
+    def reset_game:
+        for i in range(self.width):
+            for j in range(self.width):
+                self._remove_piece((i,j)
+        self._initialize_checkers
         
 
 

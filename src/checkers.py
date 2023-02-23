@@ -330,7 +330,7 @@ class Game:
                 if self.can_move((piece.y_pos,piece.x_pos)):
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
         
-        return team_moves
+        print(team_moves)
 
                         
 
@@ -781,7 +781,7 @@ class Piece():
 board = Game(3)
 print(board)
 
-print(board.all_team_moves("Black"))
+board.all_team_moves("Black")
 print(board.is_winner("Red"))
 #print(board.game_board[5][2])
 #print(type(board.game_board[5][2]))

@@ -207,16 +207,16 @@ class Game:
         if new_pos in self.list_moves(old_pos):
             if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1:
                 self.game_board[new_pos[0]][new_pos[1]] = current_piece
-                self.game_board[old_pos[0]][old_pos[1]] = None
                 self.game_board[new_pos[0]][new_pos[1]].update_position(new_pos)
+                self.game_board[old_pos[0]][old_pos[1]] = None
                 if team == "Red":
                     for piece in self.red_pieces:
-                        if piece.x_pos == current_piece.x_pos and piece.y_pos == current_piece.y_pos:
+                        if piece.x_pos == old_pos[1] and piece.y_pos == old_pos[0]:
                             self.red_pieces.remove(piece)
                             self.red_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
                 if team == "Black":
                     for piece in self.black_pieces:
-                        if piece.x_pos == current_piece.x_pos and piece.y_pos == current_piece.y_pos:
+                        if piece.x_pos == old_pos[1] and piece.y_pos == old_pos[0]:
                             self.black_pieces.remove(piece)
                             self.black_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
 

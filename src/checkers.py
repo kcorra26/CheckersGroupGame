@@ -395,7 +395,7 @@ class Game:
             if self.is_valid_position((pos[0] + current_piece.dir, pos[1] + 1)):
                 if (self.game_board[pos[0] + current_piece.dir][pos[1] + 1] is not None
                     and self.game_board[pos[0] + current_piece.dir][pos[1] + 1].team != current_piece.team):
-                    if (self.is_valid_position(pos[0] + 2*current_piece.dir, pos[1] + 2) and
+                    if (self.is_valid_position((pos[0] + 2*current_piece.dir, pos[1] + 2)) and
                         self.game_board[pos[0] + 2*current_piece.dir][pos[1] + 2] is None):
                         return True
             if self.is_valid_position((pos[0] + current_piece.dir, pos[1] - 1)):
@@ -415,7 +415,7 @@ class Game:
                 if self.is_valid_position((pos[0] + i, pos[1] - 1)):
                     if (self.game_board[pos[0] + i][pos[1] - 1] is not None
                         and self.game_board[pos[0] + i][pos[1] - 1].team != current_piece.team):
-                        if (self.is_valid_position(pos[0] + 2*i, pos[1] - 2) and
+                        if (self.is_valid_position((pos[0] + 2*i, pos[1] - 2))and
                             self.game_board[pos[0] + 2*i][pos[1] + 2] is None):
                             return True
         return False

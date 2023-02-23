@@ -162,6 +162,7 @@ class SmartBot:
                 # if the number of jumps is greater than the current max, 
                 # reset max_moves and the current max
                 if self._game.num_jumps(start_pos, end_pos) > max_jumps:
+                    # TODO: name is different in checkers
                     max_jumps = self._game.num_jumps(start_pos, end_pos)
                     max_moves = {start_pos : [end_pos]} # reset dict
                 
@@ -255,7 +256,7 @@ class BotPlayer: # playing against each other
 
         Args:
             name: Name of the bot
-            board: Board to play on
+            game: Game to play
             color: Bot's color
             opponent_color: Opponent's color
         """
@@ -280,29 +281,29 @@ class BotPlayer: # playing against each other
         
         Returns: None
         """
-        # CANT PLAY THIS UNTIL MOCK is_done() and 
         for _ in range(n):
-            # Reset the board
-            board.reset() #TODO
+            # Reset the game
+            game.reset() #TODO waiting for reset()
 
             # starting player 
-            current = bots[TeamColor.RED] #idk what color goes first
+            current = bots[TeamColor.BLACK] #idk what color goes first
 
             while not game.is_done(): # TODO OR there is a winner
                 og_pos, new_pos = current.bot.suggest_move() 
                 game.move_piece(og_pos, new_pos, current.color) 
 
                 # update the player 
-                if current.color == TeamColor.COLOR1: 
-                    current = bots[TeamColor.COLOR2] 
+                if current.color == TeamColor.BLACK: 
+                    current = bots[TeamColor.RED] 
                     # now it's the other team's turn
-                elif current.color == TeamColor.COLOR2:
-                    current = bots[TeamColor.COLOR1]
+                elif current.color == TeamColor.RED:
+                    current = bots[TeamColor.BLACK]
                 
-                # if game.is_winner(TeamColor.COLOR1):
-                # elif game.is_winner(TeamColor.Color2):
-                # else:
-                    bots[winner].wins += 1
+                if game.is_winner(TeamColor.RED):
+                    bots[TeamColor.RED].wins += 1
+                elif game.is_winner(TeamColor.BLACK):
+                    bots[TeamColor.BLACK].wins += 1
+
                 
 @click.command(name="checkers-bot")
 @click.option("-n", "--num-games", type=click.INT, default=10000)

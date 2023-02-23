@@ -8,8 +8,8 @@ import click
 from colorama import Fore, Style
 
 from checkers import Board, Game, Piece
-from mocks import MockGame, Piece, MockCheckerboard, StubRandomBot, StubSmartBot
-#from bot import RandomBot, SmartBot
+from mocks import MockGame, Piece, MockCheckerboard
+from bot import RandomBot, SmartBot
 
 
 TOP_ROW_LIGHT = Fore.WHITE + "\u250c" + "\u2500" + "\u2510"
@@ -36,7 +36,7 @@ class TUIPlayer:
     The TUIPlayer can be a human using the keyboard or a bot.
     """
     name: str
-    bot: Union[None, StubRandomBot, StubSmartBot]
+    bot: Union[None, RandomBot, SmartBot]
     #board will change
     game: MockGame
     color: str
@@ -64,10 +64,10 @@ class TUIPlayer:
             self.bot = None
         if player_type == "random-bot":
             self.name = f"Random Bot {player_num}"
-            self.bot = StubRandomBot(game, color, opponent_color)
+            self.bot = RandomBot(game, color, opponent_color)
         elif player_type == "smart-bot":
             self.name = f"Smart Bot {player_num}"
-            self.bot = StubSmartBot(game, color, opponent_color)
+            self.bot = SmartBot(game, color, opponent_color)
 
 
     def get_move(self, team:str) -> int:

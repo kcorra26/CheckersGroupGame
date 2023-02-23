@@ -208,15 +208,6 @@ class Game:
             if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1:
                 self.game_board[new_pos[0]][new_pos[1]] = current_piece
                 self.game_board[old_pos[0]][old_pos[1]] = None
-                if current_piece.team == "Red":
-                    self.red_pieces.remove(current_piece)
-                    current_piece.update_position(new_pos)
-                    self.red_pieces.add(current_piece)
-                if current_piece.team == "Black":
-                    self.black_pieces.remove(current_piece)
-                    current_piece.update_position(new_pos)
-                    self.black_pieces.add(current_piece)
-                
 
                 self.make_king()
 

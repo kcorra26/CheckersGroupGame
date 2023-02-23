@@ -26,7 +26,7 @@ class PieceSprite(pygame.sprite.Sprite):
         self.team = piece.team 
         self.is_king = piece.is_king
         self.sq_size = sq_size
-        if self.team == "RED":
+        if self.team == "Red":
             if self.is_king:
                 self.image = pygame.transform.scale(pygame.image.load('red_king.png'), (sq_size,sq_size))
             else:

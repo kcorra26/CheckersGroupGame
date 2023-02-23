@@ -1,5 +1,15 @@
 '''
 Pygame and GUI Implementation
+
+Resources Consulted:
+    https://github.com/techwithtim/Python-Checkers/tree/master/checkers
+    - the implementation is completly different, but was helpful in thinking of the
+    structure of the main pygame loop and the needed functions, such as switch_piece
+    https://www.ucode.com/coding_classes_for_kids_honors_course/course-videos/pgd-sprite-groups-in-py-games
+    - this was helpful in setting up the sprite groups
+    http://programarcadegames.com/python_examples/show_file.php?file=moving_sprites.py
+    - this was helpful in initializing the sprite class
+
 '''
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
@@ -13,11 +23,10 @@ WIDTH = HEIGHT = 800
 
 #colors
 WHITE = (255, 255,255)
-LIGHT_BROWN =(188,158,130)
-DARK_BROWN = (155, 103,60)
 BLACK = (0,0,0)
 RED = (170,0,20)
 YELLOW = (255, 204, 0)
+GREEN = (75, 139, 59)
 
 class GUIPlayer():
 
@@ -25,39 +34,39 @@ class GUIPlayer():
         """
         init function for GUI Player
 
-        Args: 
+        args: 
             board: the board being played
         """
         self.board = board
         self.sq_size = WIDTH // board.width
-        self.curr_player = 'BLACK'
         self.ROWS = self.board.width
+
+        #attributes for game play
+        self.curr_player = 'BLACK'
         self.all_sprites_list = pygame.sprite.Group()
         self.window = None
         self.selected_piece = None
 
     def init_game (self):
         '''
-        initializes the display for the game
+        initializes the display and the sprites for the game
 
-        Args: None
-        Returns None
+        args: 
+            None
         '''
         pygame.init()
         display = pygame.display.set_mode((WIDTH, HEIGHT))
         self.window = display
         pygame.display.set_caption('Checkers')
+        self.init_sprites()
         pygame.display.update()
     
     def init_sprites(self):
         '''
-        this function initializes all Pieces and returns a list of all PieceSprites
+        this function initializes all Pieces and add thems to all_piece_list
 
         args: 
-            board: a board/game which contains a list of all Pieces
-
-        retuns:
-            all_sprites_list: a list of all PieceSprites on the board
+            None
         '''
         all_pieces = self.board.red_pieces + self.board.black_pieces
 
@@ -72,7 +81,7 @@ class GUIPlayer():
         '''
         Draws checkerboard without pieces, helper function for draw_board()
 
-        Args:
+        args:
             None
         '''
         self.window.fill(BLACK)
@@ -82,7 +91,8 @@ class GUIPlayer():
 
     def __draw_highlighted_board(self):
         '''
-        Draws checkerboard without pieces but with possible moves highlighted
+        Draws checkerboard without pieces but with possible moves highlighted, helper
+        function for draw_board
 
         Args:
             None
@@ -90,19 +100,19 @@ class GUIPlayer():
         moves = self.board.list_moves(self.selected_piece)
         for row in range(self.ROWS):
             for col in range(self.ROWS):
-                if (row, col) in moves:
+                #highlights possible moves in yellow
+                if (row, col) in moves: 
                     pygame.draw.rect(self.window, YELLOW, (col*self.sq_size, row*self.sq_size, self.sq_size, self.sq_size))
-                #add a condition that will also highlight the current piece 
+                #highlights current selected piece in green
+                if (row, col) == self.selected_piece.pos:
+                    pygame.draw.rect(self.window, GREEN, (col*self.sq_size, row*self.sq_size, self.sq_size, self.sq_size))
     
-    def draw_board (self):
+    def draw_board(self):
         '''
         draws checkerboard with sprites
 
         Args: 
-            window: the pygame window where board is drawn
-            board: the board being represented
-            sq_size: the size of the squares
-            sprite_list: current sprite list (at this time in game)
+            None
         '''
         self.__draw_empty_board()
         if self.selected_piece is not None:
@@ -112,6 +122,18 @@ class GUIPlayer():
         return
 
     def move_selected_piece(self, row, col):
+        """
+        moves the selected piece to the new position represented by row, col,
+        does this by calling self.move_piece. If the selected piece cannot be
+        moved to (row, col) position, the piece is unselected
+
+        Args:
+            row: represents the row of the position self.selected_piece will
+            be moved to
+            col: represents the col of the position self.selected_piece will
+            be moved to
+
+        """
         pos_moves = self.board.list_moves(self.selected_piece)
         print(pos_moves, row, col)
         if (row, col) in pos_moves:
@@ -135,8 +157,9 @@ class GUIPlayer():
         return
 
     def play_checkers(self):
+        """
+        """
         self.init_game()
-        self.init_sprites()
 
         run = True
         while run:

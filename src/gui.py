@@ -15,7 +15,7 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
-from mocks import StubCheckerboard, Piece
+from mocks import Piece, MockCheckerboard, MockGame
 from sprites import PieceSprite
 #from checkers import Board, Game
 
@@ -30,16 +30,17 @@ GREEN = (75, 139, 59)
 
 class GUIPlayer():
 
-    def __init__(self, board):
+    def __init__(self, game:MockGame):
         """
         init function for GUI Player
 
         args: 
             board: the board being played
         """
-        self.board = board
-        self.sq_size = WIDTH // board.width
-        self.ROWS = self.board.width
+        self.game = game
+        self.board = game.board
+        self.ROWS = game.width
+        self.sq_size = WIDTH // game.width
 
         #attributes for game play
         self.curr_player = 'Black'
@@ -68,7 +69,7 @@ class GUIPlayer():
         args: 
             None
         '''
-        all_pieces = self.board.red_pieces + self.board.black_pieces
+        all_pieces = self.game.red_pieces.union(self.game.black_pieces)
 
         for piece in all_pieces:
             sprite = PieceSprite(piece, self.sq_size)
@@ -78,11 +79,11 @@ class GUIPlayer():
     
     def update_sprites(self):
         '''
-        
+
         '''
-        pieces = self.board.red_pieces + self.board.black_pieces
+        pieces = self.game.red_pieces.union(self.game.black_pieces)
         for sprite in self.all_sprites_list:
-            if sprite not in pieces:
+            if sprite.piece not in pieces:
                 sprite.kill() #will kill sprites that were jumped over
         self.all_sprites_list.update() #sets new pos for sprites that moved
 
@@ -107,7 +108,7 @@ class GUIPlayer():
         Args:
             None
         '''
-        moves = self.board.list_moves(self.selected_piece)
+        moves = self.game.list_moves(self.selected_piece)
         for row in range(self.ROWS):
             for col in range(self.ROWS):
                 #highlights possible moves in yellow
@@ -144,11 +145,11 @@ class GUIPlayer():
             be moved to
 
         """
-        pos_moves = self.board.list_moves(self.selected_piece)
+        pos_moves = self.game.list_moves(self.selected_piece)
         print(pos_moves, row, col)
         if (row, col) in pos_moves:
             print('move is possible')
-            self.board.move_piece(self.selected_piece.pos, (row, col))
+            self.game.move_piece(self.selected_piece.pos, (row, col))
             self.update_sprites() 
             self.switch_player()
         else:
@@ -181,7 +182,7 @@ class GUIPlayer():
                     col = pos[0] //self.sq_size #x-pos
                     if self.selected_piece is None:
                         print('MOUSEDOWN')
-                        piece = self.board.get_piece(row, col)
+                        piece = self.game.get_piece(row, col)
                         if piece is None or piece.team != self.curr_player:
                             break
                         print('found a piece at MOUSE')
@@ -202,6 +203,6 @@ if certain peices cannot be moved
 kill sprites
 '''
 #sample board
-ex_board = StubCheckerboard()
+ex_board = MockGame()
 player = GUIPlayer(ex_board)
 player.play_checkers()

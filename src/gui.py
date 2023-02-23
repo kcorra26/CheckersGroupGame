@@ -92,6 +92,7 @@ class GUIPlayer():
             for col in range(self.ROWS):
                 if (row, col) in moves:
                     pygame.draw.rect(self.window, YELLOW, (col*self.sq_size, row*self.sq_size, self.sq_size, self.sq_size))
+                #add a condition that will also highlight the current piece 
     
     def draw_board (self):
         '''
@@ -115,9 +116,8 @@ class GUIPlayer():
         print(pos_moves, row, col)
         if (row, col) in pos_moves:
             print('move is possible')
-            sel_piece = self.selected_piece
-            print('selected_piece pos',sel_piece.pos)
-            self.board.move_piece(sel_piece.pos, (row, col))
+            self.board.move_piece(self.selected_piece.pos, (row, col))
+            #need a kill function to kill pieces no longer on the board
             self.all_sprites_list.update()
             self.switch_player()
         else:

@@ -27,6 +27,7 @@ BLACK_KING = Fore.BLACK + Style.BRIGHT + "¤"
 RED_KING = Fore.RED + Style.BRIGHT + "¤"
 BLACK_PIECE = Fore.BLACK + "●"
 RED_PIECE = Fore.RED + "●"
+VALID_SPACE = Fore.GREEN + Style.BRIGHT + "?"
 
 
 class TUIPlayer:
@@ -94,11 +95,11 @@ class TUIPlayer:
             # a valid space is not provided)
             while True:
                 #Get the player's input on what piece they want to move where
-                cur_x = input(Style.BRIGHT + f"{self.name}: Select the column of the piece you want to move > " 
+                cur_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the column of the piece you want to move > " 
                               + Style.RESET_ALL)
                 cur_x = self._input_to_valid_move(cur_x, "x")
 
-                cur_y= input(Style.BRIGHT + f"{self.name}: Select the row of the piece you want to move > " 
+                cur_y= input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the row of the piece you want to move > " 
                              + Style.RESET_ALL)
                 cur_y = self._input_to_valid_move(cur_y, "y")
 
@@ -106,26 +107,21 @@ class TUIPlayer:
                     select_piece(self.game, (cur_x, cur_y), self.team)
 
 
-                dest_x = input(Style.BRIGHT + f"{self.name}: Select the column you want to move to > " 
+                dest_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the column you want to move to > " 
                                + Style.RESET_ALL)
                 dest_x = self._input_to_valid_move(dest_x, "x")
 
-                dest_y = input(Style.BRIGHT + f"{self.name}: Select the row you want to move to > " 
+                dest_y = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the row you want to move to > " 
                                + Style.RESET_ALL)
                 dest_y = self._input_to_valid_move(cur_y, "y")
 
                 # Convert the indices the player chose to ones that play nice with
                 # the list of list representation of the board (may be able to not have this)
                 if self.game.is_valid_move((cur_x, cur_y), (dest_x, dest_y)):
-                    return [(cur_x, cur_y), (dest_x, dest_y)]
+                    return (cur_x, cur_y), (dest_x, dest_y)
                 else:
-                    see_all = input("This is not a valid move." + Style.BRIGHT 
-                                    + "Would you like to see all of your team's"
-                                    + "possible moves? y/n > "
-                                    + Style.RESET_ALL)
-                    if see_all == "y":
-                        print(self.game.all_team_moves(self.team))
-
+                    print("Not a valid move. Please enter a valid move.")
+                    return self.get_move()
 
     def _input_to_valid_move(self, coord: str, dir:str) -> tuple:
         """
@@ -197,7 +193,7 @@ def print_game(game:MockGame, poss_moves:set=[]):
             square_str = ""
 
             if (row, col) in poss_moves:
-                square_str = (wall + "?" + wall)
+                square_str = (wall + VALID_SPACE + wall)
             elif space is None:
                 square_str = (wall + " " + wall)
             elif space.team == "Black":
@@ -229,6 +225,11 @@ def print_game(game:MockGame, poss_moves:set=[]):
 def select_piece(game:MockGame, pos:tuple, team:str):
     """
     Selects a piece on the board and highlights the positions it can move to.
+    Args:
+        game: the game object being used
+        pos: an (int, int) tuple with the position of the piece
+        team: the team to select a piece for
+    Returns: None
     """
     col, row = pos
     piece = game.board.board[row][col]
@@ -257,6 +258,7 @@ def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
 
             cur_space, new_space = current.get_move()
             game.move_piece(cur_space, new_space)
+            print("New position:")
 
             # Update the player
             if current.team == "Black":

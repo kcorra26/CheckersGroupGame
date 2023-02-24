@@ -12,7 +12,7 @@ class StubCheckerboard:
     def __str__(self):
         return("board")
     
-    def move_piece(self, old_pos, new_pos:tuple = (0,0)):
+    def move_piece(self, old_pos, new_pos:tuple):
         row, col = old_pos
         piece = self.get_piece(row, col)
         piece.update_pos(new_pos)
@@ -128,17 +128,24 @@ class MockGame:
         for piece in self.red_pieces.union(self.black_pieces):
             if piece.pos == (row, col):
                 return piece
+        else:
+            return None
     def list_moves(self, p: Piece):
         return [(0,0), (7,0), (3,4), (5,7), (3,6), (5,3), (0,3)]
-    def move_piece(self, old_pos, new_pos:tuple = (0,0)):
-        row, col = old_pos
-        piece = self.get_piece(row, col)
-        if piece is not None:   
-            piece.update_pos(new_pos)
+    def move_piece(self, old_pos, new_pos:tuple):
+        old_row, old_col = old_pos
+        new_row, new_col = new_pos
+        old_item = self.get_piece(old_row, old_col)
+        new_item = self.get_piece(new_row, new_col)
+        #piece = self.get_piece(row, col)
+        if old_item is not None:   
+            old_item.update_pos(new_pos)
+        if new_item is not None:
+            new_item.update_pos(old_pos)
 
 class MockCheckerboard:
 
-    def __init__(self, n, kings=False):
+    def __init__(self, n=3, kings=False):
         self.board = [[None, Piece("Black", (0,1)), None, Piece("Black",(0,3)), None, Piece("Black",(0,5)), None, Piece("Black", (0,7))],
                       [Piece("Black", (1,0)), None, Piece("Black",(1,2), is_king=True), None,Piece("Black", (1,4)), None, Piece("Black", (1,6)), None],
                       [None, Piece("Black", (2,1)), None, Piece("Black",(2,3)), None, Piece("Black",(2,5)), None, Piece("Black", (2,7))],
@@ -150,12 +157,16 @@ class MockCheckerboard:
         self.is_winner = None
         self.n = n
         self.width = 2*n + 2
-        #self.width = len(self.board)
-        #self.n = int((self.width - 2) // 2)
     def set_winner(self, team):
         self.is_winner = team
     def is_winner(self):
         return self.is_winner
+    def swap_places(self, old_pos, old_item, new_pos, new_item):
+        old_row, old_col = old_pos
+        new_row, new_col = new_pos
+        self.board[old_row][old_col] = new_item
+        self.board[new_row][new_col] = old_item
+
 
 
 

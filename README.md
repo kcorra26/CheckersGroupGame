@@ -25,7 +25,7 @@ returns the random list of possible moves, as such the gui shown does not obey t
 of checkers but will once it is integrated with checkers.py and utilizes an actual
 Game object. Similarly, because the bot is more attuned to the actual rules of checkers but
 the gui only runs game.move_piece() when a move is returned by list_moves() which is a
-predetermined set of locations that have been made up for testing purposes, this creates errors
+predetermined set of locations that have been made up for testing purposes, this causes errors
 
 
 Running the TUI

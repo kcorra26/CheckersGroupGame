@@ -1,12 +1,14 @@
 from typing import Optional, List, Union
 
-#was being used in GUI - am not trying to integrate Game as 
+# used in GUI
 class StubCheckerboard:
     def __init__(self, n=3):
         self.n = n
         self.width = 2*n + 2
-        self.red_pieces = [Piece('Red', (1,0)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (4,6))]
-        self.black_pieces = [Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))]
+        self.red_pieces = [Piece('Red', (1,0)), Piece('Red', (3,0), True), \
+                          Piece('Red', (3,2)), Piece('Red', (4,6))]
+        self.black_pieces = [Piece('Black', (4,5), True), Piece('Black', \
+                             (7,0)), Piece('Black', (2,3))]
         self.is_winner = None
 
     def __str__(self):
@@ -31,15 +33,16 @@ class StubCheckerboard:
     def is_winner(self):
         return self.is_winner
 
-
+# used for bot both in bot.py and in gui.py
 class CheckersGameBotMock: 
     def __init__(self, n=3):
         self.n = n 
         self.width = 2*n + 2
         self.board = MockCheckerboard(n)
-        self.red_pieces = set([Piece('Red', (1,2)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (6,2))])
-        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))])
-        # self.board?
+        self.red_pieces = set([Piece('Red', (1,2)), Piece('Red', (3,0), True),\
+                            Piece('Red', (3,2)), Piece('Red', (6,2))])
+        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', \
+                            (7,0)), Piece('Black', (2,3))])
     
     def __str__(self) -> str:
         return "BOARD"
@@ -114,8 +117,10 @@ class MockGame:
         self.width = 2*n + 2
         self.width = len(self.board.board)
         self.is_winner = None
-        self.red_pieces = set([Piece('Red', (1,0)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (4,6))])
-        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))])
+        self.red_pieces = set([Piece('Red', (1,0)), Piece('Red', (3,0), True),\
+        Piece('Red', (3,2)), Piece('Red', (4,6))])
+        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', \
+        (7,0)), Piece('Black', (2,3))])
         pass
     def __str__(self):
         return "Game"
@@ -148,14 +153,23 @@ class MockGame:
 class MockCheckerboard:
 
     def __init__(self, n=3, kings=False):
-        self.board = [[None, Piece("Black", (0,1)), None, Piece("Black",(0,3)), None, Piece("Black",(0,5)), None, Piece("Black", (0,7))],
-                      [Piece("Black", (1,0)), None, Piece("Black",(1,2), is_king=True), None,Piece("Black", (1,4)), None, Piece("Black", (1,6)), None],
-                      [None, Piece("Black", (2,1)), None, Piece("Black",(2,3)), None, Piece("Black",(2,5)), None, Piece("Black", (2,7))],
+        self.board = [[None, Piece("Black", (0,1)), None, Piece("Black",(0,3)), 
+                      None, Piece("Black",(0,5)), None, Piece("Black", (0,7))],
+                      [Piece("Black", (1,0)), None, Piece("Black",(1,2), \
+                      is_king=True), None,Piece("Black", (1,4)), None, \
+                      Piece("Black", (1,6)), None],
+                      [None, Piece("Black", (2,1)), None, Piece("Black",(2,3)),\ 
+                      None, Piece("Black",(2,5)), None, Piece("Black", (2,7))],
                       [None, None, None, None, None, None, None, None],
                       [None, None, None, None, None, None, None, None],
-                      [Piece("Red", (3,0)), None, Piece("Red",(3,2), is_king=True), None, Piece("Red", (3,4)), None, Piece("Red", (3,6)), None],
-                      [None, Piece("Red", (4,1)), None, Piece('Red', (4,3)), None, Piece("Red", (4,5)), None, Piece("Red", (4,7))],
-                      [Piece("Red", (5,0)), None, Piece("Red",(5,2), is_king=True), None, Piece("Red", (5,4)), None, Piece("Red", (5,6)), None]]
+                      [Piece("Red", (3,0)), None, Piece("Red",(3,2), \
+                      is_king=True), None, Piece("Red", (3,4)), None, \
+                      Piece("Red", (3,6)), None],
+                      [None, Piece("Red", (4,1)), None, Piece('Red', (4,3)), \
+                      None, Piece("Red", (4,5)), None, Piece("Red", (4,7))],
+                      [Piece("Red", (5,0)), None, Piece("Red",(5,2), 
+                      is_king=True), None, Piece("Red", (5,4)), None, \
+                      Piece("Red", (5,6)), None]]
         self.is_winner = None
         self.n = n
         self.width = 2*n + 2
@@ -168,7 +182,6 @@ class MockCheckerboard:
         new_row, new_col = new_pos
         self.board[old_row][old_col] = new_item
         self.board[new_row][new_col] = old_item
-
 
 
 class StubRandomBot:

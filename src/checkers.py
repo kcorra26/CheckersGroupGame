@@ -889,7 +889,7 @@ class Piece():
             self.space_color = 'dark'
         else:
             self.space_color = 'light'
-        assert self.space_color is 'dark'
+        assert self.space_color == 'dark'
     
     def __str__(self):
         """

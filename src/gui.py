@@ -17,7 +17,7 @@ import pygame
 
 from mocks import Piece, MockCheckerboard, MockGame
 from sprites import PieceSprite
-#from checkers import Board, Game
+from bot import RandomBot, SmartBot
 
 WIDTH = HEIGHT = 800
 
@@ -28,9 +28,23 @@ RED = (170,0,20)
 YELLOW = (255, 204, 0)
 GREEN = (75, 139, 59)
 
+class CheckersPlayer:
+    '''
+    simple class to store player information
+    '''
+    def __init__(self, bot = None):
+        '''
+        '''
+        if bot == None:
+            self.is_bot = False
+        else:
+            self.is_bot = True
+        self.bot = bot
+        self.color = None
+
 class GUIPlayer():
 
-    def __init__(self, game:MockGame):
+    def __init__(self, game:MockGame, player_1: CheckersPlayer, player_2:CheckersPlayer):
         """
         init function for GUI Player
 
@@ -42,8 +56,13 @@ class GUIPlayer():
         self.ROWS = game.width
         self.sq_size = WIDTH // game.width
 
+        #players
+        player_1.color = 'Black'
+        player_2.color = 'Red'
+        self.players = [player_1, player_2]
+        self.curr_player = self.players[0]
+
         #attributes for game play
-        self.curr_player = 'Black'
         self.all_sprites_list = pygame.sprite.Group()
         self.window = None
         self.selected_piece = None
@@ -160,10 +179,10 @@ class GUIPlayer():
         switches the current player
         '''
         self.selected_piece = None
-        if self.curr_player == 'Black':
-            self.curr_player = 'Red'
+        if self.curr_player == self.players[0]:
+            self.curr_player = self.players[1]
         else:
-            self.curr_player = "Black"
+            self.curr_player = self.players[0]
         return
 
     def play_checkers(self):
@@ -176,21 +195,22 @@ class GUIPlayer():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
+                elif self.curr_player.is_bot:
+                    pygame.time.wait(10000)
+                    org_pos, new_pos = self.curr_player.bot.suggest_move()
+                    self.selected_piece = self.game.get_piece(org_pos[0], org_pos[1])
+                    self.move_selected_piece(new_pos[0], org_pos[1])
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos() #this pos in in (x,y)
+                    pos = pygame.mouse.get_pos() #this pos is in (x,y)
                     row = pos[1] // self.sq_size #y-pos
                     col = pos[0] //self.sq_size #x-pos
                     if self.selected_piece is None:
-                        print('MOUSEDOWN')
                         piece = self.game.get_piece(row, col)
-                        if piece is None or piece.team != self.curr_player:
+                        if piece is None or piece.team != self.curr_player.color:
                             break
-                        print('found a piece at MOUSE')
                         self.selected_piece = piece
-                        print('set a selected piece')
                         self.draw_board() #draws possible moves
                     else:
-                        print('there is a selected piece')
                         self.move_selected_piece(row, col)
                 else:
                     self.draw_board()
@@ -203,6 +223,8 @@ if certain peices cannot be moved
 kill sprites
 '''
 #sample board
+play1 = CheckersPlayer()
+play2 = CheckersPlayer()
 ex_board = MockGame()
-player = GUIPlayer(ex_board)
+player = GUIPlayer(ex_board, play1, play2)
 player.play_checkers()

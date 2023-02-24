@@ -429,12 +429,10 @@ class Game:
         trails = []
         current_piece = self.game_board[pos[0]][pos[1]]
         direction = None
-        if current_piece is None:
-            if team == "Red":
-                direction = -1
+        if team == "Red":
+            direction = -1
+        else:
             direction = 1
-        if current_piece is not None:
-            direction = current_piece.dir
         if not self.can_jump(pos,team):
             return []
         if self.can_jump(pos,team):
@@ -443,7 +441,7 @@ class Game:
                 if (self.game_board[(pos[0] + direction)][pos[1] + 1].team != team and 
                     self.is_valid_position(((pos[0] + 2*direction),pos[1] + 2))):
                     if self.game_board[pos[0] + 2*direction][pos[1] + 2] is None:
-                        if not self.can_jump((pos[0] + 2*direction,pos[1] + 2),team):
+                        if self.can_jump((pos[0] + 2*direction,pos[1] + 2),team) is False:
                             trails.append((pos[0] + 2*direction,pos[1] + 2))
                         for trail in self.jump_trail_piece((pos[0] + 2*direction,pos[1] + 2),team):
                             trails.append([(pos[0] + 2*direction,pos[1] + 2)] + trail)
@@ -455,7 +453,7 @@ class Game:
                         if len(self.jump_trail_piece((pos[0] + 2*direction,pos[1] - 2),team)) > 0:
                             for trail in self.jump_trail_piece((pos[0] + 2*direction,pos[1] - 2),team):
                                 trails.append([(pos[0] + 2*direction,pos[1] - 2)] + trail)
-        return trails
+            return trails
     
     def jump_trail_king(self, pos, already_jumped):
         trails = []

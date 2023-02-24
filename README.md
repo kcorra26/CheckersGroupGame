@@ -12,12 +12,12 @@ import gui
 import mocks
 player = gui.GUIPlayer(mocks.MockGame(), gui.CheckersPlayer(), gui.CheckersPlayer())
 player.play_checkers()
-Once the pygame window opens it is blacks turn so click on a black piece. The selected
+Once the pygame window opens it is black's turn so click on a black piece. The selected
 piece will be highlighted in green and all possible moves in yellow. To move click
 on a highlighted yellow spot. After black moves its red's turn.
 
 To run GUI with the bot run the following commands:
-player = GUIPlayer(mock.Game(), gui.CheckersPlayer(), gui.CheckersPlayer(SmartBot(ex_board, 'Red', 'Black)))
+player = GUIPlayer(mock.Game(), gui.CheckersPlayer(), gui.CheckersPlayer(SmartBot(ex_board, 'Red', 'Black')))
 player.play_checkers()
 
 Note: the MockGame class initializes some pieces at completly random locations and

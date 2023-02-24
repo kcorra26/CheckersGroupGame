@@ -3,7 +3,7 @@
 - Robert Ukrainsky - Game Logic
 - Kasey Corra - Bot
 - Jaslin Aguirre - GUI
-- Sam Doepker - Bot
+- Sam Doepker - TUI
 
 Running the GUI
 To run the GUI you will need the pygame library. 
@@ -29,7 +29,10 @@ predetermined set of locations that have been made up for testing purposes, this
 
 
 Running the TUI
-To run the TUI, you will need the Time, Colorama, Typing and Click libraries installed.
-In the terminal from the root of the repository, run python3 tui.py --mode stub
+To run the TUI in the terminal from the root of the repository, 
+run python3 src/tui.py --mode mock
 Other versions of the TUI have not been fully tested or implemented yet. When
 prompted for a team, enter either "Red" or "Black".
+This will bring up a checkerboard with labels on the left and bottom of the board
+to signify square locations to move pieces to. While the pieces do not move,
+a set of locations marked as possible moves will be displayed as question marks.

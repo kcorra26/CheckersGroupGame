@@ -8,7 +8,7 @@ import click
 from colorama import Fore, Style
 
 from checkers import Board, Game, Piece
-from mocks import MockGame, Piece, MockCheckerboard
+from mocks import MockGame, Piece, MockCheckerboard, StubCheckerboard
 from bot import RandomBot, SmartBot
 
 
@@ -39,24 +39,24 @@ class TUIPlayer:
     bot: Union[None, RandomBot, SmartBot]
     #board will change
     game: MockGame
-    color: str
+    team: str
     bot_delay: float
 
     def __init__(self, player_num: int,  player_type: str, game: MockGame, 
-                color: str, opponent_color: str, bot_delay: float):
+                team: str, opponent_team: str, bot_delay: float):
         """
         Args:
             n: the player's number (1 or 2)
             player_type: "human", "random-bot", or "smart-bot"
             game: the Game object being used
-            color: the team the player is on ("Black" or "Red")
-            opponent_color: the other player's team
+            team: the team the player is on ("Black" or "Red")
+            opponent_team: the other player's team
             bot_delay: When playing as a bot, the artificial delay before making
                 the next move (in seconds)
         """
         self.game = game
         self.board = game.board
-        self.color = color
+        self.team = team
         self.bot_delay = bot_delay
 
         if player_type == "human":
@@ -64,17 +64,17 @@ class TUIPlayer:
             self.bot = None
         if player_type == "random-bot":
             self.name = f"Random Bot {player_num}"
-            self.bot = RandomBot(game, color, opponent_color)
+            self.bot = RandomBot(game, team, opponent_team)
         elif player_type == "smart-bot":
             self.name = f"Smart Bot {player_num}"
-            self.bot = SmartBot(game, color, opponent_color)
+            self.bot = SmartBot(game, team, opponent_team)
 
 
-    def get_move(self, team:str) -> int:
+    def get_move(self) -> int:
         """
         Gets a move from the player
-        If the player is a human player, prompt the player for a position to move to.
-        If the player is a bot, ask the bot to suggest a move.
+        If the player is a human player, prompt the player for a position to
+        move to. If the player is a bot, ask the bot to suggest a move.
         Args: 
             team: the team making the move
         Returns: 
@@ -86,24 +86,33 @@ class TUIPlayer:
             time.sleep(self.bot_delay)
             space = self.bot.suggest_move()
             # Print prompt with column already filled in
-            print(Style.BRIGHT + f"{self.name}> " + Style.RESET_ALL + str(space+1))
+            print(Style.BRIGHT + f"{self.name}> " + Style.RESET_ALL 
+                  + str(space+1))
             return space
         else:
             # Ask for a space (and re-ask if
             # a valid space is not provided)
             while True:
                 #Get the player's input on what piece they want to move where
-                cur_x = input(Style.BRIGHT + f"{self.name}: Select the column of the piece you want to move >" + Style.RESET_ALL)
-                cur_x = self._input_to_valid_move(cur_x, "x", team)
+                cur_x = input(Style.BRIGHT + f"{self.name}: Select the column of the piece you want to move > " 
+                              + Style.RESET_ALL)
+                cur_x = self._input_to_valid_move(cur_x, "x")
 
-                cur_y= input(Style.BRIGHT + f"{self.name}: Select the row of the piece you want to move > " + Style.RESET_ALL)
-                cur_y = self._input_to_valid_move(cur_y, "y", team)
+                cur_y= input(Style.BRIGHT + f"{self.name}: Select the row of the piece you want to move > " 
+                             + Style.RESET_ALL)
+                cur_y = self._input_to_valid_move(cur_y, "y")
 
-                dest_x = input(Style.BRIGHT + f"{self.name}: Select the column you want to move to > " + Style.RESET_ALL)
-                dest_x = self._input_to_valid_move(dest_x, "x", team)
+                if self.game.board.board[cur_y][cur_x] is not None:
+                    select_piece(self.game, (cur_x, cur_y), self.team)
 
-                dest_y = input(Style.BRIGHT + f"{self.name}: Select the row you want to move to > " + Style.RESET_ALL)
-                dest_y = self._input_to_valid_move(cur_y, "y", team)
+
+                dest_x = input(Style.BRIGHT + f"{self.name}: Select the column you want to move to > " 
+                               + Style.RESET_ALL)
+                dest_x = self._input_to_valid_move(dest_x, "x")
+
+                dest_y = input(Style.BRIGHT + f"{self.name}: Select the row you want to move to > " 
+                               + Style.RESET_ALL)
+                dest_y = self._input_to_valid_move(cur_y, "y")
 
                 # Convert the indices the player chose to ones that play nice with
                 # the list of list representation of the board (may be able to not have this)
@@ -111,21 +120,22 @@ class TUIPlayer:
                     return [(cur_x, cur_y), (dest_x, dest_y)]
                 else:
                     see_all = input("This is not a valid move." + Style.BRIGHT 
-                                    + "Would you like to see all of your team's possible moves? y/n > "
+                                    + "Would you like to see all of your team's"
+                                    + "possible moves? y/n > "
                                     + Style.RESET_ALL)
                     if see_all == "y":
-                        print(self.game.all_team_moves(team))
+                        print(self.game.all_team_moves(self.team))
 
 
-    def _input_to_valid_move(self, game:MockGame, coord: str, dir:str, team:str) -> tuple:
+    def _input_to_valid_move(self, coord: str, dir:str) -> tuple:
         """
         Turns the player input into a coordinate that can access the appropriate
-        positions on the board. If player did not enter valid start/end coordinates,
-        re-prompts them until they do.
+        positions on the board. If player did not enter valid start/end 
+        coordinates, re-prompts them until they do.
         Args:
             game: the Game object being used
             coord: the coordinate to be checked in a string format
-            dir: if a coordinate is an x-coordinate (column) or y-coordinate (row)
+            dir: if a coordinate is an x (column) or y-coordinate (row)
             team: the team that's moving a place
         Returns: 
             int: a coordinate converted into one that can correctly access board
@@ -135,20 +145,24 @@ class TUIPlayer:
         """
         coord = int(coord)
         if coord == "draw": 
-            game.draw(team)
+            self.game.draw(self.team)
         if coord == "resign":
-            game.resign(team)
+            self.game.resign(self.team)
         if dir == "x":
-            while not (len(coord) == 1 and 1 <= int(coord) <= self.board.width-1):
-                coord = input(Style.BRIGHT + f"{self.name}: Please enter a valid column >" + Style.RESET_ALL)
+            while not (0 <= int(coord) <= self.board.width-1):
+                coord = input(Style.BRIGHT + 
+                              f"{self.name}: Please enter a valid column >" + 
+                              Style.RESET_ALL)
         elif dir == "y":
-            while not (len(coord) == 1 and 1 <= int(coord) <= self.board.width-1):
-                coord = input(Style.BRIGHT + f"{self.name}: Please enter a valid row >" + Style.RESET_ALL)
+            while not (0 <= int(coord) <= self.board.width-1):
+                coord = input(Style.BRIGHT + 
+                              f"{self.name}: Please enter a valid row >" + 
+                              Style.RESET_ALL)
         else:
             raise ValueError("Direction was not passed correctly")
         return coord
 
-def print_game(game:MockGame):
+def print_game(game:MockGame, poss_moves:set=[]):
     """
     Prints the board out to the terminal screen.
     Args:
@@ -159,10 +173,14 @@ def print_game(game:MockGame):
     board = game.board
     width = game.width
     num_pairs = int(width/2)
-    even_line_top = Fore.WHITE + ((TOP_ROW_LIGHT + TOP_ROW_DARK) * (num_pairs) + "\n")
-    even_line_bottom = Fore.WHITE + (BOTTOM_ROW_LIGHT + BOTTOM_ROW_DARK) * (num_pairs) + "\n"
-    odd_line_top = Fore.WHITE + (TOP_ROW_DARK + TOP_ROW_LIGHT) * (num_pairs) + "\n"
-    odd_line_bottom = Fore.WHITE + (BOTTOM_ROW_DARK + BOTTOM_ROW_LIGHT) * (num_pairs) + "\n"
+    even_line_top = Fore.WHITE + (
+        (TOP_ROW_LIGHT + TOP_ROW_DARK) * (num_pairs) + "\n")
+    even_line_bottom = Fore.WHITE + (
+        (BOTTOM_ROW_LIGHT + BOTTOM_ROW_DARK) * (num_pairs) + "\n")
+    odd_line_top = Fore.WHITE + (
+        (TOP_ROW_DARK + TOP_ROW_LIGHT) * (num_pairs) + "\n")
+    odd_line_bottom = Fore.WHITE + (
+        (BOTTOM_ROW_DARK + BOTTOM_ROW_LIGHT) * (num_pairs) + "\n")
 
     for row in range(width):
         idx = Style.RESET_ALL + str(row)
@@ -175,10 +193,12 @@ def print_game(game:MockGame):
                 wall = SIDE_WALL_LIGHT
             else:
                 wall = SIDE_WALL_DARK
-            space = board[row][col]
+            space = board.board[row][col]
             square_str = ""
 
-            if space is None:
+            if (row, col) in poss_moves:
+                square_str = (wall + "?" + wall)
+            elif space is None:
                 square_str = (wall + " " + wall)
             elif space.team == "Black":
                 if space.is_king:
@@ -206,13 +226,24 @@ def print_game(game:MockGame):
         bottom_idx = bottom_idx + " " + str((i)) + " "
     print(Style.RESET_ALL +bottom_idx)
 
+def select_piece(game:MockGame, pos:tuple, team:str):
+    """
+    Selects a piece on the board and highlights the positions it can move to.
+    """
+    col, row = pos
+    piece = game.board.board[row][col]
+    all_poss_moves = game.list_moves(piece)
+    print_game(game, all_poss_moves)
+
+
+
 def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
     """
     Plays a game of checkers in the terminal.
     
     Args:
         board: the board to play on
-        players: a dictionary mapping TeamColors to TUIPlayer objects
+        players: a dictionary mapping team color strings to TUIPlayer objects
     Returns: None
     """
     #whichever player is on Black goes first
@@ -224,13 +255,13 @@ def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
             print_game(game)
             print()
 
-            cur_space, new_space = current.get_move(current)
+            cur_space, new_space = current.get_move()
             game.move_piece(cur_space, new_space)
 
             # Update the player
-            if current.color == "Black":
+            if current.team == "Black":
                 current = players["Red"]
-            elif current.color == "Red":
+            elif current.team == "Red":
                 current = players["Black"]
 
     print()
@@ -249,24 +280,22 @@ def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
 
 @click.command(name="checkers-tui")
 @click.option('--mode',
-            type=click.Choice(['real', 'stub', 'mock'], case_sensitive=False),
-            default="real")
-@click.option('--num-piece-rows',
-              type=click.INT, default=3)
+            type=click.Choice(['real', 'stub', 'mock'], 
+                              case_sensitive=False), default="real")
+@click.option('--num-piece-rows', type=click.INT, default=3)
 @click.option('--player1',
-            type=click.Choice(['human', 'random-bot', 'smart-bot'], case_sensitive=False),
-            default="human")
+            type=click.Choice(['human', 'random-bot', 'smart-bot'], 
+                              case_sensitive=False), default="human")
 @click.option('--player2',
-            type=click.Choice(['human', 'random-bot', 'smart-bot'], case_sensitive=False),
-            default="human")
+            type=click.Choice(['human', 'random-bot', 'smart-bot'], 
+                              case_sensitive=False), default="human")
 @click.option('--bot-delay', type=click.FLOAT, default=0.5)
 
 def cmd(mode, num_piece_rows, player1, player2, bot_delay):
     if mode == "real":
         game = Game(num_piece_rows)
     elif mode == "stub":
-        print('stub')
-        game = MockCheckerboard(num_piece_rows)
+        game = StubCheckerboard(num_piece_rows)
     elif mode == "mock":
         game = MockGame(num_piece_rows)
 

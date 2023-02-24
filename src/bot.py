@@ -282,7 +282,6 @@ def simulate(game, n: int, bots): # -> None:
         current = bots["Black"] #idk what color goes first
 
         while not game.is_done: # TODO OR there is a winner
-            print(f"{current.name}")
             og_pos, new_pos = current.bot.suggest_move() 
             game.move_piece(og_pos, new_pos, current.color) 
 
@@ -321,7 +320,7 @@ def cmd(num_games, player1, player2):
     bot2_wins = bots["Red"].wins 
     ties = num_games - (bot1_wins + bot2_wins) # how many neither of them won
 
-    print(f"Bot 1 ({playe1r}) wins: {100 * bot1_wins / num_games:.2f}%")
+    print(f"Bot 1 ({player1}) wins: {100 * bot1_wins / num_games:.2f}%")
     # percentage of wins 
     print(f"Bot 2 ({player2}) wins: {100 * bot2_wins / num_games:.2f}%")
     print(f"Ties: {100 * ties / num_games:.2f}%")

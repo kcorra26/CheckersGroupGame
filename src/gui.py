@@ -12,7 +12,6 @@ Resources Consulted:
 
 '''
 import os
-import sys
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
@@ -29,7 +28,7 @@ RED = (170,0,20)
 YELLOW = (255, 204, 0)
 GREEN = (75, 139, 59)
 
-class CheckersPlayer:
+class CheckersPlayer():
     '''
     simple class to store player information
     '''
@@ -41,11 +40,43 @@ class CheckersPlayer:
         else:
             self.is_bot = True
         self.bot = bot
-        self.color = None
+        if self.is_bot:
+            self.color = self.bot._color
+        else:
+            self.color = None
+    
+    def can_play_checkers (self, other):
+        '''
+        determines if two players can play checkers, if they can their team
+        color is set
+
+        args:
+            other: another CheckersPlayer object
+
+        returns(bool): whether these two players can play checkers
+        '''
+        if self.is_bot and other.is_bot and self.color != other.color:
+            return True
+        elif other.is_bot and not self.is_bot:
+            if other.color == 'Red':
+                self.color = 'Black'
+            else:
+                self.color = 'Red'
+            return True
+        elif self.is_bot and not other.is_bot:
+            if self.color == 'Red':
+                other.color = 'Black'
+            else:
+                other.color = 'Red'
+            return True
+        else:
+            return False
+
 
 class GUIPlayer():
 
-    def __init__(self, game:MockGame, player_1: CheckersPlayer, player_2:CheckersPlayer):
+    def __init__(self, game:MockGame, player_1: CheckersPlayer, \
+                 player_2:CheckersPlayer):
         """
         init function for GUI Player
 
@@ -57,11 +88,12 @@ class GUIPlayer():
         self.ROWS = game.width
         self.sq_size = WIDTH // game.width
 
-        #players
-        player_1.color = 'Black'
-        player_2.color = 'Red'
-        self.players = [player_1, player_2]
-        self.curr_player = self.players[0]
+        if player_1.can_play_checkers(player_2):
+            self.players = [player_1, player_2]
+            self.curr_player = self.players[0]
+        else: 
+            print('these two bots have the same color and cannot \
+                  play checkers')
 
         #attributes for game play
         self.all_sprites_list = pygame.sprite.Group()
@@ -84,7 +116,8 @@ class GUIPlayer():
     
     def init_sprites(self):
         '''
-        this function initializes all Pieces and add thems to all_piece_list
+        this function initializes all Pieces and add thems to
+        all_piece_list
 
         args: 
             None
@@ -99,8 +132,8 @@ class GUIPlayer():
     
     def update_sprites(self):
         '''
-        updates the sprites by removing sprites whoose pieces are no longer in play
-        and updating the locations of the remaining sprites
+        updates the sprites by removing sprites whoose pieces are no longer
+        in play and updating the locations of the remaining sprites
         '''
         pieces = self.game.red_pieces.union(self.game.black_pieces)
         for sprite in self.all_sprites_list:
@@ -119,12 +152,13 @@ class GUIPlayer():
         self.window.fill(BLACK)
         for row in range(self.ROWS):
             for col in range(row%2, self.ROWS, 2):
-                pygame.draw.rect(self.window, RED, (row*self.sq_size, col*self.sq_size, self.sq_size, self.sq_size))
+                pygame.draw.rect(self.window, RED, (row*self.sq_size, col*self.sq_size,\
+                                                    self.sq_size, self.sq_size))
 
     def __draw_highlighted_board(self):
         '''
-        Draws checkerboard without pieces but with possible moves highlighted, helper
-        function for draw_board
+        Draws checkerboard without pieces but with possible moves highlighted,
+        helper function for draw_board
 
         Args:
             None
@@ -134,10 +168,16 @@ class GUIPlayer():
             for col in range(self.ROWS):
                 #highlights possible moves in yellow
                 if (row, col) in moves: 
-                    pygame.draw.rect(self.window, YELLOW, (col*self.sq_size, row*self.sq_size, self.sq_size, self.sq_size))
+                    pygame.draw.rect(self.window, YELLOW, (col*self.sq_size, \
+                                                           row*self.sq_size, \
+                                                            self.sq_size, \
+                                                                self.sq_size))
                 #highlights current selected piece in green
                 if (row, col) == self.selected_piece.pos:
-                    pygame.draw.rect(self.window, GREEN, (col*self.sq_size, row*self.sq_size, self.sq_size, self.sq_size))
+                    pygame.draw.rect(self.window, GREEN, (col*self.sq_size,\
+                                                           row*self.sq_size, \
+                                                            self.sq_size, \
+                                                                self.sq_size))
     
     def draw_board(self):
         '''
@@ -223,11 +263,11 @@ class GUIPlayer():
 
 '''
 way for game to end
-if certain peices cannot be moved
+if all team peices cannot be moved
 '''
-#sample board
-ex_board = CheckersGameBotMock()
-play1 = CheckersPlayer()
-play2 = CheckersPlayer(SmartBot(ex_board, 'Red', 'Black'))
-player = GUIPlayer(ex_board, play1, play2)
-player.play_checkers()
+#to test bot integration with GUI using mocks
+#ex_board = CheckersGameBotMock()
+#play1 = CheckersPlayer()
+#play2 = CheckersPlayer(SmartBot(ex_board, 'Red', 'Black'))
+#player = GUIPlayer(ex_board, play1, play2)
+#player.play_checkers()

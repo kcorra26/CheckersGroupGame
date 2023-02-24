@@ -16,7 +16,7 @@ import sys
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
-from mocks import Piece, MockCheckerboard, MockGame
+from mocks import Piece, MockCheckerboard, MockGame, CheckersGameBotMock
 from sprites import PieceSprite
 from bot import RandomBot, SmartBot
 
@@ -225,7 +225,7 @@ way for game to end
 if certain peices cannot be moved
 '''
 #sample board
-ex_board = MockGame()
+ex_board = CheckersGameBotMock()
 play1 = CheckersPlayer()
 play2 = CheckersPlayer(SmartBot(ex_board, 'Red', 'Black'))
 player = GUIPlayer(ex_board, play1, play2)

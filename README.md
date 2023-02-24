@@ -5,6 +5,35 @@
 - Jaslin Aguirre - GUI
 - Sam Doepker - TUI
 
+Running the Game Logic:
+
+For running the Game Logic, no libraries will need to be used.
+In python3, to start a game of checkers in its initial state, run the following
+commands.
+
+import checkers
+game = checkers.Game()
+
+To move a piece, as in moving it just one space, call the move_piece method
+To make a piece jump, call the jump_piece method. Note, that as of now it only
+works for a regular piece, and not a king piece. 
+
+To find a list of spots a piece can go to at a specific location, run the list_moves
+method. To check if a move is valid, run the is_valid_move method. 
+
+The __str__ methodod will return a visual representation of the board at each 
+iteration of the game
+
+
+The classes are the following:
+Piece, which represents a checkers piece, has a team atttribute and an is_king 
+attribute
+Board, which represents a board of an arbitrary size, and will be an 8 by 8 for 
+the checkers game
+Game, which represents the game itself and uses piece objects as well as a Board
+object to represent the board the game is being played on
+
+
 Running the GUI
 To run the GUI you will need the pygame library. 
 In ipython 3, you should run the following commands:
@@ -48,4 +77,6 @@ The bots have their own mock class (CheckersGameBotMock), which can be used in i
     game = mocks.CheckersGameBotMock()
     smart = bot.SmartBot(game, "Red", "Black")
     smart.suggest_move()
+
+
 

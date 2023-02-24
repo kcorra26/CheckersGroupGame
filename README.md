@@ -15,7 +15,8 @@ player.play_checkers()
 Once the pygame window opens it is black's turn so click on a black piece. The selected piece will be highlighted in green and all possible moves in yellow. To move click on a highlighted yellow spot. After black moves its red's turn.
 
 To run GUI with the bot run the following commands:
-player = GUIPlayer(mock.Game(), gui.CheckersPlayer(), gui.CheckersPlayer(SmartBot(ex_board, 'Red', 'Black')))
+ex_game = mock.MockGame
+player = GUIPlayer(ex_game, gui.CheckersPlayer(), gui.CheckersPlayer(SmartBot(ex_game, 'Red', 'Black')))
 player.play_checkers()
 
 Note: the MockGame class initializes some pieces at completly random locations and returns the random list of possible moves, as such the gui shown does not obey the rules of checkers but will once it is integrated with checkers.py and utilizes an actual Game object. Similarly, because the bot is more attuned to the actual rules of checkers but the gui only runs game.move_piece() when a move is returned by list_moves() which is a

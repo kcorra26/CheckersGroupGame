@@ -55,7 +55,11 @@ class CheckersPlayer():
 
         returns(bool): whether these two players can play checkers
         '''
-        if self.is_bot and other.is_bot and self.color != other.color:
+        if not self.is_bot and not other.is_bot:
+            self.color = 'Black'
+            other.color = 'Red'
+            return True
+        elif self.is_bot and other.is_bot and self.color != other.color:
             return True
         elif other.is_bot and not self.is_bot:
             if other.color == 'Red':
@@ -212,9 +216,9 @@ class GUIPlayer():
 
         """
         pos_moves = self.game.list_moves(self.selected_piece)
-        print(pos_moves, row, col)
+        #print(pos_moves, row, col)
         if (row, col) in pos_moves:
-            print('move is possible')
+            #print('move is possible')
             self.game.move_piece(self.selected_piece.pos, (row, col))
             self.update_sprites() #changes locations and kills sprites
             self.switch_player()
@@ -255,6 +259,7 @@ class GUIPlayer():
                     self.selected_piece = self.game.get_piece(org_pos[0], org_pos[1])
                     self.move_selected_piece(new_pos[0], org_pos[1])
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+                    #print('MOUSEDOWN')
                     pos = pygame.mouse.get_pos() #this pos is in (x,y)
                     row = pos[1] // self.sq_size #y-pos
                     col = pos[0] //self.sq_size #x-pos
@@ -278,11 +283,18 @@ way for game to end
 if all team peices cannot be moved
 set up command line interface
 
+#human v. bot test
 ex_board = CheckersGameBotMock()
 play1 = CheckersPlayer()
 play2 = CheckersPlayer(SmartBot(ex_board, 'Red', 'Black'))
 player = GUIPlayer(ex_board, play1, play2)
 player.play_checkers()
 
-'''
+#human v human test
+ex_board = CheckersGameBotMock()
+play1 = CheckersPlayer()
+play2 = CheckersPlayer()
+player = GUIPlayer(ex_board, play1, play2)
+player.play_checkers()
 
+'''

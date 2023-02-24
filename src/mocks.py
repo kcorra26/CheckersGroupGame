@@ -36,14 +36,28 @@ class CheckersGameBotMock: # game mock?
     def __init__(self, n=3):
         self.n = n 
         self.width = 2*n + 2
+        self.board = MockCheckerboard(n)
+        self.red_pieces = set([Piece('Red', (1,2)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (6,2))])
+        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))])
         # self.board?
     
     def __str__(self) -> str:
         return "BOARD"
     
     def all_team_moves(self, team):
-        return {(1, 2) : [(2, 3), (2, 1)], (3, 2) : [(5, 3), (5, 0), (6, 0)], 
-                (6, 2) : [(7, 3), (7, 0)]} 
+        return {(1,2) : [(2,3), (2,1)], 
+                (3,0): [(2,3), (5,0)],
+                (3,2) : [(5,3), (5,0), (6,0)], 
+                (6,2) : [(7,3), (7,0), (7,2)], 
+                (4,5): [(1,2)],
+                (7,0): [(5,0), (7,3), (6,0)], 
+                (2,3): [(5,0)], 
+                (2,1): [(3,0), (4,5)], 
+                (5,0): [(7,3), (6,0), (2,3)],
+                (5,3): [(5,0), (6,0)], 
+                (6,0): [(2,1), (2,3)], 
+                (7,3): [(7,2), (4,5)], 
+                (7,2):[(7,0), (5,0)]} 
 
     def is_done(self):
         return False
@@ -64,6 +78,17 @@ class CheckersGameBotMock: # game mock?
         #if row == 6:
             #return True
         return False
+    def get_piece(self, row, col):
+        for piece in self.red_pieces.union(self.black_pieces):
+            if piece.pos == (row, col):
+                return piece
+    def list_moves(self, piece):
+        return self.all_team_moves(3)[piece.pos]
+
+    def move_piece(self, old_pos, new_pos:tuple = (0,0)):
+        row, col = old_pos
+        piece = self.get_piece(row, col)
+        piece.update_pos(new_pos)
 
 #mock game and board
 class Piece:

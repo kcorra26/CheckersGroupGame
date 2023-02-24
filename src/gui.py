@@ -111,10 +111,10 @@ class GUIPlayer():
         display = pygame.display.set_mode((WIDTH, HEIGHT))
         self.window = display
         pygame.display.set_caption('Checkers')
-        self.init_sprites()
+        self._init_sprites()
         pygame.display.update()
     
-    def init_sprites(self):
+    def _init_sprites(self):
         '''
         this function initializes all Pieces and add thems to
         all_piece_list
@@ -134,6 +134,8 @@ class GUIPlayer():
         '''
         updates the sprites by removing sprites whoose pieces are no longer
         in play and updating the locations of the remaining sprites
+
+        Args: None
         '''
         pieces = self.game.red_pieces.union(self.game.black_pieces)
         for sprite in self.all_sprites_list:
@@ -144,7 +146,8 @@ class GUIPlayer():
     #draw board methods
     def __draw_empty_board(self):
         '''
-        Draws checkerboard without pieces, helper function for draw_board()
+        Draws checkerboard without pieces or highlights, helper function for
+        draw_board()
 
         args:
             None
@@ -157,8 +160,8 @@ class GUIPlayer():
 
     def __draw_highlighted_board(self):
         '''
-        Draws checkerboard without pieces but with possible moves highlighted,
-        helper function for draw_board
+        Draws checkerboard without pieces but with possible moves highlighted
+        and selected piece highlighted in green, helper function for draw_board
 
         Args:
             None
@@ -189,15 +192,17 @@ class GUIPlayer():
         self.__draw_empty_board()
         if self.selected_piece is not None:
             self.__draw_highlighted_board()
-        self.all_sprites_list.draw(self.window)
+        self.all_sprites_list.draw(self.window) #redraws sprites
         pygame.display.update()
         return
 
     def move_selected_piece(self, row, col):
         """
         moves the selected piece to the new position represented by row, col,
-        does this by calling self.move_piece. If the selected piece cannot be
-        moved to (row, col) position, the piece is unselected
+        does this by calling self.move_piece. Then switched current player and
+        sets selected piece to none. If the selected piece cannot be
+        moved to (row, col) position, the piece is unselected. At the end, also
+        redraws the board
 
         Args:
             row: represents the row of the position self.selected_piece will
@@ -211,7 +216,7 @@ class GUIPlayer():
         if (row, col) in pos_moves:
             print('move is possible')
             self.game.move_piece(self.selected_piece.pos, (row, col))
-            self.update_sprites() 
+            self.update_sprites() #changes locations and kills sprites
             self.switch_player()
         else:
             self.selected_piece = None
@@ -219,7 +224,10 @@ class GUIPlayer():
 
     def switch_player(self):
         '''
-        switches the current player
+        switches the current player and sets the selected piece to
+        None
+
+        args: None
         '''
         self.selected_piece = None
         if self.curr_player == self.players[0]:
@@ -230,6 +238,9 @@ class GUIPlayer():
 
     def play_checkers(self):
         """
+        This function plays checkers.
+
+        Args: none
         """
         self.init_game()
 
@@ -239,7 +250,7 @@ class GUIPlayer():
                 if event.type == pygame.QUIT:
                     run = False
                 elif self.curr_player.is_bot:
-                    pygame.time.wait(10000)
+                    pygame.time.wait(1000) #delay
                     org_pos, new_pos = self.curr_player.bot.suggest_move()
                     self.selected_piece = self.game.get_piece(org_pos[0], org_pos[1])
                     self.move_selected_piece(new_pos[0], org_pos[1])
@@ -254,7 +265,7 @@ class GUIPlayer():
                         self.selected_piece = piece
                         self.draw_board() #draws possible moves
                     else:
-                        self.move_selected_piece(row, col)
+                        self.move_selected_piece(row, col) #moves if valid move
                 else:
                     self.draw_board()
 
@@ -262,12 +273,16 @@ class GUIPlayer():
         pygame.quit()
 
 '''
+TO-DO
 way for game to end
 if all team peices cannot be moved
+set up command line interface
+
+ex_board = CheckersGameBotMock()
+play1 = CheckersPlayer()
+play2 = CheckersPlayer(SmartBot(ex_board, 'Red', 'Black'))
+player = GUIPlayer(ex_board, play1, play2)
+player.play_checkers()
+
 '''
-#to test bot integration with GUI using mocks
-#ex_board = CheckersGameBotMock()
-#play1 = CheckersPlayer()
-#play2 = CheckersPlayer(SmartBot(ex_board, 'Red', 'Black'))
-#player = GUIPlayer(ex_board, play1, play2)
-#player.play_checkers()
+

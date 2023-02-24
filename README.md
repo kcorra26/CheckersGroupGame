@@ -33,6 +33,8 @@ the checkers game
 Game, which represents the game itself and uses piece objects as well as a Board
 object to represent the board the game is being played on
 
+Note that team can either be "Red" or "Black"
+
 
 Running the GUI
 To run the GUI you will need the pygame library. 

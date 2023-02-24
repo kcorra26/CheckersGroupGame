@@ -228,11 +228,12 @@ class Game:
         current_piece = self.game_board[old_pos[0]][old_pos[1]]
         if current_piece.is_king is False:
             for sequence in self.jump_trail_piece(old_pos,team):
-                if choose_sequence == None and sequence[len(sequence) - 1] == new_pos:
+                if choose_sequence is None and sequence[len(sequence) - 1] == new_pos:
                     choose_sequence = sequence
                 elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
                     if len(choose_sequence) < len(sequence):
                         choose_sequence = sequence
+            return choose_sequence
         if current_piece.is_king is True:
             for sequence in self.jump_trail_king(old_pos,team):
                 if choose_sequence == None and sequence[len(sequence) - 1] == new_pos:
@@ -240,7 +241,7 @@ class Game:
                 elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
                     if len(choose_sequence) < len(sequence):
                         choose_sequence = sequence
-        return choose_sequence
+            return choose_sequence
         
     def jump_piece(self,old_pos,new_pos,team):
         current_piece = self.game_board[old_pos[0]][old_pos[1]]
@@ -450,7 +451,8 @@ class Game:
                 if ((self.game_board[(pos[0] + direction)][pos[1] - 1].team != team) and 
                     self.is_valid_position(((pos[0] + 2*direction),pos[1] + 2))):
                     if self.game_board[pos[0] + 2*direction][pos[1] - 2] is None:
-                        if len(self.jump_trail_piece((pos[0] + 2*direction,pos[1] - 2),team)) > 0:
+                        if self.can_jump((pos[0] + 2*direction,pos[1] - 2),team) is False:
+                            trails.append((pos[0] + 2*direction,pos[1] - 2))
                             for trail in self.jump_trail_piece((pos[0] + 2*direction,pos[1] - 2),team):
                                 trails.append([(pos[0] + 2*direction,pos[1] - 2)] + trail)
             return trails

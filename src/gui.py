@@ -12,6 +12,7 @@ Resources Consulted:
 
 '''
 import os
+import sys
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
@@ -98,7 +99,8 @@ class GUIPlayer():
     
     def update_sprites(self):
         '''
-
+        updates the sprites by removing sprites whoose pieces are no longer in play
+        and updating the locations of the remaining sprites
         '''
         pieces = self.game.red_pieces.union(self.game.black_pieces)
         for sprite in self.all_sprites_list:
@@ -214,17 +216,17 @@ class GUIPlayer():
                         self.move_selected_piece(row, col)
                 else:
                     self.draw_board()
+
+        pygame.display.quit()
         pygame.quit()
-        quit()
 
 '''
 way for game to end
 if certain peices cannot be moved
-kill sprites
 '''
 #sample board
-play1 = CheckersPlayer()
-play2 = CheckersPlayer()
 ex_board = MockGame()
+play1 = CheckersPlayer()
+play2 = CheckersPlayer(SmartBot(ex_board, 'Red', 'Black'))
 player = GUIPlayer(ex_board, play1, play2)
 player.play_checkers()

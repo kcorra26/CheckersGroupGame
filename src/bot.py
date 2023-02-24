@@ -147,7 +147,7 @@ class SmartBot:
         else:
             # considers the new list with multiple moves that will become king
             consider = king_moves
-        """
+        
         # loops through the consider dict to find the moves with the most jumps
         for start_pos, list_moves in consider.items():
             for end_pos in list_moves:
@@ -166,7 +166,7 @@ class SmartBot:
                     lst.append(end_pos)
                     max_moves[start_pos] = lst
                 # if the number of jumps is fewer than the max, don't consider
-        """
+        
         # if there is only one max move, take it
         if self._one_move(max_moves) is not None:
             return self._one_move(max_moves)

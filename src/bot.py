@@ -12,7 +12,7 @@ import random
 from typing import Union # idk what this does yet
 
 import click
-from checkers import Board, Game, Piece, TeamColor 
+from checkers import Board, Game, Piece
 from mocks import CheckersGameBotMock
 
 
@@ -21,12 +21,8 @@ class RandomBot:
     Simple Bot that just picks a move at random
     """
 
-    #_game: Game # this is just what they have
-    _color: TeamColor # again
-    _opponent_color: TeamColor
-
-    def __init__(self, game, color: TeamColor, 
-                 opponent_color: TeamColor):
+    def __init__(self, game, color, 
+                 opponent_color):
         """
         Constructor
 
@@ -65,10 +61,6 @@ class SmartBot:
 
     # research other strategies
     """
-
-    #_game: BoardType # idk if we will use this
-    _color: TeamColor
-    _opponent_color: TeamColor
 
     def __init__(self, game, color, 
                 opponent_color):
@@ -129,10 +121,11 @@ class SmartBot:
         # loops through the move options, checks if it is a winning move 
         # (returns if so), and adds all the moves that will become a king to
         # a new dict
+
         for start_pos, list_moves in move_dict.items(): 
             for end_pos in list_moves:
                 row, col = end_pos
-        
+                
                 if self._game.is_winning_move(start_pos, end_pos, self._color):
                     return (start_pos, end_pos)
                 
@@ -154,7 +147,7 @@ class SmartBot:
         else:
             # considers the new list with multiple moves that will become king
             consider = king_moves
-        
+        """
         # loops through the consider dict to find the moves with the most jumps
         for start_pos, list_moves in consider.items():
             for end_pos in list_moves:
@@ -173,7 +166,7 @@ class SmartBot:
                     lst.append(end_pos)
                     max_moves[start_pos] = lst
                 # if the number of jumps is fewer than the max, don't consider
-        
+        """
         # if there is only one max move, take it
         if self._one_move(max_moves) is not None:
             return self._one_move(max_moves)
@@ -182,7 +175,7 @@ class SmartBot:
             consider2 = consider
         else:
             # new dict includes only moves with the most jumps
-            consider2 = max_moves
+            consider2 = max_moves 
 
         # loops through consider2 dict to find moves towards the center
         for start_pos, list_moves in consider2.items():
@@ -241,16 +234,16 @@ class SmartBot:
         
 class BotPlayer: # playing against each other
     """
-    Simple class to store information about a both player in a simulation.
+    Simple class to store information about a bot player in a simulation.
     """
 
-    name: str #idk what this stuff does
-    bot: Union[RandomBot, SmartBot]
-    color: TeamColor
-    wins: int
+    #name: str #idk what this stuff does
+    #bot: Union[RandomBot, SmartBot]
+    #color: str
+    #wins: int
 
-    def __init__(self, name: str, game, color: TeamColor,
-                 opponent_color: TeamColor):
+    def __init__(self, name, game, color,
+                 opponent_color):
         """
         Constructor
 
@@ -269,40 +262,40 @@ class BotPlayer: # playing against each other
         self.color = color
         self.wins = 0
     
-    def simulate(game, n: int, bots): # -> None:
-        """
-        Simulate multiple games between two bots
+def simulate(game, n: int, bots): # -> None:
+    """
+    Simulate multiple games between two bots
 
-        Args:
-            board: The board to play on
-            n: The number of matches to play
-            bots: Dictionary mapping piece colors to BotPlayer objects
-            (the bots that will face off in each match) # IDK what this is
-        
-        Returns: None
-        """
-        for _ in range(n):
-            # Reset the game
-            game.reset() #TODO waiting for reset()
+    Args:
+        board: The board to play on
+        n: The number of matches to play
+        bots: Dictionary mapping piece colors to BotPlayer objects
+        (the bots that will face off in each match) # IDK what this is
+    
+    Returns: None
+    """
+    for _ in range(n):
+        # Reset the game
+        game.reset_game() #TODO waiting for reset()
 
-            # starting player 
-            current = bots[TeamColor.BLACK] #idk what color goes first
+        # starting player 
+        current = bots["Black"] #idk what color goes first
 
-            while not game.is_done(): # TODO OR there is a winner
-                og_pos, new_pos = current.bot.suggest_move() 
-                game.move_piece(og_pos, new_pos, current.color) 
+        while not game.is_done: # TODO OR there is a winner
+            og_pos, new_pos = current.bot.suggest_move() 
+            game.move_piece(og_pos, new_pos, current.color) 
 
-                # update the player 
-                if current.color == TeamColor.BLACK: 
-                    current = bots[TeamColor.RED] 
-                    # now it's the other team's turn
-                elif current.color == TeamColor.RED:
-                    current = bots[TeamColor.BLACK]
-                
-                if game.is_winner(TeamColor.RED):
-                    bots[TeamColor.RED].wins += 1
-                elif game.is_winner(TeamColor.BLACK):
-                    bots[TeamColor.BLACK].wins += 1
+            # update the player 
+            if current.color == "Black": 
+                current = bots["Red"] 
+                # now it's the other team's turn
+            elif current.color == "Red":
+                current = bots["Black"]
+            
+            if game.is_winner("Red"):
+                bots["Red"].wins += 1
+            elif game.is_winner("Black"):
+                bots["Black"].wins += 1
 
                 
 @click.command(name="checkers-bot")
@@ -314,17 +307,17 @@ class BotPlayer: # playing against each other
               type=click.Choice(['random', 'smart'], case_sensitive=False),
               default="random")
 def cmd(num_games, player1, player2):
-    game = Game()
+    game = checkers.Game()
                                     # bot1 team, opponent
-    bot1 = BotPlayer(player1, game, TeamColor.COLOR1, TeamColor.COLOR2)
-    bot2 = BotPlayer(player1, game, TeamColor.COLOR2, TeamColor.COLOR1)
+    bot1 = BotPlayer(player1, game, "Black", "Red")
+    bot2 = BotPlayer(player2, game, "Red", "Black")
 
-    bots = {TeamColor.COLOR1: bot1, TeamColor.COLOR2: bot2}
+    bots = {"Black": bot1, "Red": bot2}
 
     simulate(game, num_games, bots) # simulating for a number of games
 
-    bot1_wins = bots[TeamColor.COLOR1].wins # number of wins
-    bot2_wins = bots[TeamColor.COLOR2].wins 
+    bot1_wins = bots["Black"].wins # number of wins
+    bot2_wins = bots["Red"].wins 
     ties = num_games - (bot1_wins + bot2_wins) # how many neither of them won
 
     print(f"Bot 1 ({player1}) wins: {100 * bot1_wins / num_games:.2f}%")

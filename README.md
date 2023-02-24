@@ -14,25 +14,20 @@ commands.
 import checkers
 game = checkers.Game()
 ```
-To move a piece, as in moving it just one space, call the move_piece method
-To make a piece jump, call the jump_piece method. Note, that as of now it only
-works for a regular piece, and not a king piece. 
+To move a piece, as in moving it just one space, call the `move_piece` method
+To make a piece jump, call the `jump_piece` method. Note, that as of now it only works for a regular piece, and not a king piece. 
 
-To find a list of spots a piece can go to at a specific location, run the list_moves
-method. To check if a move is valid, run the is_valid_move method. 
+To find a list of spots a piece can go to at a specific location, run the `list_moves` method (to find all moves, run `all_team_moves()`). To check if a move is valid, run the `is_valid_move` method. 
 
 The `__str__` method will return a visual representation of the board at each 
 iteration of the game
 
 The classes are the following:
-`Piece`, which represents a checkers piece, has a team atttribute and an is_king 
-attribute
-`Board`, which represents a board of an arbitrary size, and will be an 8 by 8 for 
-the checkers game
-`Game`, which represents the game itself and uses piece objects as well as a Board
-object to represent the board the game is being played on
+`Piece`, which represents a checkers piece, has a team atttribute and an `is_king` attribute
+`Board`, which represents a board of an arbitrary size, and will be an 8 by 8 for the checkers game
+`Game`, which represents the game itself and uses piece objects as well as a   `Board` object to represent the board the game is being played on
 
-Note that team can either be "Red" or "Black"
+Note that team can either be `"Red"` or `"Black"`
 
 
 # Running the GUI
@@ -52,7 +47,7 @@ ex_game = mock.MockGame
 player = GUIPlayer(ex_game, gui.CheckersPlayer(), gui.CheckersPlayer(SmartBot(ex_game, 'Red', 'Black')))
 player.play_checkers()
 ```
-Note: The MockGame class initializes some pieces at completly random locations and returns the random list of possible moves, as such the gui shown does not obey the rules of checkers but will once it is integrated with checkers.py and utilizes an actual Game object. Similarly, because the bot is more attuned to the actual rules of checkers but the gui only runs game.move_piece() when a move is returned by list_moves, which is a predetermined set of locations that have been made up for testing purposes, this creates errors that will be resolved by Milestone 3. 
+Note: The `MockGame` class initializes some pieces at completly random locations and returns the random list of possible moves, as such the gui shown does not obey the rules of checkers, but will once it is integrated with `checkers.py` and utilizes an actual `Game` object. Similarly, because the bot is more attuned to the actual rules of checkers but the gui only runs `game.move_piece()` when a move is returned by `list_moves`(a predetermined set of locations that have been created for testing purposes), this creates errors that will be resolved by Milestone 3. 
 
 
 # Running the TUI
@@ -74,17 +69,17 @@ The `bots.py` file includes two classes:
     - The bot then finds the move that would result in the most number of jumps, or captures. If there are multiple such moves, it makes the following selections considering only those moves. If there are no jumping moves, it makes the following selections considering all moves that were evaluated when looking for maximum jumps.
     - The bot then finds the move with an end column closest to the center of the board. If there are multiple such moves, it chooses one of these moves at random. If there are no such moves, it picks a move at random from the moves that were evaluated when looking for centermost jumps.
 
-These two classes are used in the GUI and are integrated with the `CheckersGameBotMock` class in `mocks.py` (see instructions below). Due to the existing bugs in the `Game` class in c`heckers.py`, the `simulate()` and `cmd()` functions do not yet operate as intended. 
+These two classes are used in the GUI and are integrated with the `CheckersGameBotMock` class in `mocks.py` (see instructions below). Due to the existing bugs in the `Game` class in `checkers.py`, the `simulate()` and `cmd()` functions do not yet operate as intended. 
 
 
 # Running with stubs and mocks
 Stub and mock implementations of the Game class are available in the mocks.py file, and are used as explained above.
 
 The bots have their own mock class (`CheckersGameBotMock`), which can be used in ipython3 to test the efficacy of the bot like this:
-    ```
-    import bot
-    import mocks
-    game = mocks.CheckersGameBotMock()
-    smart = bot.SmartBot(game, "Red", "Black")
-    smart.suggest_move()
-    ```
+```
+import bot
+import mocks
+game = mocks.CheckersGameBotMock()
+smart = bot.SmartBot(game, "Red", "Black")
+smart.suggest_move()
+```

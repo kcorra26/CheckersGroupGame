@@ -31,8 +31,8 @@ class StubCheckerboard:
     def is_winner(self):
         return self.is_winner
 
-#Bot
-class CheckersGameBotMock: # game mock?
+
+class CheckersGameBotMock: 
     def __init__(self, n=3):
         self.n = n 
         self.width = 2*n + 2
@@ -74,14 +74,13 @@ class CheckersGameBotMock: # game mock?
         return abs(end_row - og_row - 1)
     
     def is_winning_move(self, og_pos, end_pos, team):
-        #row, _ = og_pos
-        #if row == 6:
-            #return True
         return False
+    
     def get_piece(self, row, col):
         for piece in self.red_pieces.union(self.black_pieces):
             if piece.pos == (row, col):
                 return piece
+    
     def list_moves(self, piece):
         return self.all_team_moves(3)[piece.pos]
 
@@ -89,6 +88,7 @@ class CheckersGameBotMock: # game mock?
         row, col = old_pos
         piece = self.get_piece(row, col)
         piece.update_pos(new_pos)
+
 
 #mock game and board
 class Piece:
@@ -106,6 +106,7 @@ class Piece:
         self.col = new_pos[1]
         self.row = new_pos[0]
         self.pos = new_pos
+
 
 class MockGame:
     def __init__(self, n=3):
@@ -135,6 +136,7 @@ class MockGame:
         piece = self.get_piece(row, col)
         piece.update_pos(new_pos)
 
+
 class MockCheckerboard:
 
     def __init__(self, n, kings=False):
@@ -155,10 +157,10 @@ class MockCheckerboard:
         return self.is_winner
 
 
-
 class StubRandomBot:
     def __init__(self):
         pass
+
 
 class StubSmartBot:
     def __init__(self):

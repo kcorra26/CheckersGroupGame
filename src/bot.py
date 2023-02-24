@@ -35,20 +35,18 @@ class RandomBot:
         self._color = color
         self._opponent_color = opponent_color
     
-    def suggest_move(self): # -> int:
+    def suggest_move(self):
         """
         Suggests a move 
 
-        Returns: None
+        Returns: tup(tup(int, int), tup(int, int)) -- suggested move
         """
-        # why does the docstring say it returns none if the example code
-        # returns random.choice(possible_cols)?
         move_dict = self._game.all_team_moves(self._color)
         og_pos = random.choice(list(move_dict))
         end_pos = random.choice(move_dict[og_pos])
 
-        return (og_pos, end_pos) # returns tuple of tuples
-        # ((x, y), (x2, y2))
+        return (og_pos, end_pos) 
+
 
 class SmartBot: 
     """
@@ -77,7 +75,7 @@ class SmartBot:
         self._color = color
         self._opponent_color = opponent_color
 
-    def suggest_move(self): # -> int:
+    def suggest_move(self):
         """
         Suggests a move
 
@@ -88,13 +86,7 @@ class SmartBot:
         https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win 
         - if you have the chance to move more than one way, move toward the
         center. (a centrallized spot has two moves, while an edge has one)
-        - protect the king row by advancing two of the four back pieces
-        * or half, depending on the size of the board?
-            - for Color1, pos (0, 2) and (0, 6)
-            - for Color2, pos (width-1, 1) and (width-1, 5) *not 100% sure
         - consider and prioritize opportunities for jumping 
-            - maybe have a jump counter? for each move
-            - idk how to label the moves
         
         https://www.thesprucecrafts.com/how-to-win-at-checkers-411170 
         - prioritize getting a checker to the end of the board over how many 
@@ -120,8 +112,7 @@ class SmartBot:
     
         # loops through the move options, checks if it is a winning move 
         # (returns if so), and adds all the moves that will become a king to
-        # a new dict
-
+        # a new dict (king strategy by thesprucecrafts)
         for start_pos, list_moves in move_dict.items(): 
             for end_pos in list_moves:
                 row, col = end_pos
@@ -149,6 +140,7 @@ class SmartBot:
             consider = king_moves
         
         # loops through the consider dict to find the moves with the most jumps
+        # (jump strategy by HobbyLark)
         for start_pos, list_moves in consider.items():
             for end_pos in list_moves:
                 
@@ -177,7 +169,8 @@ class SmartBot:
             # new dict includes only moves with the most jumps
             consider2 = max_moves 
 
-        # loops through consider2 dict to find moves towards the center
+        # loops through consider2 dict to find moves towards the center 
+        # (centermost strategy suggested by both HobbyLark and thesprucecrafts)
         for start_pos, list_moves in consider2.items():
             for end_pos in list_moves:
                 row, col = end_pos
@@ -200,15 +193,12 @@ class SmartBot:
             # randomly pick from the max_jump move options 
             og_pos = random.choice(list(consider2))
             end_pos = random.choice(consider2[og_pos])
-            print("random from either king or jumps, centermost empty")
             return (og_pos, end_pos)
         else: 
             # if there is more than one centermost move, randomly pick 
             og_pos = random.choice(list(centermost))
             end_pos = random.choice(centermost[og_pos])
-            print("random from centermost")
             return (og_pos, end_pos)
-            
 
     def _one_move(self, dic): 
         """
@@ -262,7 +252,7 @@ class BotPlayer: # playing against each other
         self.color = color
         self.wins = 0
     
-def simulate(game, n: int, bots): # -> None:
+def simulate(game, n: int, bots):
     """
     Simulate multiple games between two bots
 
@@ -276,19 +266,18 @@ def simulate(game, n: int, bots): # -> None:
     """
     for _ in range(n):
         # Reset the game
-        game.reset_game() #TODO waiting for reset()
+        game.reset_game() 
 
         # starting player 
-        current = bots["Black"] #idk what color goes first
+        current = bots["Black"] 
 
-        while not game.is_done: # TODO OR there is a winner
+        while not game.is_done: 
             og_pos, new_pos = current.bot.suggest_move() 
             game.move_piece(og_pos, new_pos, current.color) 
 
             # update the player 
             if current.color == "Black": 
                 current = bots["Red"] 
-                # now it's the other team's turn
             elif current.color == "Red":
                 current = bots["Black"]
             
@@ -297,7 +286,7 @@ def simulate(game, n: int, bots): # -> None:
             elif game.is_winner("Black"):
                 bots["Black"].wins += 1
 
-                
+# for TUI integration, not fully complete (but have fully integrated with GUI)
 @click.command(name="checkers-bot")
 @click.option("-n", "--num-games", type=click.INT, default=10000)
 @click.option("--player1", 
@@ -306,25 +295,25 @@ def simulate(game, n: int, bots): # -> None:
 @click.option("--player2", 
               type=click.Choice(['random', 'smart'], case_sensitive=False),
               default="random")
+# waiting on Game Logic in order to test the percentage of wins
 def cmd(num_games, player1, player2):
     game = checkers.Game()
-                                    # bot1 team, opponent
+
     bot1 = BotPlayer(player1, game, "Black", "Red")
     bot2 = BotPlayer(player2, game, "Red", "Black")
 
     bots = {"Black": bot1, "Red": bot2}
 
-    simulate(game, num_games, bots) # simulating for a number of games
+    simulate(game, num_games, bots) 
 
-    bot1_wins = bots["Black"].wins # number of wins
+    bot1_wins = bots["Black"].wins 
     bot2_wins = bots["Red"].wins 
-    ties = num_games - (bot1_wins + bot2_wins) # how many neither of them won
+    ties = num_games - (bot1_wins + bot2_wins) 
 
     print(f"Bot 1 ({player1}) wins: {100 * bot1_wins / num_games:.2f}%")
-    # percentage of wins 
     print(f"Bot 2 ({player2}) wins: {100 * bot2_wins / num_games:.2f}%")
     print(f"Ties: {100 * ties / num_games:.2f}%")
 
 
-    if __name__ == "__main__": # idk what this does
+    if __name__ == "__main__": 
         cmd()

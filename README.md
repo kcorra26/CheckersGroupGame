@@ -33,3 +33,20 @@ To run the TUI, you will need the Time, Colorama, Typing and Click libraries ins
 In the terminal from the root of the repository, run python3 tui.py --mode stub
 Other versions of the TUI have not been fully tested or implemented yet. When
 prompted for a team, enter either "Red" or "Black".
+
+Bots
+The bots.py file includes two classes:
+    - RandomBot: A bot that will just choose a move at random. 
+    - SmartBot: A bot that will try to make a winning move if possible. If not such move is possible, it checks whether the opposing player would win by the bot making a certain move and, if so, it does not make that move. 
+    It then checks if any move would make a piece a king. If so, it selects that move. If there are multiple such moves, it makes the following selections considering only those moves. If there are no king moves, it makes the following selections considering the all moves that do not result in the other team winning.
+    The bot then finds the move that would result in the most number of jumps, or captures. If there are multiple such moves, it makes the following selections considering only those moves. If there are no jumping moves, it makes the following selections considering the king moves.
+    The bot then finds the move with an end column closest to the center of the board. If there are multiple such moves, it chooses one of these moves at random. If there are no such moves, it picks a move at random from the king and max jump moves.
+These two classes are used in the GUI and are integrated with the CheckersGameBotMock class in mocks.py (see instructions below). Due to the existing bugs in the Game class in checkers.py, the simulate() and cmd() functions do not yet operate as intended. 
+
+Running with stubs and mocks
+Stub and mock implementations of the Game class are available in the mocks.py file. 
+
+The bots have their own mock class (CheckersGameBotMock), which can be used to test the efficacy of the bot like this:
+    game = mocks.CheckersGameBotMock()
+    smart = bot.SmartBot(game, "Red", "Black")
+    smart.suggest_move()

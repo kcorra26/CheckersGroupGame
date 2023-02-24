@@ -45,9 +45,13 @@ class CheckersGameBotMock: # game mock?
         return "BOARD"
     
     def all_team_moves(self, team):
-        return {(1, 2) : [(2, 3), (2, 1)], (3, 2) : [(5, 3), (5, 0), (6, 0)], 
-                (6, 2) : [(7, 3), (7, 0)], 
-                (3,2): (1,2)} 
+        return {(1, 2) : [(2, 3), (2, 1)], 
+                (3, 0): [(2,3), (5,0)],
+                (3, 2) : [(5, 3), (5, 0), (6, 0)], 
+                (6, 2) : [(7, 3), (7, 0), (7,2)], 
+                (4,5): [(1,2)],
+                (7,0): [(5,0), (7,3), (6,0)], 
+                (2,3): [(5,0)]} 
 
     def is_done(self):
         return False
@@ -73,7 +77,7 @@ class CheckersGameBotMock: # game mock?
             if piece.pos == (row, col):
                 return piece
     def list_moves(self, piece):
-        return [(0,0), (7,0), (3,4), (5,7), (3,6), (5,3), (0,3), (7,2)]
+        return self.all_team_moves(3)[piece.pos]
 
     def move_piece(self, old_pos, new_pos:tuple = (0,0)):
         row, col = old_pos

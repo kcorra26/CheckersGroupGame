@@ -5,8 +5,6 @@ a file to hold the sprite class, for gui purposes
 '''
 import pygame
 from mocks import Piece
-WHITE = (255, 255, 255)
-YELLOW = (255, 204, 0)
 
 class PieceSprite(pygame.sprite.Sprite):
     '''

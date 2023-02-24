@@ -175,6 +175,7 @@ class GUIPlayer():
             self.switch_player()
         else:
             self.selected_piece = None
+        self.draw_board()
 
     def switch_player(self):
         '''

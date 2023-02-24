@@ -327,6 +327,17 @@ class Game:
 
         
     def jump_piece(self,old_pos,new_pos,team):
+        """
+        Makes a piece jump from one spot to another, only under the condition
+        that it is a valid jump
+         Parameters:
+            old_pos(tup): the original positon
+            new_pos(tup): new position
+            team: team of the piece at the original position
+        Returns:None
+        """
+
+
         current_piece = self.game_board[old_pos[0]][old_pos[1]]
         if self.is_valid_move(old_pos,new_pos):
             for pos in self.middle_positions(old_pos,new_pos,team):
@@ -395,6 +406,13 @@ class Game:
                     self.red_pieces.add(Piece((i,j),"Red"))
     
     def reset_game(self):
+        """
+        Resets the game, putting the pieces back to where they were initially
+        and refilling the red and black piece set
+
+        Parameters:None
+        Returns:None
+        """
         self.red_pieces = set()
         self.black_pieces = set()
         for i in range(self.width):
@@ -475,11 +493,24 @@ class Game:
         
 
     def is_valid_position(self,pos):
+        """
+        Determines if a given tuple position is a position that is on the board
+        Parameters:
+            pos(tup): the position
+        Returns(bool): If the given tuple positions is on the board
+        """
         if 0 <= pos[0] <= self.width - 1 and 0 <= pos[1] <= self.width - 1:
             return True
         return False 
 
     def list_moves(self,pos):
+        """
+        Lists all the moves of a piece at a position
+        Parameters:
+            pos(tup): the position 
+        Returns(list): returns a list of tuples of all the positions a piece can
+        go to
+        """
         current_piece = self.game_board[pos[0]][pos[1]]
         if current_piece.is_king is False:
             return self.list_moves_piece(pos,False,[],current_piece.team)
@@ -487,6 +518,13 @@ class Game:
             return self.list_moves_king(pos,False,[],current_piece.team)
 
     def can_jump(self,pos,team):
+        """
+        Determines if a piece can jump at a position
+        Parameters:
+            pos(tup): position of the piece
+            team: team of piece
+        Returns(bool): If the piece can jump at that position
+        """
         current_spot = self.game_board[pos[0]][pos[1]]
         directions = [-1,1]
         direction = None
@@ -525,6 +563,15 @@ class Game:
 
 
     def jump_trail_piece(self,pos,team):
+        """
+        Returns a sequences representing all the possible ways a piece can jump
+            Parameters:
+            pos(tup): position of the piece
+            team: team of piece
+        Returns(list): A list of lists of all the sequences a piece can jump throuogh
+        """
+
+
         trails = []
         current_piece = self.game_board[pos[0]][pos[1]]
         direction = None
@@ -556,6 +603,15 @@ class Game:
             return trails
     
     def jump_trail_king(self, pos, already_jumped):
+        """
+        Returns a sequences representing all the possible ways a king piece can jump
+            Parameters:
+            pos(tup): position of the piece
+            team: team of piece
+            already_move(list): all the spots the king piece has already jumped through
+        Returns(list): A list of list of all the sequences a king piece 
+        can jump throuogh
+        """
         trails = []
         has_jumped = already_jumped
         directions = [-1,1]
@@ -595,6 +651,9 @@ class Game:
         
         Args:
             pos(tuple) - a tuple representing the position of the Piece 
+            has_jumped(bool): if the piece has already jumped
+            already_jumped(list): All the positions the list has jumped through
+            team: team of piece
 
         Returns:
             lst(tup(int,int)): all possible move locations for the Piece at the 
@@ -658,6 +717,20 @@ class Game:
         return moves
         
     def list_moves_king(self, pos, has_jumped,already_moved):
+        """
+        Determines the list of moves that a king piece at a given position 
+        specified by pos can make.
+        
+        Args:
+            pos(tuple) - a tuple representing the position of the Piece 
+            has_jumped(bool): if the piece has already jumped
+            already_jumped(list): All the positions the list has jumped through
+            team: team of piece
+
+        Returns:
+            lst(tup(int,int)): all possible move locations for the king Piece at 
+            the given position
+        """
         moves = []
         has_moved = already_moved
         current_piece = self.game_board[pos[0]][pos[1]]
@@ -710,7 +783,15 @@ class Game:
 
 
     def is_valid_move(self, curr_pos, new_pos):
-
+        """
+        Determines if moving from one position to another is a valid move
+        Parameters:
+            curr_pos(tup): the current positions
+            new_pos(tup): the final position
+        Returns(bool): If the piece at the current position can jump to the new
+        position
+        """
+        
         current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
         if new_pos not in self.list_moves(curr_pos):
             return True
@@ -719,17 +800,7 @@ class Game:
 
 
     
-    """def is_valid_move(self, curr_pos, new_pos):
-
-        current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
-        if current_piece.is_king is False:
-            if new_pos not in self.list_moves_piece(curr_pos):
-                return True
-            return False
-        if current_piece.is_king is True:
-            if new_pos not in self.list_moves_king(curr_pos):
-                return True
-            return False"""
+    
 
 
         

@@ -5,10 +5,8 @@ class StubCheckerboard:
     def __init__(self, n=3):
         self.n = n
         self.width = 2*n + 2
-        self.red_pieces = [Piece('Red', (1,0)), Piece('Red', (3,0), True), \
-                          Piece('Red', (3,2)), Piece('Red', (4,6))]
-        self.black_pieces = [Piece('Black', (4,5), True), Piece('Black', \
-                             (7,0)), Piece('Black', (2,3))]
+        self.red_pieces = [Piece('Red', (1,0)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (4,6))]
+        self.black_pieces = [Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))]
         self.is_winner = None
 
     def __str__(self):
@@ -39,10 +37,8 @@ class CheckersGameBotMock:
         self.n = n 
         self.width = 2*n + 2
         self.board = MockCheckerboard(n)
-        self.red_pieces = set([Piece('Red', (1,2)), Piece('Red', (3,0), True),\
-                            Piece('Red', (3,2)), Piece('Red', (6,2))])
-        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', \
-                            (7,0)), Piece('Black', (2,3))])
+        self.red_pieces = set([Piece('Red', (1,2)), Piece('Red', (3,0), True),Piece('Red', (3,2)), Piece('Red', (6,2))])
+        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))])
     
     def __str__(self) -> str:
         return "BOARD"
@@ -117,10 +113,8 @@ class MockGame:
         self.width = 2*n + 2
         self.width = len(self.board.board)
         self.is_winner = None
-        self.red_pieces = set([Piece('Red', (1,0)), Piece('Red', (3,0), True),\
-        Piece('Red', (3,2)), Piece('Red', (4,6))])
-        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', \
-        (7,0)), Piece('Black', (2,3))])
+        self.red_pieces = set([Piece('Red', (1,0)), Piece('Red', (3,0), True),Piece('Red', (3,2)), Piece('Red', (4,6))])
+        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))])
         pass
     def __str__(self):
         return "Game"
@@ -158,8 +152,8 @@ class MockCheckerboard:
                       [Piece("Black", (1,0)), None, Piece("Black",(1,2), \
                       is_king=True), None,Piece("Black", (1,4)), None, \
                       Piece("Black", (1,6)), None],
-                      [None, Piece("Black", (2,1)), None, Piece("Black",(2,3)),\ 
-                      None, Piece("Black",(2,5)), None, Piece("Black", (2,7))],
+                      [None, Piece("Black", (2,1)), None, Piece("Black",(2,3)), None, \
+                       Piece("Black",(2,5)), None, Piece("Black", (2,7))],
                       [None, None, None, None, None, None, None, None],
                       [None, None, None, None, None, None, None, None],
                       [Piece("Red", (3,0)), None, Piece("Red",(3,2), \

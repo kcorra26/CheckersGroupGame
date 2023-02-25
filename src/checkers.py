@@ -342,18 +342,23 @@ class Game:
         if self.is_valid_move(old_pos,new_pos):
             for pos in self.middle_positions(old_pos,new_pos,team):
                 self.game_board[int(pos[0])][int(pos[1])] = None
-                if team == "Red":
+                """if team == "Red":
                     for piece in self.red_pieces:
                         if piece.y_pos == int(pos[0]) and piece.x_pos == int(pos[1]):
                             self.red_pieces.remove(piece)
                 if team == "Black":
                     for piece in self.black_pieces:
                         if piece.y_pos == int(pos[0]) and piece.x_pos == int(pos[1]):
-                            self.black_pieces.remove(piece)
+                            self.black_pieces.remove(piece)"""
+                if team == "Red":
+                    self._remove_piece(pos,"Black")
+                if team == "Black":
+                    self._remove_piece(pos,"Red")
+                    
                     
             self.game_board[new_pos[0]][new_pos[1]] = current_piece
             self.game_board[old_pos[0]][old_pos[1]] = None
-            if team == "Red":
+            """if team == "Red":
                 for piece in self.red_pieces:
                     if piece.x_pos == old_pos[1] and piece.y_pos == old_pos[0]:
                         self.red_pieces.remove(piece)
@@ -363,26 +368,30 @@ class Game:
                     if piece.x_pos == old_pos[1] and piece.y_pos == old_pos[0]:
                         self.black_pieces.remove(piece)
                         self.black_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
+            """
 
             self.make_king()
         
 
-    def _remove_piece(self, pos):
+    def _remove_piece(self, pos,team):
         """
         Removes a piece at a specific position. 
 
         Parameters: 
             pos: tuple(int, int)
+            team: team of the piece
         Returns: None
         """
-        for piece in self.black_pieces:
-            if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
-                self.black_pieces.remove(piece)
-        for piece in self.red_pieces:
-            if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
-                self.red_pieces.remove(piece)
+        if team == "Red":
+            for piece in self.red_pieces:
+                if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
+                    self.red_pieces.remove(piece)
+        if team == "Black":
+            for piece in self.black_pieces:
+                if piece.x_pos == pos[1] and piece.y_pos == pos[0]:
+                    self.black_pieces.remove(piece)
 
-        self.game_board[pos[0]][pos[1]] = None
+    
         
     
     def _initialize_checkers(self):

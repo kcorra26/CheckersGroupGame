@@ -319,8 +319,8 @@ class Game:
 
         middle_positions = []
         full_sequence = [old_pos] + self.find_correct_sequence(old_pos,new_pos,team)
-        if len(self.find_correct_sequence(old_pos,new_pos,team)) == 1:
-            middle_positions.append(((old_pos[0]+new_pos[0])/2,(old_pos[1]+ new_pos[1])/2))
+        """if len(self.find_correct_sequence(old_pos,new_pos,team)) == 1:
+            middle_positions.append(((old_pos[0]+new_pos[0])/2,(old_pos[1]+ new_pos[1])/2))"""
         
         
         for i in range(len(full_sequence) - 1):
@@ -350,7 +350,7 @@ class Game:
                     self._remove_piece(pos,"Black")
                 if team == "Black":
                     self._remove_piece(pos,"Red")
-            for pos in self.middle_positions(old_pos,new_pos,team):
+            #for pos in self.middle_positions(old_pos,new_pos,team):
                 self.game_board[int(pos[0])][int(pos[1])] = None   
             self.game_board[new_pos[0]][new_pos[1]] = current_piece
             self.game_board[old_pos[0]][old_pos[1]] = None
@@ -505,7 +505,7 @@ class Game:
 
         Return (bool) whether the piece at given position has available moves
         """
-        current_piece = self.game_board[pos[0]][pos[1]]
+        """current_piece = self.game_board[pos[0]][pos[1]]
         if current_piece.is_king is False:
             if len(self.list_moves_piece(pos,False,[],current_piece.team)) > 0:
                 return True
@@ -513,7 +513,10 @@ class Game:
         if current_piece.is_king is True:
             if len(self.list_moves_king(pos,False,[],current_piece.team)) > 0:
                 return True
-            return False
+            return False"""
+        if len(self.list_moves(pos))> 0:
+            return True
+        return False
 
         
 
@@ -536,11 +539,17 @@ class Game:
         Returns(list): returns a list of tuples of all the positions a piece can
         go to
         """
-        current_piece = self.game_board[pos[0]][pos[1]]
+        """current_piece = self.game_board[pos[0]][pos[1]]
         if current_piece.is_king is False:
             return self.list_moves_piece(pos,False,[],current_piece.team)
         else:
-            return self.list_moves_king(pos,False,[],current_piece.team)
+            return self.list_moves_king(pos,False,[],current_piece.team)"""
+        current_piece = self.game_board[pos[0]][pos[1]]
+        if current_piece.is_king is False:
+            return self.list_moves_piece(pos,current_piece.team)
+        else:
+            return self.list_moves_king(pos,current_piece.team)
+        
 
     def can_jump(self,pos,team):
         """
@@ -627,7 +636,7 @@ class Game:
                             trails.append([(pos[0] + 2*direction,pos[1] - 2)] + trail)
             return trails
     
-    def jump_trail_king(self, pos, already_jumped):
+    def jump_trail_king(self, pos, already_jumped,team):
         """
         Returns a sequences representing all the possible ways a king piece can jump
             Parameters:
@@ -643,23 +652,23 @@ class Game:
         current_piece = self.game_board[pos[0]][pos[1]]
         assert current_piece.is_king is False
         if self.can_jump(pos) is False:
-            return []
+            return [[]]
         for i in directions:
             if (self.is_valid_position(((pos[0] + i),pos[1] + 1)) and
                 self.game_board[pos[0] + i][pos[1] + 1] is not None):
-                if (self.game_board[(pos[0] + i)][pos[1] + 1] !=
-                    current_piece.team and self.is_valid_position(((pos[0] + 2*i),pos[1] + 2))):
+                if (self.game_board[(pos[0] + i)][pos[1] + 1].team !=team 
+                    and self.is_valid_position(((pos[0] + 2*i),pos[1] + 2))):
                     if (self.game_board[pos[0] + 2*i][pos[1] + 2] is None and 
                         ((pos[0] + 2*i),(pos[1] + 2)) not in has_jumped):
                         has_jumped.append(((pos[0] + 2*i),(pos[1] + 2)))
-                        for trail in self.jump_trail_king((pos[0] + 2*i,pos[1] + 2),has_jumped):
+                        for trail in self.jump_trail_king((pos[0] + 2*i,pos[1] + 2),has_jumped,team):
                             trails.append(
-                            [self.game_board[pos[0] + 2*i][pos[1] + 2]] + 
-                            self.jump_trail_piece(((pos[0] + 2*i),pos[1] + 2)))
+                            [self.game_board[pos[0] + 2*i][pos[1] + 2]] + trail)
             if (self.is_valid_position(((pos[0] + i),pos[1] - 1)) and
                 self.game_board[pos[0] + i][pos[1] - 1] is not None):
-                if (self.game_board[(pos[0] + i)][pos[1] - 1] !=
-                    current_piece.team and self.is_valid_position(((pos[0] + 2*i),pos[1] + 2))):
+                has_jumped = already_jumped
+                if (self.game_board[(pos[0] + i)][pos[1] - 1] != team and 
+                    self.is_valid_position(((pos[0] + 2*i),pos[1] - 2))):
                     if (self.game_board[pos[0] + 2*i][pos[1] - 2] is None
                         and ((pos[0] + 2*i),(pos[1] -2)) not in has_jumped):
                         has_jumped.append(((pos[0] + 2*i),(pos[1] -2)))
@@ -669,7 +678,7 @@ class Game:
                             self.jump_trail_piece(((pos[0] + 2*i),pos[1] - 2)))
         return trails
 
-    def list_moves_piece(self, pos, has_jumped,already_moved,team):
+    #def list_moves_piece(self, pos, has_jumped,already_moved,team):
         """
         Determines the list of moves that a piece at a given position 
         specified by pos can make.
@@ -684,7 +693,7 @@ class Game:
             lst(tup(int,int)): all possible move locations for the Piece at the 
             given position
         """
-        moves = []
+        """moves = []
         has_moved = already_moved
         current_piece = self.game_board[pos[0]][pos[1]]
         direction = None
@@ -700,20 +709,20 @@ class Game:
 
         if has_jumped is False:
             if self.is_valid_position(((pos[0] + direction), pos[1] - 1 )):
-                if (self.game_board[(pos[0] + direction)][pos[1] - 1] == None):
+                if (self.game_board[(pos[0] + direction)][pos[1] - 1] is None):
                     moves.append(((pos[0] + direction), pos[1] - 1))
                 elif (self.game_board[(pos[0] + direction)][pos[1] - 1].team 
-                      != current_piece.team and self.is_valid_position(((pos[0] + 2*direction), pos[1] - 2 ))):
+                      != team and self.is_valid_position(((pos[0] + 2*direction), pos[1] - 2 ))):
                     if (self.game_board[(pos[0] + 2*direction)][pos[1] - 2] is None and 
                         ((pos[0] + 2*direction),pos[1] - 2) not in already_moved):
                         has_moved.append(((pos[0] + 2*direction), (pos[1] - 2)))
                         moves += self.list_moves_piece(((pos[0] + 2*direction), pos[1] - 2 ), True,has_moved,team)
-            if self.is_valid_position(((pos[0] + direction), pos[1] + 1 )):
+            if self.is_valid_position(((pos[0] + direction), pos[1] + 1)):
                 has_moved = []
                 if (self.game_board[(pos[0] + direction)][pos[1] + 1] is None):
                     moves.append(((pos[0] + direction), pos[1] + 1 ))
                 elif (self.game_board[(pos[0] + direction)][pos[1] + 1].team 
-                    != current_piece.team and self.is_valid_position(((pos[0] + 2*direction), pos[1] + 2 ))):
+                    != team and self.is_valid_position(((pos[0] + 2*direction), pos[1] + 2 ))):
                     if (self.game_board[(pos[0] + 2*direction)][pos[1] + 2] is None
                         and ((pos[0] + 2*direction),pos[1] + 2) not in already_moved):
                         has_moved.append(((pos[0] + 2*direction), (pos[1] + 2)))
@@ -740,8 +749,23 @@ class Game:
             else:
                 moves.append(pos)
         return moves
+        """
+    def list_moves_piece(self,pos,team):
+        current_piece = self.game_board[pos[0]][pos[1]]
+        positions = []
+        if self.can_jump(pos,team):
+            for trail in self.jump_trail_piece(pos,team):
+                positions.append(trail[len(trail) - 1])
+        if self.is_valid_position(((pos[0] + current_piece.dir),(pos[1] + 1))):
+            if self.game_board[pos[0] + current_piece.dir][pos[1] + 1] is None:
+                positions.append(((pos[0] + current_piece.dir),(pos[1] + 1)))
+        if self.is_valid_position(((pos[0] + current_piece.dir),(pos[1] - 1))):
+            if self.game_board[pos[0] + current_piece.dir][pos[1] - 1] is None:
+                positions.append(((pos[0] + current_piece.dir),(pos[1] - 1)))
+        return positions
+
         
-    def list_moves_king(self, pos, has_jumped,already_moved):
+    #def list_moves_king(self, pos, has_jumped,already_moved,team):
         """
         Determines the list of moves that a king piece at a given position 
         specified by pos can make.
@@ -756,7 +780,7 @@ class Game:
             lst(tup(int,int)): all possible move locations for the king Piece at 
             the given position
         """
-        moves = []
+        """"moves = []
         has_moved = already_moved
         current_piece = self.game_board[pos[0]][pos[1]]
         assert current_piece.is_king is True
@@ -767,20 +791,20 @@ class Game:
                     if (self.game_board[(pos[0] + i)][pos[1] - 1] is None):
                         moves.append(((pos[0] + i), pos[1] - 1 ))
                     elif (self.game_board[(pos[0] + i)][pos[1] - 1].team 
-                        != current_piece.team and self.is_valid_position(((pos[0] + 2*i), pos[1] - 2 ))):
+                        != team and self.is_valid_position(((pos[0] + 2*i), pos[1] - 2 ))):
                         if (self.game_board[(pos[0] + 2*i)][pos[1] - 2] is None and 
                             ((pos[0] + 2*i),pos[1] - 2) not in has_moved):
                             has_moved.append(((pos[0] + 2*i),pos[1] - 2))
-                            moves += self.list_moves_king(((pos[0] + 2*i), pos[1] - 2 ), True, has_moved)
+                            moves += self.list_moves_king(((pos[0] + 2*i), pos[1] - 2 ), True, has_moved,team)
                 if self.is_valid_position(((pos[0] + i), pos[1] + 1 )):
                     if (self.game_board[(pos[0] + i)][pos[1] + 1] is None):
                         moves.append(((pos[0] + i), pos[1] + 1))
                     elif (self.game_board[(pos[0] + i)][pos[1] + 1].team 
-                        != current_piece.team and self.is_valid_position(((pos[0] + 2*i), pos[1] + 2 ))):
+                        != team and self.is_valid_position(((pos[0] + 2*i), pos[1] + 2 ))):
                         if (self.game_board[(pos[0] + 2*i)][pos[1] + 2] is None and 
                             ((pos[0] + 2*i),pos[1] + 2) not in has_moved):
                             has_moved.append(((pos[0] + 2*i),pos[1] + 2))
-                            moves += self.list_moves_king((((pos[0] + 2*i),pos[1] + 2), True, has_moved))
+                            moves += self.list_moves_king((((pos[0] + 2*i),pos[1] + 2), True, has_moved,team))
         if has_jumped is True:
             for i in directions:
                 if (self.is_valid_position(((pos[0] + i), pos[1] - 1 ))):
@@ -803,7 +827,23 @@ class Game:
                                 moves += self.list_moves_king(((pos[0] + 2*i), pos[1] + 2 ), True, has_moved)
             else:
                 moves.append(pos)
-        return moves
+        return moves"""
+    def list_moves_king (self,pos,team):
+        current_piece = self.game_board[pos[0]][pos[1]]
+        positions = []
+        directions = [-1,1]
+        if self.can_jump(pos,team):
+            for trail in self.jump_trail_king(pos,team):
+                positions.append(trail[len(trail) - 1])
+        for i in directions:
+            if self.is_valid_position(((pos[0] + i),(pos[1] + 1))):
+                if self.game_board[pos[0] + i][pos[1] + 1] is None:
+                    positions.append(((pos[0] + i),(pos[1] + 1)))
+            if self.is_valid_position(((pos[0] + i),(pos[1] - 1))):
+                if self.game_board[pos[0] + i][pos[1] - 1] is None:
+                    positions.append(((pos[0] + i),(pos[0] - 1)))
+        return positions
+
 
 
 
@@ -819,8 +859,8 @@ class Game:
         
         current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
         if new_pos not in self.list_moves(curr_pos):
-            return True
-        return False
+            return False
+        return True
 
 
 

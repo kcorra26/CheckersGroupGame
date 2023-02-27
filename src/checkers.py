@@ -180,46 +180,47 @@ class Game:
 
         Returns(int):Number of jumps a piece must make from one spot to another
         """
-        return len(self.find_correct_sequence(old_pos,new_pos,team)) - 1
+        if self.find_correct_sequence(old_pos,new_pos,team): 
+            return len(self.find_correct_sequence(old_pos,new_pos,team)) #- 1
+        return 0
 
-    def is_winning_move(self,old_pos,new_pos,team):
+    def is_winning_move(self, old_pos, new_pos, team_making, team_would_win):
         """
         Determines if a move will make corresponding piece's team win
 
         Parameters:
             old_pos(tup): original position
             new_pos(tup): new position
-            team: team of the piece at the original position
+            team_making: team of the piece at the original position making the move
+            team_would_win: team of the piece to check if it would win if the move was made
         Returns(bool): if this move will make the team win
         """
         original_set = None
         current_piece = self.game_board[old_pos[0]][old_pos[1]]
         is_winner = None
-        if team == "Red":
-            original_set = self.red_pieces
-        if team == "Black":
-            original_set = self.black_pieces
+        original_set_red = self.red_pieces
+        original_set_black = self.black_pieces
+        original_board = self.game_board
         if self.is_valid_move(old_pos,new_pos):
-            if current_piece.can_move(old_pos,new_pos):
-                self.move_piece(old_pos,new_pos)
-                is_winner = self.is_winner(team)
+            if current_piece.can_move(new_pos): 
+                self.move_piece(old_pos,new_pos, team_making)
+                is_winner = self.is_winner(team_would_win)
+                """
                 self.game_board[old_pos[0]][old_pos[1]] = self.game_board[new_pos[0]][new_pos[1]]
-                self.game_board[new_pos[0]][new_pos[1]] = None
-                if team == "Red":
-                    self.red_pieces = original_set
-                if team == "Black":
-                    self.black_pieces = original_set
-                return is_winner
-            if self.can_jump(old_pos):
-                self.jump_piece(old_pos,new_pos)
-                is_winner = self.is_winner(team)
+                self.game_board[new_pos[0]][new_pos[1]] = None """
+                 
+            """" i commented this out because move_piece already checks for can_jump
+            if self.can_jump(old_pos, team_making):
+                self.jump_piece(old_pos, new_pos, team_making)
+                is_winner = self.is_winner(team_would_win)
                 self.game_board[old_pos[0]][old_pos[1]] = self.game_board[new_pos[0]][new_pos[1]]
-                self.game_board[new_pos[0]][new_pos[1]] = None
-                if team == "Red":
-                    self.red_pieces = original_set
-                if team == "Black":
-                    self.black_pieces = original_set
-                return is_winner
+                self.game_board[new_pos[0]][new_pos[1]] = None """
+        self.game_board = original_board # this updates the whole board (and it works), which is good because may jump and mess up other spots
+        # i'm not sure if we need to update the pieces too 
+        self.red_pieces = original_set_red
+        self.black_pieces = original_set_black
+        return is_winner
+        # is winner works as intended now 
         
     def is_done(self):
         """
@@ -229,7 +230,9 @@ class Game:
 
         Returns(bool): if the game is over
         """
-        if self.is_winner is not None:
+        if self.is_winner("Red") or self.is_winner("Black"):
+            return True
+        if self._is_draw():
             return True
         return False
 
@@ -250,8 +253,9 @@ class Game:
         """
         current_piece = self.game_board[old_pos[0]][old_pos[1]]
         if new_pos in self.list_moves(old_pos):
-            if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1:
+            if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1: # this only accounts for non-jumping pieces
                 self.game_board[new_pos[0]][new_pos[1]] = current_piece
+                print("updating position of move piece")
                 self.game_board[new_pos[0]][new_pos[1]].update_position(new_pos)
                 self.game_board[old_pos[0]][old_pos[1]] = None
                 if team == "Red":
@@ -264,8 +268,10 @@ class Game:
                         if piece.x_pos == old_pos[1] and piece.y_pos == old_pos[0]:
                             self.black_pieces.remove(piece)
                             self.black_pieces.add(self.game_board[new_pos[0]][new_pos[1]])
-
                 self.make_king()
+            else: # this didn't exist before. need to update the position of jump pieces as well. 
+                self.jump_piece(old_pos, new_pos, team)
+                # this works
 
 
     def find_correct_sequence(self, old_pos,new_pos,team):
@@ -281,7 +287,7 @@ class Game:
         destination
         """
 
-        choose_sequence = None
+        choose_sequence = None # something about this is wrong
         current_piece = self.game_board[old_pos[0]][old_pos[1]]
         if current_piece.is_king is False:
             for sequence in self.jump_trail_piece(old_pos,team):
@@ -292,7 +298,7 @@ class Game:
                         choose_sequence = sequence
             return choose_sequence
         if current_piece.is_king is True:
-            for sequence in self.jump_trail_king(old_pos,team):
+            for sequence in self.jump_trail_king(old_pos, old_pos, [], team):
                 if choose_sequence == None and sequence[len(sequence) - 1] == new_pos:
                     choose_sequence = sequence
                 elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
@@ -349,6 +355,7 @@ class Game:
             self._remove_piece(old_pos,team)
             self.game_board[int(new_pos[0])][int(new_pos[1])] = current_piece
             self.game_board[int(old_pos[0])][int(old_pos[1])] = None
+            print("updating position of jump piece") # this never happens
             self.game_board[int(new_pos[0])][int(new_pos[1])].update_position((new_pos[0],new_pos[1]))
             if team == "Red":
                 self.red_pieces.add(self.game_board[int(new_pos[0])][int(new_pos[1])])
@@ -531,6 +538,8 @@ class Game:
         else:
             return self.list_moves_king(pos,False,[],current_piece.team)"""
         current_piece = self.game_board[pos[0]][pos[1]]
+        if current_piece is None:
+            print(pos)
         if current_piece.is_king is False:
             return self.list_moves_piece(pos,current_piece.team)
         else:
@@ -722,7 +731,7 @@ class Game:
         """
         
         current_piece = self.game_board[curr_pos[0]][curr_pos[1]]
-        if new_pos not in self.list_moves(curr_pos):
+        if new_pos not in self.list_moves(curr_pos): # why is current_piece necessary here?
             return False
         return True
 

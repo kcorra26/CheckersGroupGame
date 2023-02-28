@@ -332,12 +332,7 @@ def simulate(game, n: int, bots):
 # for TUI integration, not fully complete (but have fully integrated with GUI)
 @click.command(name="checkers-bot")
 @click.option("-n", "--num-games", type=click.INT, default=10000)
-@click.option("--player1", 
-              type=click.Choice(['random', 'smart'], case_sensitive=False),
-              default="random")
-@click.option("--player2", 
-              type=click.Choice(['random', 'smart'], case_sensitive=False),
-              default="random")
+
 # waiting on Game Logic in order to test the percentage of wins
 def cmd(num_games, player1, player2):
     game = checkers.Game()

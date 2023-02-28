@@ -87,10 +87,10 @@ class TUIPlayer:
         """
         if self.bot is not None:
             time.sleep(self.bot_delay)
-            space = self.bot.suggest_move()
+            space = self.bot.suggest_move(self.game)
             # Print prompt with column already filled in
             print(Style.BRIGHT + f"{self.name}> " + Style.RESET_ALL 
-                  + str(space+1))
+                  + str(space[1]), str(space[0]))
             return space
         else:
             # Ask for a space (and re-ask if
@@ -115,8 +115,6 @@ class TUIPlayer:
                 dest_y = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the row you want to move to > " 
                                + Style.RESET_ALL)
                 dest_y = self._input_to_valid_move(dest_y, "y")
-
-                print(str((cur_y, cur_x)) + " to " + str((dest_y, dest_x)))
                 
 
                 if self.game.is_valid_move((cur_y, cur_x), (dest_y, dest_x)):
@@ -141,11 +139,11 @@ class TUIPlayer:
         Raises:
             ValueError: if direction is not x or y
         """
-        coord = int(coord)
-        if coord == "draw": 
+        if coord.lower() == "draw": 
             self.game.draw(self.team)
-        if coord == "resign":
+        if coord.lower() == "resign":
             self.game.resign(self.team)
+            return -1
         if dir == "x":
             while not (0 <= int(coord) <= self.width-1):      
                 coord = input(Style.BRIGHT + 
@@ -158,7 +156,7 @@ class TUIPlayer:
                               Style.RESET_ALL)
         else:
             raise ValueError("Direction was not passed correctly")
-        return coord
+        return int(coord)
 
 def print_game(game:GameType, poss_moves:Optional[list]=[]):
     """

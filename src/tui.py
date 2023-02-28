@@ -7,8 +7,8 @@ from typing import Union, Dict, Optional
 import click
 from colorama import Fore, Style
 
-from checkers import Board, Game, Piece
-from mocks import MockGame, Piece, MockCheckerboard, StubCheckerboard, GameType
+from checkers import Board, Game, Piece, GameType
+from mocks import MockGame, Piece, MockCheckerboard, StubCheckerboard
 from bot import RandomBot, SmartBot
 
 
@@ -27,7 +27,7 @@ BLACK_KING = Fore.BLACK + Style.BRIGHT + "¤"
 RED_KING = Fore.RED + Style.BRIGHT + "¤"
 BLACK_PIECE = Fore.BLACK + "●"
 RED_PIECE = Fore.RED + "●"
-VALID_SPACE = Fore.GREEN + Style.BRIGHT + "?"
+VALID_SPACE = Fore.GREEN + "?"
 
 
 class TUIPlayer:
@@ -56,9 +56,11 @@ class TUIPlayer:
                 the next move (in seconds)
         """
         self.game = game
+        #self.board is a list of lists
         self.board = game.game_board
         self.team = team
         self.bot_delay = bot_delay
+        self.width = game.width
 
         if player_type == "human":
             self.name = f"Player {player_num}"
@@ -103,9 +105,8 @@ class TUIPlayer:
                              + Style.RESET_ALL)
                 cur_y = self._input_to_valid_move(cur_y, "y")
 
-                if self.game.game_board.board[cur_y][cur_x] is not None:
+                if self.game.game_board[cur_y][cur_x] is not None:
                     select_piece(self.game, (cur_x, cur_y), self.team)
-
 
                 dest_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the column you want to move to > " 
                                + Style.RESET_ALL)
@@ -113,12 +114,13 @@ class TUIPlayer:
 
                 dest_y = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the row you want to move to > " 
                                + Style.RESET_ALL)
-                dest_y = self._input_to_valid_move(cur_y, "y")
+                dest_y = self._input_to_valid_move(dest_y, "y")
 
-                # Convert the indices the player chose to ones that play nice with
-                # the list of list representation of the board (may be able to not have this)
-                if self.game.is_valid_move((cur_x, cur_y), (dest_x, dest_y)):
-                    return (cur_x, cur_y), (dest_x, dest_y)
+                print(str((cur_y, cur_x)) + " to " + str((dest_y, dest_x)))
+                
+
+                if self.game.is_valid_move((cur_y, cur_x), (dest_y, dest_x)):
+                    return (cur_y, cur_x), (dest_y, dest_x)
                 else:
                     print("Not a valid move. Please enter a valid move.")
                     return self.get_move()
@@ -145,12 +147,12 @@ class TUIPlayer:
         if coord == "resign":
             self.game.resign(self.team)
         if dir == "x":
-            while not (0 <= int(coord) <= self.board.width-1):
+            while not (0 <= int(coord) <= self.width-1):      
                 coord = input(Style.BRIGHT + 
                               f"{self.name}: Please enter a valid column >" + 
                               Style.RESET_ALL)
         elif dir == "y":
-            while not (0 <= int(coord) <= self.board.width-1):
+            while not (0 <= int(coord) <= self.width-1):
                 coord = input(Style.BRIGHT + 
                               f"{self.name}: Please enter a valid row >" + 
                               Style.RESET_ALL)
@@ -233,10 +235,10 @@ def select_piece(game:GameType, pos:tuple, team:str) -> None:
     Returns: None
     """
     col, row = pos
-    piece = game.game_board.board[row][col]
-    all_poss_moves = game.list_moves(piece)
+    piece = game.game_board[row][col]
+    all_poss_moves = game.list_moves((row, col))
     print_game(game, all_poss_moves)
-
+    print(all_poss_moves)
 
 
 def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
@@ -251,14 +253,14 @@ def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
     #whichever player is on Black goes first
     current = players["Black"]
     #Play the game until there's a winner
-    while game.is_winner is None:
+    while game.winner is None:
             # Print the board
             print()
             print_game(game)
             print()
 
             cur_space, new_space = current.get_move()
-            game.move_piece(cur_space, new_space)
+            game.move_piece(cur_space, new_space, current.team)
             print("New position:")
 
             # Update the player
@@ -270,7 +272,7 @@ def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
     print()
     print_game(game)
 
-    winner = game.is_winner()
+    winner = game.winner
     if winner is not None:
         print(f"The winner is {players[winner].name}!")
     else:

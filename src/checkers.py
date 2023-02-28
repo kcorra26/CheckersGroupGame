@@ -910,19 +910,6 @@ class Piece():
    
 
         
-
-
-
-
-
-#board = Game(3)
-#print(board)
-
-#board.all_team_moves("Black")
-#print(board.is_winner("Red"))
-#print(board.game_board[5][2])
-#print(type(board.game_board[5][2]))g
-
 from typing import Union
 from mocks import StubCheckerboard, MockGame
 GameType = Union[Game, MockGame, StubCheckerboard]

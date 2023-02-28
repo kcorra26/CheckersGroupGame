@@ -869,6 +869,7 @@ class Piece():
         """
         self.y_pos = pos[0]
         self.x_pos = pos[1]
+        self.pos = pos
         
 
     def is_king(self):

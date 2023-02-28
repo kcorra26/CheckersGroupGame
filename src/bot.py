@@ -31,19 +31,21 @@ class RandomBot:
             color: Bot's team color
             opponent_color: Opponent's color
         """
-        self._game = game
+        #self._game = game
         self._color = color
         self._opponent_color = opponent_color
     
-    def suggest_move(self):
+    def suggest_move(self, game):
         """
         Suggests a move 
 
         Returns: tup(tup(int, int), tup(int, int)) -- suggested move
         """
-        move_dict = self._game.all_team_moves(self._color)
+        #move_dict = self._game.all_team_moves(self._color)
+        move_dict = game.all_team_moves(self._color)
         og_pos = random.choice(list(move_dict))
         end_pos = random.choice(move_dict[og_pos])
+        print("random bot picked at random")
 
         return (og_pos, end_pos) 
 
@@ -71,11 +73,11 @@ class SmartBot:
             opponent_color: Opponent's color
         """
 
-        self._game = game
+        #self._game = game
         self._color = color
         self._opponent_color = opponent_color
 
-    def suggest_move(self):
+    def suggest_move(self, game): # do i need to pass the game in every time?
         """
         Suggests a move
 
@@ -94,20 +96,24 @@ class SmartBot:
         """
         # assumming that when there is at least one opportunity to jump, 
         # all_team_moves consists only of those jumping moves
-        move_dict = self._game.all_team_moves(self._color) 
+        #move_dict = self._game.all_team_moves(self._color) # but self.color works?
+        move_dict = game.all_team_moves(self._color)
+        print(move_dict)
 
         # if there is just one move in the dictionary (ie if there is one 
         # key and that key just has one tuple in its list):
         if self._one_move(move_dict) is not None:
             # return the position of the key and the first (and only) value 
             # in the value list
+            print("only option")
             return self._one_move(move_dict)
         
         max_moves = {} 
         king_moves = {} 
         max_jumps = 0
         centermost = {}
-        center = self._game.width // 2
+        #center = self._game.width // 2
+        center = game.width // 2
         dist_from_center = center
     
         # loops through the move options, checks if it is a winning move 
@@ -117,20 +123,31 @@ class SmartBot:
             for end_pos in list_moves:
                 row, col = end_pos
                 
-                if self._game.is_winning_move(start_pos, end_pos, self._color):
+                #if self._game.is_winning_move(start_pos, end_pos, self._color):
+                #if game.can_jump(start_pos, self._color):
+                    # print(f'team {self._color} can jump at {start_pos}')
+                
+                if game.is_winning_move(start_pos, end_pos, self._color, self._color): # self._color
+                    print("picked from winning moves")
                     return (start_pos, end_pos)
                 
-                if self._game.is_winning_move(start_pos, end_pos, 
-                                            self._opponent_color):
+                #if self._game.is_winning_move(start_pos, end_pos, 
+                 #                           self._opponent_color):
+            
+                if game.is_winning_move(start_pos, end_pos, 
+                                        self._color, self._opponent_color):
+                    print("winning move exists, ignoring")
                     continue
                 
-                if self._game.will_king(start_pos, end_pos, self._color): 
+                #if self._game.will_king(start_pos, end_pos, self._color): 
+                if game.will_king(start_pos, end_pos, self._color):
                     temp_lst = king_moves.get((start_pos), [])
                     temp_lst.append(end_pos)
                     king_moves[start_pos] = temp_lst
 
         # if there is only one king move, take it
         if self._one_move(king_moves) is not None:
+            print("picked from king moves")
             return self._one_move(king_moves)
         elif king_moves == {}:
             # considers the original list
@@ -146,24 +163,39 @@ class SmartBot:
                 
                 # if the number of jumps is greater than the current max, 
                 # reset max_moves and the current max
-                if self._game.num_jumps(start_pos, end_pos) > max_jumps:
-                    # TODO: name is different in checkers
-                    max_jumps = self._game.num_jumps(start_pos, end_pos)
+                
+
+                #if self._game.num_jumps(start_pos, end_pos, self._color) > max_jumps:
+                if game.num_jumps(start_pos, end_pos, self._color) > max_jumps:
+                    #max_jumps = self._game.num_jumps(start_pos, end_pos, self._color)
+                    max_jumps = game.num_jumps(start_pos, end_pos, self._color)
                     max_moves = {start_pos : [end_pos]} # reset dict
                 
                 # if the number of jumps is equal to the current max, add it
                 # to max_moves
-                elif self._game.num_jumps(start_pos, end_pos) == max_jumps:
+                
+                #elif self._game.num_jumps(start_pos, end_pos, self._color) == max_jumps:
+                elif game.num_jumps(start_pos, end_pos, self._color) == max_jumps:
                     lst = max_moves.get((start_pos), [])
                     lst.append(end_pos)
                     max_moves[start_pos] = lst
                 # if the number of jumps is fewer than the max, don't consider
+                
+                """
+                if game.can_jump(start_pos, self._color):
+                    print("considering jump move")
+                    print(start_pos, end_pos)
+                    lst = max_moves.get((start_pos), [])
+                    lst.append(end_pos)
+                    max_moves[start_pos] = lst """
         
         # if there is only one max move, take it
         if self._one_move(max_moves) is not None:
+            print("picked from sole max_move")
             return self._one_move(max_moves)
         elif max_moves == {}: 
             # new dict includes all king moves or all of move_dict
+            print("no jumps")
             consider2 = consider
         else:
             # new dict includes only moves with the most jumps
@@ -178,26 +210,30 @@ class SmartBot:
                 # if the distance from the center of the board is smaller 
                 # than the previous minimum, reset the minimum and the options
                 # dict
-                if abs(col - (self._game.width // 2)) < dist_from_center:
-                    dist_from_center = abs(col - (self._game.width // 2))
+                if abs(col - (center)) < dist_from_center:
+                    dist_from_center = abs(col - (center))
                     centermost = {start_pos : [end_pos]}
                 # if the distance is equal ot the minimum, add it to the
                 # options dict
-                elif abs(col - (self._game.width // 2)) == dist_from_center:
+                elif abs(col - (center)) == dist_from_center:
                     centermost.get(start_pos, []).append(end_pos)
         
         # if there is only one centermost move, take it
         if self._one_move(centermost) is not None:
+            print(consider2)
+            print("only one centermost option")
             return self._one_move(centermost)
         elif centermost == {}: 
             # randomly pick from the max_jump move options 
             og_pos = random.choice(list(consider2))
             end_pos = random.choice(consider2[og_pos])
+            print("random from max jump")
             return (og_pos, end_pos)
         else: 
             # if there is more than one centermost move, randomly pick 
             og_pos = random.choice(list(centermost))
             end_pos = random.choice(centermost[og_pos])
+            print("random from centermost")
             return (og_pos, end_pos)
 
     def _one_move(self, dic): 
@@ -271,9 +307,12 @@ def simulate(game, n: int, bots):
         # starting player 
         current = bots["Black"] 
 
-        while not game.is_done: 
-            og_pos, new_pos = current.bot.suggest_move() 
-            game.move_piece(og_pos, new_pos, current.color) 
+        while not game.is_done(): 
+            og_pos, new_pos = current.bot.suggest_move(game) 
+            print(og_pos, new_pos)
+            # the former piece is still in game.black_pieces
+            game.move_piece(og_pos, new_pos, current.color) # it's calling a move that doesn't exist anymore because of the previous move
+            old_color = current.color
 
             # update the player 
             if current.color == "Black": 
@@ -285,6 +324,10 @@ def simulate(game, n: int, bots):
                 bots["Red"].wins += 1
             elif game.is_winner("Black"):
                 bots["Black"].wins += 1
+            print(f'{old_color} : {og_pos}, {new_pos}') # but (2, 3) is an empty space
+            print("after decision:")
+            print(game)
+            print("----------------------------------------")
 
 # for TUI integration, not fully complete (but have fully integrated with GUI)
 @click.command(name="checkers-bot")

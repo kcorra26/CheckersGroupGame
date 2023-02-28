@@ -815,13 +815,13 @@ class Piece():
         Returns: None
         """
         #Piece's position represented by an (int, int) tuple with (x,y) position
-        self.pos = pos
 
         # Piece's x position or col
         self.x_pos = pos[1]
 
         # Piece's y position or row
         self.y_pos = pos[0]
+        self.pos = (self.y_pos,self.x_pos)
 
         # TeamColor enum representing the Piece's team
         self.team = team_color

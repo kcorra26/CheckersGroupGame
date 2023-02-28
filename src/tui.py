@@ -2,13 +2,13 @@
 TUI for Checkers
 """
 import time 
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 
 import click
 from colorama import Fore, Style
 
 from checkers import Board, Game, Piece
-from mocks import MockGame, Piece, MockCheckerboard, StubCheckerboard
+from mocks import MockGame, Piece, MockCheckerboard, StubCheckerboard, GameType
 from bot import RandomBot, SmartBot
 
 
@@ -39,11 +39,11 @@ class TUIPlayer:
     name: str
     bot: Union[None, RandomBot, SmartBot]
     #board will change
-    game: MockGame
+    game: GameType
     team: str
     bot_delay: float
 
-    def __init__(self, player_num: int,  player_type: str, game: MockGame, 
+    def __init__(self, player_num: int,  player_type: str, game: GameType, 
                 team: str, opponent_team: str, bot_delay: float):
         """
         Args:
@@ -56,7 +56,7 @@ class TUIPlayer:
                 the next move (in seconds)
         """
         self.game = game
-        self.board = game.board
+        self.board = game.game_board
         self.team = team
         self.bot_delay = bot_delay
 
@@ -103,7 +103,7 @@ class TUIPlayer:
                              + Style.RESET_ALL)
                 cur_y = self._input_to_valid_move(cur_y, "y")
 
-                if self.game.board.board[cur_y][cur_x] is not None:
+                if self.game.game_board.board[cur_y][cur_x] is not None:
                     select_piece(self.game, (cur_x, cur_y), self.team)
 
 
@@ -158,15 +158,16 @@ class TUIPlayer:
             raise ValueError("Direction was not passed correctly")
         return coord
 
-def print_game(game:MockGame, poss_moves:set=[]):
+def print_game(game:GameType, poss_moves:Optional[list]=[]):
     """
     Prints the board out to the terminal screen.
     Args:
-        board (Board): the board to be printed
+        game: the game to print out
+        poss_moves [Optional]
 
     Returns: None
     """
-    board = game.board
+    board = game.game_board
     width = game.width
     num_pairs = int(width/2)
     even_line_top = Fore.WHITE + (
@@ -189,7 +190,7 @@ def print_game(game:MockGame, poss_moves:set=[]):
                 wall = SIDE_WALL_LIGHT
             else:
                 wall = SIDE_WALL_DARK
-            space = board.board[row][col]
+            space = board[row][col]
             square_str = ""
 
             if (row, col) in poss_moves:
@@ -222,7 +223,7 @@ def print_game(game:MockGame, poss_moves:set=[]):
         bottom_idx = bottom_idx + " " + str((i)) + " "
     print(Style.RESET_ALL +bottom_idx)
 
-def select_piece(game:MockGame, pos:tuple, team:str):
+def select_piece(game:GameType, pos:tuple, team:str) -> None:
     """
     Selects a piece on the board and highlights the positions it can move to.
     Args:
@@ -232,13 +233,13 @@ def select_piece(game:MockGame, pos:tuple, team:str):
     Returns: None
     """
     col, row = pos
-    piece = game.board.board[row][col]
+    piece = game.game_board.board[row][col]
     all_poss_moves = game.list_moves(piece)
     print_game(game, all_poss_moves)
 
 
 
-def play_checkers(game:MockGame, players: Dict[str, TUIPlayer]) -> None:
+def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
     """
     Plays a game of checkers in the terminal.
     

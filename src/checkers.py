@@ -159,7 +159,7 @@ class Game:
             if spot is not None and spot.is_king is False and spot.team == "Black":
                 self._remove_piece((spot.y_pos,spot.x_pos),"Black")
                 spot.is_king = True
-                self.red_pieces.add(spot)
+                self.black_pieces.add(spot)
                 
     
     def will_king(self,old_pos,new_pos,team):

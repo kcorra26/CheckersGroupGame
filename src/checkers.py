@@ -719,7 +719,7 @@ class Game:
                                 trails.append(
                                 [((pos[0] + 2*i),(pos[1] - 2))] + trail)
                         else:
-                            trails.append[((pos[0] + 2*i),(pos[1] - 2))]()
+                            trails.append([((pos[0] + 2*i),(pos[1] - 2))])
                     elif ((pos[0] + 2*i),(pos[1] - 2)) == original_pos and original_pos != prev_pos:
                         trails.append([((pos[0] + 2*i),(pos[1] - 2))])
                     

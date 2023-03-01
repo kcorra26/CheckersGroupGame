@@ -217,7 +217,7 @@ class Game:
         middle_pos = []
         initial_pos = self.game_board.get_piece(old_pos)
         end_pos = self.game_board.get_piece(new_pos)
-        if abs(new_pos[1] - old_pos[1]) == 1 and abs(new_pos[0] - old_pos[0]) == 1:
+        if abs(new_pos[1] - old_pos[1]) != 1 and abs(new_pos[0] - old_pos[0]) != 1:
             for pos in self.middle_positions(old_pos,new_pos,team_making):
                 middle_pos.append(self.game_board.get_piece(pos))
         for piece in self.red_pieces:

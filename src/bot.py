@@ -9,7 +9,7 @@ Bots for Checkers
 (and command for running simulations with bots)
 """
 import random
-from typing import Union # idk what this does yet
+from typing import Union 
 
 import click
 from checkers import Board, Game, Piece
@@ -77,7 +77,7 @@ class SmartBot:
         self._color = color
         self._opponent_color = opponent_color
 
-    def suggest_move(self, game): # do i need to pass the game in every time?
+    def suggest_move(self, game): 
         """
         Suggests a move
 
@@ -242,15 +242,10 @@ class SmartBot:
         return None
                 
         
-class BotPlayer: # playing against each other
+class BotPlayer: 
     """
     Simple class to store information about a bot player in a simulation.
     """
-
-    #name: str #idk what this stuff does
-    #bot: Union[RandomBot, SmartBot]
-    #color: str
-    #wins: int
 
     def __init__(self, name, game, color,
                  opponent_color):
@@ -316,7 +311,7 @@ def simulate(game, n: int, bots):
             print(game)
             print("----------------------------------------")
 
-# for TUI integration, not fully complete (but have fully integrated with GUI)
+# idk if we will need this
 @click.command(name="checkers-bot")
 @click.option("-n", "--num-games", type=click.INT, default=10000)
 

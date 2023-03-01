@@ -56,7 +56,6 @@ class TUIPlayer:
                 the next move (in seconds)
         """
         self.game = game
-        #self.board is a list of lists
         self.board = game.game_board
         self.team = team
         self.bot_delay = bot_delay
@@ -105,7 +104,7 @@ class TUIPlayer:
                              + Style.RESET_ALL)
                 cur_y = self._input_to_valid_move(cur_y, "y")
 
-                if self.game.game_board[cur_y][cur_x] is not None:
+                if self.board.board[cur_y][cur_x] is not None:
                     select_piece(self.game, (cur_x, cur_y), self.team)
 
                 dest_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the column you want to move to > " 
@@ -167,7 +166,7 @@ def print_game(game:GameType, poss_moves:Optional[list]=[]):
 
     Returns: None
     """
-    board = game.game_board
+    board = game.game_board.board
     width = game.width
     num_pairs = int(width/2)
     even_line_top = Fore.WHITE + (
@@ -233,7 +232,7 @@ def select_piece(game:GameType, pos:tuple, team:str) -> None:
     Returns: None
     """
     col, row = pos
-    piece = game.game_board[row][col]
+    piece = game.game_board.board[row][col]
     all_poss_moves = game.list_moves((row, col))
     print_game(game, all_poss_moves)
     print(all_poss_moves)

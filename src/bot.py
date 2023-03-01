@@ -123,17 +123,30 @@ class SmartBot:
             for end_pos in list_moves:
                 row, col = end_pos
                 
-                #if self._game.is_winning_move(start_pos, end_pos, self._color):
-                #if game.can_jump(start_pos, self._color):
-                    # print(f'team {self._color} can jump at {start_pos}')
                 
+                exists = False
+                for piece in game.black_pieces:
+                    if piece.pos == start_pos:
+                        exists = True
+                if not exists:
+                    print(f'checking is_winning with {start_pos}, {end_pos}, but it doesnt exist in piece before winning move')
+                else:
+                    print("works before winning move!")
                 if game.is_winning_move(start_pos, end_pos, self._color, self._color): # self._color
                     print("picked from winning moves")
                     return (start_pos, end_pos)
                 
                 #if self._game.is_winning_move(start_pos, end_pos, 
                  #                           self._opponent_color):
-            
+                exists = False
+                for piece in game.black_pieces:
+                    if piece.pos == start_pos:
+                        exists = True
+                if not exists:
+                    print(f'{start_pos} doesnt exist after win move 1')
+                else:
+                    print("works after winning move 1!")
+
                 if game.is_winning_move(start_pos, end_pos, 
                                         self._color, self._opponent_color):
                     print("winning move exists, ignoring")
@@ -311,7 +324,7 @@ def simulate(game, n: int, bots):
             og_pos, new_pos = current.bot.suggest_move(game) 
             print(og_pos, new_pos)
             # the former piece is still in game.black_pieces
-            game.move_piece(og_pos, new_pos, current.color) # it's calling a move that doesn't exist anymore because of the previous move
+            game.move_piece(og_pos, new_pos, current.color) 
             old_color = current.color
 
             # update the player 
@@ -327,6 +340,12 @@ def simulate(game, n: int, bots):
             print(f'{old_color} : {og_pos}, {new_pos}') # but (2, 3) is an empty space
             print("after decision:")
             print(game)
+            print("red pieces:")
+            for piece in game.red_pieces:
+                print(piece.pos)
+            print("black pieces")
+            for piece in game.black_pieces:
+                print(piece.pos)
             print("----------------------------------------")
 
 # for TUI integration, not fully complete (but have fully integrated with GUI)

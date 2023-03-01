@@ -209,31 +209,31 @@ class Game:
         Returns(bool): if this move will make the team win
         """
         original_set = None
+        exists = False
         current_piece = self.game_board.board[old_pos[0]][old_pos[1]]
         is_winner = None
-        original_set_red = self.red_pieces
-        original_set_black = self.black_pieces
+        original_set_red = self.red_pieces # this effectively doesn't do anything, because it's the pieces and not just the numbers
+        original_set_black = self.black_pieces 
         original_board = self.game_board.board
+        
         if self.is_valid_move(old_pos,new_pos):
-            if current_piece.can_move(new_pos): 
-                self.move_piece(old_pos,new_pos, team_making)
-                is_winner = self.is_winner(team_would_win)
-                """
-                self.game_board.board[old_pos[0]][old_pos[1]] = self.game_board.board[new_pos[0]][new_pos[1]]
-                self.game_board.board[new_pos[0]][new_pos[1]] = None """
+            #if current_piece.can_move(new_pos): 
+            self.move_piece(old_pos,new_pos, team_making)
+            print(f"after making hypothetical move from {old_pos} to {new_pos}")
+            print(self)
+            for piece in self.black_pieces:
+                print(piece.pos)
+            # ok so it doesn't revert the piece back to it's original position, even tho it 
+            is_winner = self.is_winner(team_would_win)
                  
-            """" i commented this out because move_piece already checks for can_jump
-            if self.can_jump(old_pos, team_making):
-                self.jump_piece(old_pos, new_pos, team_making)
-                is_winner = self.is_winner(team_would_win)
-                self.game_board.board[old_pos[0]][old_pos[1]] = self.game_board.board[new_pos[0]][new_pos[1]]
-                self.game_board.board[new_pos[0]][new_pos[1]] = None """
-        self.game_board.board = original_board # this updates the whole board (and it works), which is good because may jump and mess up other spots
-        # i'm not sure if we need to update the pieces too 
+        self.game_board.board = original_board # THESE THREE CALLS DONT WORK. 
         self.red_pieces = original_set_red
-        self.black_pieces = original_set_black
+        self.black_pieces = original_set_black 
+        print(f"after resetting to {old_pos}. notice how it's the same as the hypothetical even tho it shouldn't be")
+        # when it needs to move hypothetically, it doesn't reset the pieces to where they were originally
+        print(self)
         return is_winner
-        # is winner works as intended now 
+
         
     def is_done(self):
         """
@@ -567,8 +567,6 @@ class Game:
         else:
             return self.list_moves_king(pos,False,[],current_piece.team)"""
         current_piece = self.game_board.get_piece(pos)
-        if current_piece is None:
-            print(pos)
         if current_piece.is_king is False:
             return self.list_moves_piece(pos,current_piece.team)
         else:

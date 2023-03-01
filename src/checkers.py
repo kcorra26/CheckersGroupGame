@@ -116,7 +116,7 @@ class Game:
         # Runs the create board function, creating a list of lists (grid) with
         # Empty objects at each position in the grid
         #self.game_board.board = Board().board
-        self.game_board.board = Board()
+        self.game_board = Board()
 
         self._initialize_checkers()
 
@@ -943,19 +943,6 @@ class Piece():
     
    
 
-        
-
-
-
-
-
-#board = Game(3)
-#print(board)
-
-#board.all_team_moves("Black")
-#print(board.is_winner("Red"))
-#print(board.game_board.board[5][2])
-#print(type(board.game_board.board[5][2]))g
 
 from typing import Union
 from mocks import StubCheckerboard, MockGame

@@ -77,7 +77,7 @@ class Board:
         
     
     def get_piece(self,pos):
-        return self.board[pos[0]][pos[1]]
+        return self.board[int(pos[0])][int(pos[1])]
     
     def remove_piece(self,pos):
         self.board[pos[0]][pos[1]] = None
@@ -210,11 +210,23 @@ class Game:
         """
         original_set = None
         exists = False
-        current_piece = self.game_board.board[old_pos[0]][old_pos[1]]
+        current_piece = self.game_board.get_piece(old_pos)
         is_winner = None
-        original_set_red = self.red_pieces # this effectively doesn't do anything, because it's the pieces and not just the numbers
-        original_set_black = self.black_pieces 
-        original_board = self.game_board.board
+        original_set_red = set()
+        original_set_black = set()
+        middle_pos = []
+        initial_pos = self.game_board.get_piece(old_pos)
+        end_pos = self.game_board.get_piece(new_pos)
+
+        for pos in self.middle_positions(old_pos,new_pos,team_making):
+            middle_pos.append(self.game_board.get_piece(pos))
+        for piece in self.red_pieces:
+            original_set_red.add(piece)
+        for piece in self.black_pieces:
+            original_set_black.add(piece)
+        # this effectively doesn't do anything, because it's the pieces and not just the numbers
+        #original_set_black = self.black_pieces 
+        #original_board = self.game_board.board
         
         if self.is_valid_move(old_pos,new_pos):
             #if current_piece.can_move(new_pos): 
@@ -226,9 +238,13 @@ class Game:
             # ok so it doesn't revert the piece back to it's original position, even tho it 
             is_winner = self.is_winner(team_would_win)
                  
-        self.game_board.board = original_board # THESE THREE CALLS DONT WORK. 
+        for pos in middle_pos:
+            self.game_board.add_piece(pos) # THESE THREE CALLS DONT WORK. 
         self.red_pieces = original_set_red
-        self.black_pieces = original_set_black 
+        self.black_pieces = original_set_black
+        initial_pos.update_position(old_pos)
+        self.game_board.add_piece(initial_pos)
+        self.game_board.board[new_pos[0]][new_pos[1]] = None
         print(f"after resetting to {old_pos}. notice how it's the same as the hypothetical even tho it shouldn't be")
         # when it needs to move hypothetically, it doesn't reset the pieces to where they were originally
         print(self)
@@ -670,8 +686,8 @@ class Game:
         directions = [-1,1]
         current_piece = self.game_board.board[pos[0]][pos[1]]
         #assert current_piece.is_king is False
-        if self.can_jump(pos,team,True) is False:
-            return [[]]
+        """if self.can_jump(pos,team,True) is False:
+            return []"""
         for i in directions:
             if (self.is_valid_position(((pos[0] + i),pos[1] + 1)) and
                 self.game_board.board[pos[0] + i][pos[1] + 1] is not None):
@@ -680,9 +696,12 @@ class Game:
                     if ((self.game_board.board[pos[0] + 2*i][pos[1] + 2] is None
                         and ((pos[0] + 2*i),(pos[1] + 2))!= original_pos and ((pos[0] + 2*i),(pos[1] + 2)) 
                         not in already_jumped)):
-                        for trail in (self.jump_trail_king((pos[0] + 2*i,pos[1] + 2),original_pos,pos,already_jumped + [pos],team)):
-                            trails.append(
-                            [((pos[0] + 2*i),(pos[1] + 2))] + trail)
+                        if self.jump_trail_king((pos[0] + 2*i,pos[1] + 2),original_pos,pos,already_jumped + [pos],team) != []:
+                            for trail in (self.jump_trail_king((pos[0] + 2*i,pos[1] + 2),original_pos,pos,already_jumped + [pos],team)):
+                                trails.append(
+                                [((pos[0] + 2*i),(pos[1] + 2))] + trail)
+                        else:
+                            trails.append([((pos[0] + 2*i),(pos[1] + 2))])
                     elif ((pos[0] + 2*i),(pos[1] + 2)) == original_pos and original_pos != prev_pos:
                         trails.append([((pos[0] + 2*i),(pos[1] + 2))])
                 
@@ -695,10 +714,12 @@ class Game:
                     if (self.game_board.board[pos[0] + 2*i][pos[1] - 2] is None
                         and ((pos[0] + 2*i),(pos[1] -2))!= original_pos and ((pos[0] + 2*i),(pos[1] - 2)) 
                         not in already_jumped):
-                        
-                        for trail in (self.jump_trail_king((pos[0] + 2*i,pos[1] - 2),original_pos,pos, already_jumped + [pos],team)):
-                            trails.append(
-                            [((pos[0] + 2*i),(pos[1] - 2))] + trail)
+                        if self.jump_trail_king((pos[0] + 2*i,pos[1] - 2),original_pos,pos,already_jumped + [pos],team) != []:
+                            for trail in (self.jump_trail_king((pos[0] + 2*i,pos[1] - 2),original_pos,pos, already_jumped + [pos],team)):
+                                trails.append(
+                                [((pos[0] + 2*i),(pos[1] - 2))] + trail)
+                        else:
+                            trails.append[((pos[0] + 2*i),(pos[1] - 2))]()
                     elif ((pos[0] + 2*i),(pos[1] - 2)) == original_pos and original_pos != prev_pos:
                         trails.append([((pos[0] + 2*i),(pos[1] - 2))])
                     

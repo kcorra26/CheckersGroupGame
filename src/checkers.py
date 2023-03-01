@@ -664,7 +664,7 @@ class Game:
             if (self.is_valid_position(((pos[0] + direction),pos[1] - 1)) and
                 (self.game_board.board[(pos[0] + direction)][pos[1] - 1] is not None)):
                 if ((self.game_board.board[(pos[0] + direction)][pos[1] - 1].team != team) and 
-                    self.is_valid_position(((pos[0] + 2*direction),pos[1] + 2))):
+                    self.is_valid_position(((pos[0] + 2*direction),pos[1] - 2))):
                     if self.game_board.board[pos[0] + 2*direction][pos[1] - 2] is None:
                         if self.can_jump((pos[0] + 2*direction,pos[1] - 2),team,False) is False:
                             trails.append([(pos[0] + 2*direction,pos[1] - 2)])
@@ -793,6 +793,7 @@ class Game:
                     if self.game_board.board[i][j].x_pos != pos[1] or self.game_board.board[i][j].y_pos != pos[0]:
                         self.game_board.board[i][j] = None
         self.game_board.board[pos[0]][pos[1]].is_king = True
+        self.game_board.board[pos[0]][pos[1]].team = "Black"
         piece = self.game_board.board[pos[0]][pos[1]]
         if team == "Red":
             self.red_pieces.add(piece)

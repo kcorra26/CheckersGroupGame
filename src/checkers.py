@@ -193,7 +193,7 @@ class Game:
 
         Returns(int):Number of jumps a piece must make from one spot to another
         """
-        if self.find_correct_sequence(old_pos,new_pos,team): 
+        if self.find_correct_sequence(old_pos,new_pos,team) is not None: 
             return len(self.find_correct_sequence(old_pos,new_pos,team)) #- 1
         return 0
 

@@ -216,6 +216,10 @@ class Game:
         original_set_black = set()
         middle_pos = []
         initial_pos = self.game_board.get_piece(old_pos)
+        initial_pos_is_king = False
+        if initial_pos.is_king is True:
+            initial_pos_is_king = True
+
         end_pos = self.game_board.get_piece(new_pos)
         if abs(new_pos[1] - old_pos[1]) != 1 and abs(new_pos[0] - old_pos[0]) != 1:
             for pos in self.middle_positions(old_pos,new_pos,team_making):
@@ -243,6 +247,7 @@ class Game:
         self.red_pieces = original_set_red
         self.black_pieces = original_set_black
         initial_pos.update_position(old_pos)
+        initial_pos.is_king = initial_pos_is_king
         self.game_board.add_piece(initial_pos)
         self.game_board.board[new_pos[0]][new_pos[1]] = None
         print(f"after resetting to {old_pos}. notice how it's the same as the hypothetical even tho it shouldn't be")

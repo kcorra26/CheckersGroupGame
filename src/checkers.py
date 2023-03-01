@@ -217,9 +217,9 @@ class Game:
         middle_pos = []
         initial_pos = self.game_board.get_piece(old_pos)
         end_pos = self.game_board.get_piece(new_pos)
-
-        for pos in self.middle_positions(old_pos,new_pos,team_making):
-            middle_pos.append(self.game_board.get_piece(pos))
+        if abs(new_pos[1] - old_pos[1]) >= 1 and abs(new_pos[0] - old_pos[0]) >= 1:
+            for pos in self.middle_positions(old_pos,new_pos,team_making):
+                middle_pos.append(self.game_board.get_piece(pos))
         for piece in self.red_pieces:
             original_set_red.add(piece)
         for piece in self.black_pieces:
@@ -237,9 +237,9 @@ class Game:
                 print(piece.pos)
             # ok so it doesn't revert the piece back to it's original position, even tho it 
             is_winner = self.is_winner(team_would_win)
-                 
-        for pos in middle_pos:
-            self.game_board.add_piece(pos) # THESE THREE CALLS DONT WORK. 
+        if middle_pos != [] :       
+            for pos in middle_pos:
+                self.game_board.add_piece(pos) # THESE THREE CALLS DONT WORK. 
         self.red_pieces = original_set_red
         self.black_pieces = original_set_black
         initial_pos.update_position(old_pos)

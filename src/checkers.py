@@ -709,7 +709,7 @@ class Game:
                         #trails.append([])
             if (self.is_valid_position(((pos[0] + i),pos[1] - 1)) and
                 self.game_board.board[pos[0] + i][pos[1] - 1] is not None):
-                if (self.game_board.board[(pos[0] + i)][pos[1] - 1] != team and 
+                if (self.game_board.board[(pos[0] + i)][pos[1] - 1].team != team and 
                     self.is_valid_position(((pos[0] + 2*i),pos[1] - 2))):
                     if (self.game_board.board[pos[0] + 2*i][pos[1] - 2] is None
                         and ((pos[0] + 2*i),(pos[1] -2))!= original_pos and ((pos[0] + 2*i),(pos[1] - 2)) 

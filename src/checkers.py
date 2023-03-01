@@ -242,6 +242,8 @@ class Game:
         self.game_board.add_piece(initial_pos)
         self.game_board.board[new_pos[0]][new_pos[1]] = None
         return is_winner
+    
+    
 
         
     def is_done(self):
@@ -509,11 +511,11 @@ class Game:
         Returns (bool): whether the specified team is a winner
         """
         if team == "Red":
-            if len(self.black_pieces) == 0 and len(self.all_team_moves("Black")) == 0:
+            if len(self.black_pieces) == 0 or len(self.all_team_moves("Black")) == 0:
                 return True
             return False
         if team == "Black":
-            if len(self.red_pieces) == 0 and len(self.all_team_moves("Red")) == 0:
+            if len(self.red_pieces) == 0 or len(self.all_team_moves("Red")) == 0:
                 return True
             return False
 

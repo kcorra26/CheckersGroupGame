@@ -304,19 +304,21 @@ class Game:
         current_piece = self.game_board.board[old_pos[0]][old_pos[1]]
         if current_piece.is_king is False:
             for sequence in self.jump_trail_piece(old_pos,team):
-                if choose_sequence is None and sequence[len(sequence) - 1] == new_pos:
-                    choose_sequence = sequence
-                elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
-                    if len(choose_sequence) < len(sequence):
+                if len(sequence) > 0:
+                    if choose_sequence is None and sequence[len(sequence) - 1] == new_pos:
                         choose_sequence = sequence
+                    elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
+                        if len(choose_sequence) < len(sequence):
+                            choose_sequence = sequence
             return choose_sequence
         if current_piece.is_king is True:
             for sequence in self.jump_trail_king(old_pos, old_pos, None, [], team):
-                if choose_sequence == None and sequence[len(sequence) - 1] == new_pos:
-                    choose_sequence = sequence
-                elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
-                    if len(choose_sequence) < len(sequence):
+                if len(sequence) > 0:
+                    if choose_sequence == None and sequence[len(sequence) - 1] == new_pos:
                         choose_sequence = sequence
+                    elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
+                        if len(choose_sequence) < len(sequence):
+                            choose_sequence = sequence
             return choose_sequence
     
     def middle_positions(self,old_pos,new_pos,team):

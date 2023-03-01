@@ -588,7 +588,7 @@ class Game:
             direction = -1
         if team == "Black":
             direction = 1
-        if (current_spot is None and is_king is False) or (current_spot is not None and not current_spot.is_king):
+        if (current_spot is None and is_king is False) or (current_spot is not None and is_king is False):
             if self.is_valid_position((pos[0] + direction, pos[1] + 1)):
                 if (self.game_board.board[pos[0] + direction][pos[1] + 1] is not None
                     and self.game_board.board[pos[0] + direction][pos[1] + 1].team != team):
@@ -772,17 +772,18 @@ class Game:
                     if self.game_board.board[i][j].x_pos != pos[1] or self.game_board.board[i][j].y_pos != pos[0]:
                         self.game_board.board[i][j] = None
         self.game_board.board[pos[0]][pos[1]].is_king = True
+        piece = self.game_board.board[pos[0]][pos[1]]
         if team == "Red":
-            self.red_pieces.add(Piece(pos,"Red", True))
+            self.red_pieces.add(piece)
         if team == "Black":
-            self.black_pieces.add(Piece(pos,"Black",True))
+            self.black_pieces.add(piece)
     
     def add_piece(self,pos,team):
         self.game_board.board[pos[0]][pos[1]] = Piece((pos[0],pos[1]),team)
         if team == "Red":
-            self.red_pieces.add(Piece((pos[0],pos[1]),team))
+            self.red_pieces.add(self.game_board.board[pos[0]][pos[1]])
         if team == "Black":
-            self.black_pieces.add(Piece((pos[0],pos[1]),team))
+            self.black_pieces.add(self.game_board.board[pos[0]][pos[1]])
 
 
         
@@ -912,7 +913,7 @@ class Piece():
         """
         return self.is_king
 
-    """def can_move(self, new_pos):
+    def can_move(self, new_pos):
         '''
         Determines if Piece can move to the new position, based on the rules of 
         checkers for a Piece (e.g. Pieces can only move forward)
@@ -939,7 +940,7 @@ class Piece():
             if (abs(new_pos[1] - self.y_pos) == 1 and abs(new_pos[0] - self.x_pos) == 1):
                 return True
             return False
-        """
+        
     
    
 

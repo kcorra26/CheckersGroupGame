@@ -804,6 +804,8 @@ class Game:
             return True
         return False
 
+    def piece_at_pos(self,pos):
+        return self.game_board.get_piece(pos)
 
     def draw(self, team): 
         """

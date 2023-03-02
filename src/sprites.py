@@ -36,10 +36,14 @@ class PieceSprite(pygame.sprite.Sprite):
                 self.image = pygame.transform.scale(pygame.image.load('black.png'), (sq_size,sq_size))
         self.rect = self.image.get_rect()
 
-    def update(self):
+    def update(self):  
         '''
         called in every frame - updates the position of the sprite
         piece.pos = (row, col) = (y, x)
+
+        args:
+            None
+
         '''
-        self.rect.x = self.sq_size * self.piece.col
-        self.rect.y = self.sq_size * self.piece.row
+        self.rect.x = self.sq_size * self.piece.x_pos
+        self.rect.y = self.sq_size * self.piece.y_pos

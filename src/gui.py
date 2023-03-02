@@ -15,7 +15,7 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
-from mocks import Piece, MockCheckerboard, MockGame, CheckersGameBotMock
+from checkers import Board, Game, Piece
 from sprites import PieceSprite
 from bot import RandomBot, SmartBot
 
@@ -55,6 +55,7 @@ class CheckersPlayer():
 
         returns(bool): whether these two players can play checkers
         '''
+        assert isinstance(other, CheckersPlayer)
         if not self.is_bot and not other.is_bot:
             self.color = 'Black'
             other.color = 'Red'
@@ -79,7 +80,7 @@ class CheckersPlayer():
 
 class GUIPlayer():
 
-    def __init__(self, game:MockGame, player_1: CheckersPlayer, \
+    def __init__(self, game:Game, player_1: CheckersPlayer, \
                  player_2:CheckersPlayer):
         """
         init function for GUI Player
@@ -88,7 +89,7 @@ class GUIPlayer():
             board: the board being played
         """
         self.game = game
-        self.board = game.board
+        self.board = game.game_board
         self.ROWS = game.width
         self.sq_size = WIDTH // game.width
 
@@ -96,8 +97,7 @@ class GUIPlayer():
             self.players = [player_1, player_2]
             self.curr_player = self.players[0]
         else: 
-            print('these two bots have the same color and cannot \
-                  play checkers')
+            raise TypeError('These two bots have the same team and cannot play against each other')
 
         #attributes for game play
         self.all_sprites_list = pygame.sprite.Group()
@@ -239,6 +239,19 @@ class GUIPlayer():
         else:
             self.curr_player = self.players[0]
         return
+    
+    def bot_play_turn(self):
+        '''
+        plays current turn for bot, ensures that the current player is
+        a bot, then makes move suggested by bot
+
+        args: None
+        '''
+        assert self.curr_player.is_bot
+        pygame.time.wait(1000) #bot delay (edit later)
+        org_pos, new_pos = self.curr_player.bot.suggest_move()
+        self.selected_piece = self.game.get_piece(org_pos[0], org_pos[1])
+        self.move_selected_piece(new_pos[0], org_pos[1])
 
     def play_checkers(self):
         """
@@ -251,28 +264,24 @@ class GUIPlayer():
         run = True
         while run:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT or self.game.is_done():
                     run = False
                 elif self.curr_player.is_bot:
-                    pygame.time.wait(1000) #delay
-                    org_pos, new_pos = self.curr_player.bot.suggest_move()
-                    self.selected_piece = self.game.get_piece(org_pos[0], org_pos[1])
-                    self.move_selected_piece(new_pos[0], org_pos[1])
+                    self.bot_play_turn()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     #print('MOUSEDOWN')
                     pos = pygame.mouse.get_pos() #this pos is in (x,y)
                     row = pos[1] // self.sq_size #y-pos
                     col = pos[0] //self.sq_size #x-pos
                     if self.selected_piece is None:
-                        piece = self.game.get_piece(row, col)
+                        piece = self.board.get_piece((row, col))
                         if piece is None or piece.team != self.curr_player.color:
                             break
                         self.selected_piece = piece
                         self.draw_board() #draws possible moves
                     else:
                         self.move_selected_piece(row, col) #moves if valid move
-                else:
-                    self.draw_board()
+                self.draw_board()
 
         pygame.display.quit()
         pygame.quit()
@@ -291,10 +300,11 @@ player = GUIPlayer(ex_board, play1, play2)
 player.play_checkers()
 
 #human v human test
-ex_board = CheckersGameBotMock()
+
+
+'''
+ex_board = Game()
 play1 = CheckersPlayer()
 play2 = CheckersPlayer()
 player = GUIPlayer(ex_board, play1, play2)
 player.play_checkers()
-
-'''

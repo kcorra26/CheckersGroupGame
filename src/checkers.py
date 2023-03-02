@@ -240,7 +240,8 @@ class Game:
         initial_pos.update_position(old_pos)
         initial_pos.is_king = initial_pos_is_king
         self.game_board.add_piece(initial_pos)
-        self.game_board.board[new_pos[0]][new_pos[1]] = None
+        if old_pos != new_pos:
+            self.game_board.board[new_pos[0]][new_pos[1]] = None
         return is_winner
     
     

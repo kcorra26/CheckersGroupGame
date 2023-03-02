@@ -232,7 +232,6 @@ def select_piece(game:GameType, pos:tuple, team:str) -> None:
     Returns: None
     """
     col, row = pos
-    piece = game.game_board.board[row][col]
     all_poss_moves = game.list_moves((row, col))
     print_game(game, all_poss_moves)
     print(all_poss_moves)
@@ -250,15 +249,15 @@ def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
     #whichever player is on Black goes first
     current = players["Black"]
     #Play the game until there's a winner
-    while game.winner is None:
+    while not game.is_done():
             # Print the board
             print()
             print_game(game)
             print()
 
+
             cur_space, new_space = current.get_move()
             game.move_piece(cur_space, new_space, current.team)
-            print("New position:")
 
             # Update the player
             if current.team == "Black":
@@ -266,12 +265,16 @@ def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
             elif current.team == "Red":
                 current = players["Black"]
 
+
     print()
     print_game(game)
 
-    winner = game.winner
-    if winner is not None:
-        print(f"The winner is {players[winner].name}!")
+    if game.is_winner("Red"):
+        game.winner = "Red"
+        print(f"The winner is {players['Red'].name}!")
+    elif game.is_winner("Black"):
+        game.winner = "Black"
+        print(f"The winner is {players['Black'].name}!")
     else:
         print("It's a tie!")
 

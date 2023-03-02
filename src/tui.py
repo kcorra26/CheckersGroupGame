@@ -56,7 +56,6 @@ class TUIPlayer:
                 the next move (in seconds)
         """
         self.game = game
-        #self.board is a list of lists
         self.board = game.game_board
         self.team = team
         self.bot_delay = bot_delay
@@ -105,7 +104,7 @@ class TUIPlayer:
                              + Style.RESET_ALL)
                 cur_y = self._input_to_valid_move(cur_y, "y")
 
-                if self.game.game_board[cur_y][cur_x] is not None:
+                if self.board.board[cur_y][cur_x] is not None:
                     select_piece(self.game, (cur_x, cur_y), self.team)
 
                 dest_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the column you want to move to > " 
@@ -167,7 +166,7 @@ def print_game(game:GameType, poss_moves:Optional[list]=[]):
 
     Returns: None
     """
-    board = game.game_board
+    board = game.game_board.board
     width = game.width
     num_pairs = int(width/2)
     even_line_top = Fore.WHITE + (
@@ -233,7 +232,6 @@ def select_piece(game:GameType, pos:tuple, team:str) -> None:
     Returns: None
     """
     col, row = pos
-    piece = game.game_board[row][col]
     all_poss_moves = game.list_moves((row, col))
     print_game(game, all_poss_moves)
     print(all_poss_moves)
@@ -251,15 +249,15 @@ def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
     #whichever player is on Black goes first
     current = players["Black"]
     #Play the game until there's a winner
-    while game.winner is None:
+    while not game.is_done():
             # Print the board
             print()
             print_game(game)
             print()
 
+
             cur_space, new_space = current.get_move()
             game.move_piece(cur_space, new_space, current.team)
-            print("New position:")
 
             # Update the player
             if current.team == "Black":
@@ -267,12 +265,16 @@ def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
             elif current.team == "Red":
                 current = players["Black"]
 
+
     print()
     print_game(game)
 
-    winner = game.winner
-    if winner is not None:
-        print(f"The winner is {players[winner].name}!")
+    if game.is_winner("Red"):
+        game.winner = "Red"
+        print(f"The winner is {players['Red'].name}!")
+    elif game.is_winner("Black"):
+        game.winner = "Black"
+        print(f"The winner is {players['Black'].name}!")
     else:
         print("It's a tie!")
 

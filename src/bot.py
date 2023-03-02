@@ -9,7 +9,7 @@ Bots for Checkers
 (and command for running simulations with bots)
 """
 import random
-from typing import Union # idk what this does yet
+from typing import Union 
 
 import click
 from checkers import Board, Game, Piece
@@ -77,7 +77,7 @@ class SmartBot:
         self._color = color
         self._opponent_color = opponent_color
 
-    def suggest_move(self, game): # do i need to pass the game in every time?
+    def suggest_move(self, game): 
         """
         Suggests a move
 
@@ -112,7 +112,6 @@ class SmartBot:
         king_moves = {} 
         max_jumps = 0
         centermost = {}
-        #center = self._game.width // 2
         center = game.width // 2
         dist_from_center = center
     
@@ -123,29 +122,9 @@ class SmartBot:
             for end_pos in list_moves:
                 row, col = end_pos
                 
-                
-                exists = False
-                for piece in game.black_pieces:
-                    if piece.pos == start_pos:
-                        exists = True
-                if not exists:
-                    print(f'checking is_winning with {start_pos}, {end_pos}, but it doesnt exist in piece before winning move')
-                else:
-                    print("works before winning move!")
-                if game.is_winning_move(start_pos, end_pos, self._color, self._color): # self._color
+                if game.is_winning_move(start_pos, end_pos, self._color, self._color): 
                     print("picked from winning moves")
                     return (start_pos, end_pos)
-                
-                #if self._game.is_winning_move(start_pos, end_pos, 
-                 #                           self._opponent_color):
-                exists = False
-                for piece in game.black_pieces:
-                    if piece.pos == start_pos:
-                        exists = True
-                if not exists:
-                    print(f'{start_pos} doesnt exist after win move 1')
-                else:
-                    print("works after winning move 1!")
 
                 if game.is_winning_move(start_pos, end_pos, 
                                         self._color, self._opponent_color):
@@ -193,14 +172,6 @@ class SmartBot:
                     lst.append(end_pos)
                     max_moves[start_pos] = lst
                 # if the number of jumps is fewer than the max, don't consider
-                
-                """
-                if game.can_jump(start_pos, self._color):
-                    print("considering jump move")
-                    print(start_pos, end_pos)
-                    lst = max_moves.get((start_pos), [])
-                    lst.append(end_pos)
-                    max_moves[start_pos] = lst """
         
         # if there is only one max move, take it
         if self._one_move(max_moves) is not None:
@@ -271,15 +242,10 @@ class SmartBot:
         return None
                 
         
-class BotPlayer: # playing against each other
+class BotPlayer: 
     """
     Simple class to store information about a bot player in a simulation.
     """
-
-    #name: str #idk what this stuff does
-    #bot: Union[RandomBot, SmartBot]
-    #color: str
-    #wins: int
 
     def __init__(self, name, game, color,
                  opponent_color):
@@ -301,6 +267,7 @@ class BotPlayer: # playing against each other
         self.color = color
         self.wins = 0
     
+
 def simulate(game, n: int, bots):
     """
     Simulate multiple games between two bots
@@ -335,26 +302,21 @@ def simulate(game, n: int, bots):
             
             if game.is_winner("Red"):
                 bots["Red"].wins += 1
+                print(f'Red wins! num red wins: {bots["Red"].wins}')
             elif game.is_winner("Black"):
                 bots["Black"].wins += 1
+                print(f'Black wins! num black wins: {bots["Black"].wins}')
             print(f'{old_color} : {og_pos}, {new_pos}') # but (2, 3) is an empty space
             print("after decision:")
             print(game)
-            print("red pieces:")
-            for piece in game.red_pieces:
-                print(piece.pos)
-            print("black pieces")
-            for piece in game.black_pieces:
-                print(piece.pos)
             print("----------------------------------------")
 
-# for TUI integration, not fully complete (but have fully integrated with GUI)
+# idk if we will need this
 @click.command(name="checkers-bot")
 @click.option("-n", "--num-games", type=click.INT, default=10000)
 
-# waiting on Game Logic in order to test the percentage of wins
 def cmd(num_games, player1, player2):
-    game = checkers.Game()
+    game = Game()
 
     bot1 = BotPlayer(player1, game, "Black", "Red")
     bot2 = BotPlayer(player2, game, "Red", "Black")
@@ -371,6 +333,6 @@ def cmd(num_games, player1, player2):
     print(f"Bot 2 ({player2}) wins: {100 * bot2_wins / num_games:.2f}%")
     print(f"Ties: {100 * ties / num_games:.2f}%")
 
-
+    
     if __name__ == "__main__": 
         cmd()

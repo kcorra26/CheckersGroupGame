@@ -275,7 +275,6 @@ def simulate(game, n, bots):
 
         while not game.is_done(): 
             og_pos, new_pos = current.bot.suggest_move(game) 
-            print(og_pos, new_pos) #TODO remove print
             game.move_piece(og_pos, new_pos, current.color) 
             old_color = current.color
 

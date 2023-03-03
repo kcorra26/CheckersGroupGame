@@ -10,14 +10,19 @@ Resources Consulted:
     http://programarcadegames.com/python_examples/show_file.php?file=moving_sprites.py
     - this was helpful in initializing the sprite class
 
+    To do:
+    IMKClient Stall detected, *please Report* your user scenario attaching a spindump (or sysdiagnose) that captures the problem - (imkxpc_bundleIdentifierWithReply:) block performed very slowly (2.15 secs).
+
 '''
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
 from checkers import Board, Game, Piece
+from mocks import StubCheckerboard, MockGame
 from sprites import PieceSprite
 from bot import RandomBot, SmartBot
+import click
 
 WIDTH = HEIGHT = 800
 
@@ -89,7 +94,7 @@ class GUIPlayer():
             board: the board being played
         """
         self.game = game
-        self.board = game.game_board
+        #self.board = game.game_board
         self.ROWS = game.width
         self.sq_size = WIDTH // game.width
 
@@ -170,7 +175,7 @@ class GUIPlayer():
         Args:
             None
         '''
-        moves = self.game.list_moves(self.selected_piece)
+        moves = self.game.list_moves(self.selected_piece.pos)
         for row in range(self.ROWS):
             for col in range(self.ROWS):
                 #highlights possible moves in yellow
@@ -215,11 +220,14 @@ class GUIPlayer():
             be moved to
 
         """
-        pos_moves = self.game.list_moves(self.selected_piece)
+        assert self.selected_piece.team == self.curr_player.color
+        pos_moves = self.game.list_moves(self.selected_piece.pos)
+        #print(self.game)
+        #print('selected',self.selected_piece.pos)
         #print(pos_moves, row, col)
         if (row, col) in pos_moves:
             #print('move is possible')
-            self.game.move_piece(self.selected_piece.pos, (row, col))
+            self.game.move_piece(self.selected_piece.pos, (row, col), self.curr_player.color)
             self.update_sprites() #changes locations and kills sprites
             self.switch_player()
         else:
@@ -249,9 +257,11 @@ class GUIPlayer():
         '''
         assert self.curr_player.is_bot
         pygame.time.wait(1000) #bot delay (edit later)
-        org_pos, new_pos = self.curr_player.bot.suggest_move()
-        self.selected_piece = self.game.get_piece(org_pos[0], org_pos[1])
-        self.move_selected_piece(new_pos[0], org_pos[1])
+        org_pos, new_pos = self.curr_player.bot.suggest_move(self.game)
+        #print('org', org_pos, 'new', new_pos)
+        self.selected_piece = self.game.piece_at_pos((org_pos[0], org_pos[1]))
+        #print(self.selected_piece.pos)
+        self.move_selected_piece(new_pos[0], new_pos[1])
 
     def play_checkers(self):
         """
@@ -264,7 +274,11 @@ class GUIPlayer():
         run = True
         while run:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or self.game.is_done():
+                self.draw_board()
+                if event.type == pygame.QUIT:
+                    run = False
+                elif self.game.is_done():
+                    #add something to display who won
                     run = False
                 elif self.curr_player.is_bot:
                     self.bot_play_turn()
@@ -274,37 +288,60 @@ class GUIPlayer():
                     row = pos[1] // self.sq_size #y-pos
                     col = pos[0] //self.sq_size #x-pos
                     if self.selected_piece is None:
-                        piece = self.board.get_piece((row, col))
-                        if piece is None or piece.team != self.curr_player.color:
-                            break
-                        self.selected_piece = piece
+                        piece = self.game.game_board.board[row][col]
+                        if piece is not None and piece.team == self.curr_player.color:
+                            self.selected_piece = piece
                         self.draw_board() #draws possible moves
                     else:
                         self.move_selected_piece(row, col) #moves if valid move
-                self.draw_board()
-
+            else:
+                continue
+                
         pygame.display.quit()
         pygame.quit()
 
-'''
-TO-DO
-way for game to end
-if all team peices cannot be moved
-set up command line interface
+#
+# Command-line interface
+#
 
-#human v. bot test
-ex_board = CheckersGameBotMock()
-play1 = CheckersPlayer()
-play2 = CheckersPlayer(SmartBot(ex_board, 'Red', 'Black'))
-player = GUIPlayer(ex_board, play1, play2)
-player.play_checkers()
+@click.command(name="checkers-gui")
+@click.option('--mode',
+            type=click.Choice(['real', 'stub', 'mock'], 
+                              case_sensitive=False), default="real")
+@click.option('--num-piece-rows', type=click.INT, default=3)
+@click.option('--black-type',
+            type=click.Choice(['human', 'random-bot', 'smart-bot'], 
+                              case_sensitive=False), default="human")
+@click.option('--red-type',
+            type=click.Choice(['human', 'random-bot', 'smart-bot'], 
+                              case_sensitive=False), default="smart-bot")
+@click.option('--bot-delay', type=click.FLOAT, default=0.5)
 
-#human v human test
+def cmd(mode, num_piece_rows, black_type, red_type, bot_delay):
+    if mode == "real":
+        game = Game(num_piece_rows)
+    elif mode == "stub":
+        game = StubCheckerboard(num_piece_rows)
+    elif mode == "mock":
+        game = MockGame(num_piece_rows)
 
+    if black_type == 'human':
+        player1 = CheckersPlayer()
+    elif black_type == 'random-bot':
+        player1 = CheckersPlayer(RandomBot(game, 'Black', 'Red'))
+    else:
+        player1 = CheckersPlayer(SmartBot(game, 'Black', 'Red'))
 
-'''
-ex_board = Game()
-play1 = CheckersPlayer()
-play2 = CheckersPlayer()
-player = GUIPlayer(ex_board, play1, play2)
-player.play_checkers()
+    if red_type == 'human':
+        player2 = CheckersPlayer()
+    elif red_type == 'random-bot':
+        player2= CheckersPlayer(RandomBot(game, 'Red', 'Black'))
+    else:
+        player2 = CheckersPlayer(SmartBot(game, 'Red', 'Black'))
+
+    gui = GUIPlayer(game, player1, player2)
+    gui.play_checkers()
+
+if __name__ == "__main__":
+    cmd()    
+    pass

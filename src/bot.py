@@ -1,9 +1,4 @@
 """
-- basic research on Checkers-playing strategies
-- document the exact strategies we are implementing, citing sources
-- implementation should match cited strategy
-- demonstrate that bot is able to beat a random bot more than 50% of the time
-
 Bots for Checkers
 
 (and command for running simulations with bots)
@@ -21,13 +16,12 @@ class RandomBot:
     Simple Bot that just picks a move at random
     """
 
-    def __init__(self, game, color, 
-                 opponent_color):
+    def __init__(self, game, color, opponent_color):
         """
         Constructor
 
         Args: 
-            game: Game the bot will play on
+            game: Game the bot will play on # this is redundant
             color: Bot's team color
             opponent_color: Opponent's color
         """
@@ -41,29 +35,40 @@ class RandomBot:
 
         Returns: tup(tup(int, int), tup(int, int)) -- suggested move
         """
-        #move_dict = self._game.all_team_moves(self._color)
         move_dict = game.all_team_moves(self._color)
         og_pos = random.choice(list(move_dict))
         end_pos = random.choice(move_dict[og_pos])
-        print("random bot picked at random")
 
         return (og_pos, end_pos) 
 
 
 class SmartBot: 
     """
-    Smart bot. Will do the following:
-    - If there is a winning move, take it #idk if this applies
-    # check for skips?
-    - Otherwise, check if there is a move that will block the opponent
-      from winning. If so, take it. 
-    - Otherwise, pick a move at random
+    Smart bot. Checks for wins, opposing team wins, king moves, jumps, and 
+    centermost moves. 
+    Will do the following:
+    - If there is a winning move, take it 
+    - If taking a move will result in a win for the other team, do not take it
+    - Otherwise, if there is a move that would make a piece a king, take it 
+      (source #2 indicated that I should prioritize this over maximum captures). 
+      If there are multiple such moves, check for jumps and centermost moves.
+    - Otherwise, if there is a move that would result in the most number
+      of jumps or captures, take it (source #1). If there are multiple such 
+      moves, check for centermost move. 
+    - Otherwise, take the move with an end column position closest to the 
+      center of the board (source #1). If there are multiple such moves, 
+      choose one at random.
+    - Otherwise, pick a move at random.
 
-    # research other strategies
+    strategy source #1: 
+    https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win
+    
+    strategy source #2: 
+    https://www.thesprucecrafts.com/how-to-win-at-checkers-411170 
+    
     """
 
-    def __init__(self, game, color, 
-                opponent_color):
+    def __init__(self, game, color, opponent_color):
         """
         Constructor
 
@@ -82,17 +87,6 @@ class SmartBot:
         Suggests a move
 
         Returns: tup(tup(int, int), tup(int, int)) -- suggested move
-        """
-
-        """
-        https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win 
-        - if you have the chance to move more than one way, move toward the
-        center. (a centrallized spot has two moves, while an edge has one)
-        - consider and prioritize opportunities for jumping 
-        
-        https://www.thesprucecrafts.com/how-to-win-at-checkers-411170 
-        - prioritize getting a checker to the end of the board over how many 
-        jumps a move will get you
         """
         # assumming that when there is at least one opportunity to jump, 
         # all_team_moves consists only of those jumping moves
@@ -241,7 +235,10 @@ class SmartBot:
             return (next(iter(dic)), dic[next(iter(dic))][0])
         return None
                 
-        
+#
+# SIMULATION CODE
+#
+
 class BotPlayer: 
     """
     Simple class to store information about a bot player in a simulation.
@@ -254,7 +251,7 @@ class BotPlayer:
 
         Args:
             name: Name of the bot
-            game: Game to play
+            game: Game to play # idk if i need this TODO
             color: Bot's color
             opponent_color: Opponent's color
         """
@@ -273,10 +270,10 @@ def simulate(game, n: int, bots):
     Simulate multiple games between two bots
 
     Args:
-        board: The board to play on
+        game: Game to play
         n: The number of matches to play
         bots: Dictionary mapping piece colors to BotPlayer objects
-        (the bots that will face off in each match) # IDK what this is
+        (the bots that will face off in each match) 
     
     Returns: None
     """
@@ -284,13 +281,12 @@ def simulate(game, n: int, bots):
         # Reset the game
         game.reset_game() 
 
-        # starting player 
+        # the starting player is Black
         current = bots["Black"] 
 
         while not game.is_done(): 
             og_pos, new_pos = current.bot.suggest_move(game) 
-            print(og_pos, new_pos)
-            # the former piece is still in game.black_pieces
+            print(og_pos, new_pos) #TODO remove print
             game.move_piece(og_pos, new_pos, current.color) 
             old_color = current.color
 
@@ -300,20 +296,26 @@ def simulate(game, n: int, bots):
             elif current.color == "Red":
                 current = bots["Black"]
             
-            if game.is_winner("Red"):
-                bots["Red"].wins += 1
-                print(f'Red wins! num red wins: {bots["Red"].wins}')
-            elif game.is_winner("Black"):
-                bots["Black"].wins += 1
-                print(f'Black wins! num black wins: {bots["Black"].wins}')
-            print(f'{old_color} : {og_pos}, {new_pos}') # but (2, 3) is an empty space
+            print(f'{old_color} : {og_pos}, {new_pos}') # TODO remove print
             print("after decision:")
             print(game)
             print("----------------------------------------")
+            
+        if game.is_winner("Red"): # idk if this indent makes a difference
+            bots["Red"].wins += 1
+            print(f'Red wins! num red wins: {bots["Red"].wins}')
+        elif game.is_winner("Black"):
+            bots["Black"].wins += 1
+            print(f'Black wins! num black wins: {bots["Black"].wins}')
 
-# idk if we will need this
+"""
 @click.command(name="checkers-bot")
-@click.option("-n", "--num-games", type=click.INT, default=10000)
+@click.option("-n", "--num-games", type=click.INT, default=1000)
+@click.option("--player1", type=click.Choice(['random', 'smart'], 
+              case_sensitive=False), default='smart')
+@click.option("--player2", type=click.Choice(['random', 'smart'], 
+              case_sensitive=False), default='random')
+"""
 
 def cmd(num_games, player1, player2):
     game = Game()
@@ -333,6 +335,6 @@ def cmd(num_games, player1, player2):
     print(f"Bot 2 ({player2}) wins: {100 * bot2_wins / num_games:.2f}%")
     print(f"Ties: {100 * ties / num_games:.2f}%")
 
-    
-    if __name__ == "__main__": 
-        cmd()
+"""
+if __name__ == "__main__": 
+    cmd()"""

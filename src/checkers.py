@@ -96,7 +96,7 @@ class Game:
         # Runs the create board function, creating a list of lists (grid) with
         # Empty objects at each position in the grid
         #self.game_board.board = Board().board
-        self.game_board = Board(n)
+        self.game_board = Board(n,n)
         self._initialize_checkers()
         # Starts the game of checkers and places all pieces
         self.winner = None

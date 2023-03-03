@@ -96,7 +96,7 @@ class Game:
         # Runs the create board function, creating a list of lists (grid) with
         # Empty objects at each position in the grid
         #self.game_board.board = Board().board
-        self.game_board = Board()
+        self.game_board = Board(n)
         self._initialize_checkers()
         # Starts the game of checkers and places all pieces
         self.winner = None
@@ -473,12 +473,10 @@ class Game:
         """
         if team == "Red":
             if len(self.black_pieces) == 0 or len(self.all_team_moves("Black")) == 0:
-                #self.is_winner = "Red"
                 return True
             return False
         if team == "Black":
             if len(self.red_pieces) == 0 or len(self.all_team_moves("Red")) == 0:
-                #self.is_winner = "Black"
                 return True
             return False
 

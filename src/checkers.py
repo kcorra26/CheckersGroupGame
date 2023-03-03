@@ -2,28 +2,21 @@
 Examples:
     1) Make a new board:
         board = Board()
-
     2) Check whether a given move is feasible:
         board.can_move((0, 1))
         # if they want to just check to see if it can move at all
         board.is_valid_move((0, 1), (1, 2))
         #if they want to check if they can move to a certain place
-
     3) How to obtain all the valid moves for a piece at a given position:
         board.list_moves((0, 1))
-
     4) How to obtain the list of all possible moves a player can make on the 
         board:
         board.all_team_moves(team)
-
     5) How to check whether there is a winner and, if so, who the winner is:
         board.is_winner(team)
-
 """
-
 from enum import Enum
 TeamColor = Enum("TeamColor",  ["RED", "BLACK", "EMPTY"]) 
-
 class Board:
     """Class for representing an empty board of any size"""
     def __init__(self, n=3, a=3):
@@ -34,20 +27,15 @@ class Board:
             n: number of rows in board
             a: number of columns in board
         """
-
         self.width = (2 * n) + 2
         self._num_rows = (2 * n) + 2
         self._num_columns = (2 * a) + 2
         self.board = self._create_board()
-
-
     def _create_board(self): 
         """
         Initializes an empty board, represented by a list of lists where every 
         cell is filled with an Empty object
-
         Args: None
-
         Returns: a board (list of lists) populated with Empty objects
         """
         empty_board = []
@@ -60,7 +48,6 @@ class Board:
     def __str__(self):
         """
         Returns a string representation of the Board.
-
         Parameters: None
         Returns: str
         """
@@ -68,7 +55,6 @@ class Board:
         for row in self.board:
             for spot in row:
                 s+= "| |"
-
             s += "\n" 
         return s
     
@@ -81,8 +67,6 @@ class Board:
     
     def remove_piece(self,pos):
         self.board[pos[0]][pos[1]] = None
-
-
 
 class Game:
     """
@@ -100,37 +84,29 @@ class Game:
         # Color on board determined by even/odd position of x and y
         # n: number of rows of pieces; board length and width is calculated 
         # as 2n + 2
-
         # Set containing all Piece and King objects for the red team
         self.red_pieces = set()
-
         # Set containining all Piece and King objects for the black team
         self.black_pieces = set()
-
         # Width/length of the board; the board is a square
         self.width = (2 * n) + 2
         
         # the number of rows of pieces per team
         self._num_rows = n
-
         # Runs the create board function, creating a list of lists (grid) with
         # Empty objects at each position in the grid
         #self.game_board.board = Board().board
         self.game_board = Board()
-
         self._initialize_checkers()
-
         # Starts the game of checkers and places all pieces
         self.winner = None
+
         self.since_piece_removed_black = 0
         self.since_piece_removed_red = 0
-
   
-
     def __str__(self):
         """
         Returns a string representation of the Game.
-
         Parameters: None
         Returns: str
         """
@@ -148,7 +124,6 @@ class Game:
         """
         Turns every piece that reaches the last row of the opposite side and
         isn't a king into a king
-
         Parameters:None
         Returns:None
         """
@@ -168,7 +143,6 @@ class Game:
     def will_king(self,old_pos,new_pos,team):
         """
         Determines if a certain move will make the piece become a king
-
         Parameters:
             old_pos(tup): original position of the piece
             new_pos(tup): new position of the piece
@@ -193,17 +167,16 @@ class Game:
             old_pos(tup):original position
             new_pos(tup): new position
             team(str): team of piece at the original position
-
         Returns(int):Number of jumps a piece must make from one spot to another
         """
         if self.find_correct_sequence(old_pos,new_pos,team) is not None: 
             return len(self.find_correct_sequence(old_pos,new_pos,team)) #- 1
         return 0
 
+
     def is_winning_move(self, old_pos, new_pos, team_making, team_would_win):
         """
         Determines if a move will make corresponding piece's team win
-
         Parameters:
             old_pos(tup): original position
             new_pos(tup): new position
@@ -222,7 +195,6 @@ class Game:
         initial_pos_is_king = False
         if initial_pos.is_king is True:
             initial_pos_is_king = True
-
         end_pos = self.game_board.get_piece(new_pos)
         if abs(new_pos[1] - old_pos[1]) != 1 and abs(new_pos[0] - old_pos[0]) != 1:
             for pos in self.middle_positions(old_pos,new_pos,team_making):
@@ -233,7 +205,7 @@ class Game:
             original_set_black.add(piece)
         
         if self.is_valid_move(old_pos,new_pos):
-            self.move_piece(old_pos,new_pos, team_making)
+            self.move_piece(old_pos,new_pos, team_making, True)
             is_winner = self.is_winner(team_would_win)
         if middle_pos != [] :       
             for pos in middle_pos:
@@ -248,15 +220,10 @@ class Game:
             self.game_board.board[new_pos[0]][new_pos[1]] = None
         return is_winner
     
-    
-
-        
     def is_done(self):
         """
         Determines if the game is over
-
         Parameters: None
-
         Returns(bool): if the game is over
         """
         if self.is_winner("Red") or self.is_winner("Black"):
@@ -264,20 +231,16 @@ class Game:
         if self._is_draw():
             return True
         return False
-
-
                 
-    def move_piece(self, old_pos, new_pos,team):
+    def move_piece(self, old_pos, new_pos, team, checking_winner=False):
         """
         Ensures the piece is in play, moves the piece at the old position to 
         the new position if the new position is valid, and notifies the player 
         if invalid. If the Piece reaches the end of the board, it changes into
         a King object. The piece can only be moved one space at a time
-
         Parameters:
             old_pos: tuple(int, int)
             new_pos: tuple(int, int)
-
         Returns: None
         """
         current_piece = self.game_board.get_piece(old_pos)
@@ -297,24 +260,25 @@ class Game:
                             self.black_pieces.remove(piece)
                             self.black_pieces.add(self.game_board.board[new_pos[0]][new_pos[1]])
                 self.make_king()
-                if team == "Red":
-                    self.since_piece_removed_red +=1
-                if team == "Black":
-                    self.since_piece_removed_black +=1
 
+                if not checking_winner:
+                    if team == "Red":
+                        self.since_piece_removed_red += 1
+                    if team == "Black":
+                        self.since_piece_removed_black += 1
             else: 
                 self.jump_piece(old_pos, new_pos, team)
-                if team == "Red":
-                    self.since_piece_removed_red = 0
-                if team == "Black":
-                    self.since_piece_removed_black = 0
+                if not checking_winner:
+                    if team == "Red":
+                        self.since_piece_removed_red = 0
+                    if team == "Black":
+                        self.since_piece_removed_black = 0
 
 
     def find_correct_sequence(self, old_pos,new_pos,team):
         """
         Finds the best sequence that a piece should jump through to get to a 
         destination
-
         Parameters:
             old_pos(tup): the original positon
             new_pos(tup): new position
@@ -322,7 +286,6 @@ class Game:
         Returns(list): The best sequence a piece should go through to get to a
         destination
         """
-
         choose_sequence = None # something about this is wrong
         current_piece = self.game_board.board[old_pos[0]][old_pos[1]]
         if current_piece.is_king is False:
@@ -344,11 +307,11 @@ class Game:
                             choose_sequence = sequence
             return choose_sequence
     
+
     def middle_positions(self,old_pos,new_pos,team):
         """
         Returns all the spots a piece must go thorugh when jumping from one spot
         to another
-
         Parameters:
             old_pos(tup): the original positon
             new_pos(tup): new position
@@ -357,7 +320,6 @@ class Game:
         Returns(list): All the spot a piece must go through when jumping from one 
         spot to another
         """
-
         middle_positions = []
         full_sequence = [old_pos] + self.find_correct_sequence(old_pos,new_pos,team)
         
@@ -366,8 +328,8 @@ class Game:
                 (full_sequence[i][1] + full_sequence[i+1][1])/2)
                 middle_positions.append(middle_pos)
         return middle_positions
-
         
+
     def jump_piece(self,old_pos,new_pos,team):
         """
         Makes a piece jump from one spot to another, only under the condition
@@ -378,8 +340,6 @@ class Game:
             team: team of the piece at the original position
         Returns:None
         """
-
-
         current_piece = self.game_board.board[old_pos[0]][old_pos[1]]
         if self.is_valid_move(old_pos,new_pos):
             for pos in self.middle_positions(old_pos,new_pos,team):
@@ -389,7 +349,6 @@ class Game:
                 if team == "Black":
                     self._remove_piece((int(pos[0]),int(pos[1])),"Red")
                 self.game_board.remove_piece((int(pos[0]),int(pos[1])) )
-
             if old_pos != new_pos:
                 self._remove_piece(old_pos,team)
                 self.game_board.board[int(old_pos[0])][int(old_pos[1])] = None
@@ -400,7 +359,6 @@ class Game:
             
                 if team == "Black":
                     self.black_pieces.add(self.game_board.board[int(new_pos[0])][int(new_pos[1])])
-
                 self.make_king()
         
         
@@ -414,7 +372,6 @@ class Game:
     def _remove_piece(self, pos,team):
         """
         Removes a piece at a specific position. 
-
         Parameters: 
             pos: tuple(int, int)
             team: team of the piece
@@ -437,15 +394,11 @@ class Game:
             self.black_pieces.remove(piece)
         else:
             self.red_pieces.remove(piece)
-
-
     def _initialize_checkers(self):
         """
         Adds all the pieces to the board in starting positions and to the 
         respective team sets
-
         Parameters: None
-
         Returns: None
         """
         """"for i in range(3):
@@ -471,12 +424,10 @@ class Game:
                     self.game_board.add_piece(piece)
                     self.red_pieces.add(piece)
     
-
     def reset_game(self):
         """
         Resets the game, putting the pieces back to where they were initially
         and refilling the red and black piece set
-
         Parameters:None
         Returns:None
         """
@@ -494,7 +445,6 @@ class Game:
         Maps the location of each piece that has at least one valid move to 
         a list of valid next moves, ultimately returning a dictionary of all 
         possible moves for that team. 
-
         Args: 
             Team (TeamColor): the team to get moves for
         Returns: 
@@ -513,43 +463,36 @@ class Game:
                     team_moves[(piece.y_pos,piece.x_pos)] = self.list_moves((piece.y_pos,piece.x_pos))
         
         return team_moves
-
                         
     def is_winner(self, team): 
         """
         Determines if the given team is the winner
-
         Args:
             team(TeamColor) - the team who is being checked if it is winner
-
         Returns (bool): whether the specified team is a winner
         """
         if team == "Red":
             if len(self.black_pieces) == 0 or len(self.all_team_moves("Black")) == 0:
-                game.is_winner = "Red"
+                #self.is_winner = "Red"
                 return True
             return False
         if team == "Black":
             if len(self.red_pieces) == 0 or len(self.all_team_moves("Red")) == 0:
-                game.is_winner = "Black"
+                #self.is_winner = "Black"
                 return True
             return False
-
 
     def can_move(self, pos):
         """
         Determines if the piece at position specified by pos has available 
         moves.
-
         Args: 
             pos (tuple) - a tuple representing the position of the Piece
-
         Return (bool) whether the piece at given position has available moves
         """
         if len(self.list_moves(pos))> 0:
             return True
         return False
-
         
     def is_valid_position(self,pos):
         """
@@ -561,8 +504,6 @@ class Game:
         if 0 <= pos[0] <= self.width - 1 and 0 <= pos[1] <= self.width - 1:
             return True
         return False 
-
-
     def list_moves(self,pos):
         """
         Lists all the moves of a piece at a position
@@ -582,7 +523,6 @@ class Game:
         else:
             return self.list_moves_king(pos,current_piece.team)
         
-
     def can_jump(self,pos,team,is_king):
         """
         Determines if a piece can jump at a position
@@ -636,7 +576,6 @@ class Game:
             team: team of piece
         Returns(list): A list of lists of all the sequences a piece can jump throuogh
         """
-
         trails = []
         current_piece = self.game_board.board[pos[0]][pos[1]]
         direction = None
@@ -667,7 +606,6 @@ class Game:
                             trails.append([(pos[0] + 2*direction,pos[1] - 2)] + trail)
             return trails
     
-
     def jump_trail_king(self, pos,original_pos,prev_pos,already_jumped,team):
         """
         Returns a sequences representing all the possible ways a king piece can jump
@@ -714,7 +652,6 @@ class Game:
                         trails.append([((pos[0] + 2*i),(pos[1] - 2))])
                         
         return trails
-
    
     def list_moves_piece(self,pos,team):
         current_piece = self.game_board.get_piece(pos)
@@ -729,7 +666,6 @@ class Game:
             if self.game_board.board[pos[0] + current_piece.dir][pos[1] - 1] is None:
                 positions.append(((pos[0] + current_piece.dir),(pos[1] - 1)))
         return positions
-
         
     def list_moves_king(self,pos,team):
         current_piece = self.game_board.board[pos[0]][pos[1]]
@@ -748,7 +684,6 @@ class Game:
         
         return positions
         
-
     def is_valid_move(self, curr_pos, new_pos):
         """
         Determines if moving from one position to another is a valid move
@@ -763,8 +698,6 @@ class Game:
         if new_pos not in self.list_moves(curr_pos): # why is current_piece necessary here?
             return False
         return True
-
-
     def remove_pieces(self,pos,team):
         self.red_pieces = set()
         self.black_pieces = set()
@@ -781,15 +714,12 @@ class Game:
         if team == "Black":
             self.black_pieces.add(piece)
     
-
     def add_piece(self,pos,team):
         self.game_board.board[pos[0]][pos[1]] = Piece((pos[0],pos[1]),team)
         if team == "Red":
             self.red_pieces.add(self.game_board.board[pos[0]][pos[1]])
         if team == "Black":
             self.black_pieces.add(self.game_board.board[pos[0]][pos[1]])
-
-
     def resign(self, team): 
         """
         Allows one team to resign and designates the other team as winner.
@@ -804,7 +734,6 @@ class Game:
             self.winner = "Black"
         self.winner = "Red"
     
-
     def _is_draw(self):
         """
         Determines if the state of the game is a draw; the game is a draw if 
@@ -816,14 +745,12 @@ class Game:
         """
         if self.all_team_moves("Red") == {} and self.all_team_moves("Black") == {}:
             return True
-        if self.since_piece_removed_black >=40 or self.since_piece_removed_red >=40:
+        if self.since_piece_removed_black >= 40 or self.since_piece_removed_red >= 40: 
             return True
         return False
 
     def piece_at_pos(self,pos):
-        return self.game_board.get_piece()
-    
-
+        return self.game_board.get_piece(pos)
 
     def draw(self, team): 
         """
@@ -841,7 +768,6 @@ class Game:
         raise NotImplementedError
 
 
-
 class Piece(): 
     """
     Class representing playable pieces on the board that are not kings
@@ -851,23 +777,18 @@ class Piece():
         Constructor for the Piece class. Utilizes the x and y positions of the 
         Piece to calculate the space color and if the color is not dark, will 
         notify that this Piece cannot be placed at this location.
-
         Args: 
             pos(tuple) - a tuple with two values, representing the position of
             the Piece object (row, col)
             team(TeamColor) - the team the Piece is on
-
         Returns: None
         """
         #Piece's position represented by an (int, int) tuple with (x,y) position
-
         # Piece's x position or col
         self.x_pos = pos[1]
-
         # Piece's y position or row
         self.y_pos = pos[0]
         self.pos = (self.y_pos,self.x_pos)
-
         # TeamColor enum representing the Piece's team
         self.team = team_color
         self.is_king = is_king
@@ -876,7 +797,6 @@ class Piece():
             self.dir = -1
         else:
             self.dir = 1
-
         # Color of the space that the Piece is on; by the rules, must always be 
         # on a dark space, so raises an AssertionError if this doesn't happen as
         # an additional verifier
@@ -889,7 +809,6 @@ class Piece():
     def __str__(self):
         """
         Returns a string representation of the piece.
-
         Parameters: None
         Returns: str
         """
@@ -902,7 +821,6 @@ class Piece():
                 return "|R|"
             return "|B|"
        
-
     def update_position(self, pos):
         """
         Changes the x and y positions of the piece. Does not check if the new 
@@ -916,23 +834,18 @@ class Piece():
         self.x_pos = pos[1]
         self.pos = pos
         
-
     def is_king(self):
         """
         Determines if a Piece object is a king or not
         Returns (bool): a Piece object is always a king so this will return True
         """
         return self.is_king
-
-
     def can_move(self, new_pos):
         '''
         Determines if Piece can move to the new position, based on the rules of 
         checkers for a Piece (e.g. Pieces can only move forward)
-
         Args: 
             new_pos (tuple): a tuple representing the new position
-
         Returns (bool): whether the Piece can move to that position. Note that 
         this does not take into account whether another Piece is in new_position
         , which is handled by the board method
@@ -955,8 +868,6 @@ class Piece():
         
     
    
-
-
 from typing import Union
 from mocks import StubCheckerboard, MockGame
 GameType = Union[Game, MockGame, StubCheckerboard]

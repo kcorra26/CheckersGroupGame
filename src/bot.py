@@ -92,14 +92,12 @@ class SmartBot:
         # all_team_moves consists only of those jumping moves
         #move_dict = self._game.all_team_moves(self._color) # but self.color works?
         move_dict = game.all_team_moves(self._color)
-        print(move_dict)
 
         # if there is just one move in the dictionary (ie if there is one 
         # key and that key just has one tuple in its list):
         if self._one_move(move_dict) is not None:
             # return the position of the key and the first (and only) value 
             # in the value list
-            print("only option")
             return self._one_move(move_dict)
         
         max_moves = {} 
@@ -117,12 +115,10 @@ class SmartBot:
                 row, col = end_pos
                 
                 if game.is_winning_move(start_pos, end_pos, self._color, self._color): 
-                    print("picked from winning moves")
                     return (start_pos, end_pos)
 
                 if game.is_winning_move(start_pos, end_pos, 
                                         self._color, self._opponent_color):
-                    print("winning move exists, ignoring")
                     continue
                 
                 #if self._game.will_king(start_pos, end_pos, self._color): 
@@ -133,7 +129,6 @@ class SmartBot:
 
         # if there is only one king move, take it
         if self._one_move(king_moves) is not None:
-            print("picked from king moves")
             return self._one_move(king_moves)
         elif king_moves == {}:
             # considers the original list
@@ -169,11 +164,9 @@ class SmartBot:
         
         # if there is only one max move, take it
         if self._one_move(max_moves) is not None:
-            print("picked from sole max_move")
             return self._one_move(max_moves)
         elif max_moves == {}: 
             # new dict includes all king moves or all of move_dict
-            print("no jumps")
             consider2 = consider
         else:
             # new dict includes only moves with the most jumps
@@ -198,20 +191,16 @@ class SmartBot:
         
         # if there is only one centermost move, take it
         if self._one_move(centermost) is not None:
-            print(consider2)
-            print("only one centermost option")
             return self._one_move(centermost)
         elif centermost == {}: 
             # randomly pick from the max_jump move options 
             og_pos = random.choice(list(consider2))
             end_pos = random.choice(consider2[og_pos])
-            print("random from max jump")
             return (og_pos, end_pos)
         else: 
             # if there is more than one centermost move, randomly pick 
             og_pos = random.choice(list(centermost))
             end_pos = random.choice(centermost[og_pos])
-            print("random from centermost")
             return (og_pos, end_pos)
 
     def _one_move(self, dic): 
@@ -265,7 +254,7 @@ class BotPlayer:
         self.wins = 0
     
 
-def simulate(game, n: int, bots):
+def simulate(game, n, bots):
     """
     Simulate multiple games between two bots
 
@@ -296,26 +285,19 @@ def simulate(game, n: int, bots):
             elif current.color == "Red":
                 current = bots["Black"]
             
-            print(f'{old_color} : {og_pos}, {new_pos}') # TODO remove print
-            print("after decision:")
-            print(game)
-            print("----------------------------------------")
-            
-        if game.is_winner("Red"): # idk if this indent makes a difference
+        if game.is_winner("Red"): 
             bots["Red"].wins += 1
-            print(f'Red wins! num red wins: {bots["Red"].wins}')
         elif game.is_winner("Black"):
             bots["Black"].wins += 1
-            print(f'Black wins! num black wins: {bots["Black"].wins}')
 
-"""
+
 @click.command(name="checkers-bot")
 @click.option("-n", "--num-games", type=click.INT, default=1000)
 @click.option("--player1", type=click.Choice(['random', 'smart'], 
               case_sensitive=False), default='smart')
 @click.option("--player2", type=click.Choice(['random', 'smart'], 
               case_sensitive=False), default='random')
-"""
+
 
 def cmd(num_games, player1, player2):
     game = Game()
@@ -335,6 +317,6 @@ def cmd(num_games, player1, player2):
     print(f"Bot 2 ({player2}) wins: {100 * bot2_wins / num_games:.2f}%")
     print(f"Ties: {100 * ties / num_games:.2f}%")
 
-"""
+
 if __name__ == "__main__": 
-    cmd()"""
+    cmd()

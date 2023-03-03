@@ -411,13 +411,13 @@ class Game:
                 if (i + j) % 2 == 1:
                     self.game_board.board[i][j] = Piece((i,j),"Red")
                     self.red_pieces.add(Piece((i,j),"Red"))"""
-        for i in range(3):
+        for i in range(self._num_rows):
             for j in range(self.width):
                 if (i + j) % 2 == 1:
                     piece = Piece((i,j),"Black")
                     self.game_board.add_piece(piece)
                     self.black_pieces.add(piece)
-        for i in range(self.width - 3, self.width):
+        for i in range(self.width - self._num_rows, self.width):
             for j in range(self.width):
                 if (i + j) % 2 == 1:
                     piece = Piece((i,j),"Red")

@@ -795,9 +795,14 @@ class Game:
         if team == "Red":
             if wants_to_draw is True:
                 self.red_wants_to_draw = True
+            else:
+                self.black_wants_to_draw = False
+
         if team == "Black":
             if wants_to_draw is True:
                 self.black_wants_to_draw = True
+            else:
+                self.red_wants_to_draw = False
         
             
 

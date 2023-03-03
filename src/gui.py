@@ -10,6 +10,9 @@ Resources Consulted:
     http://programarcadegames.com/python_examples/show_file.php?file=moving_sprites.py
     - this was helpful in initializing the sprite class
 
+    To do:
+    IMKClient Stall detected, *please Report* your user scenario attaching a spindump (or sysdiagnose) that captures the problem - (imkxpc_bundleIdentifierWithReply:) block performed very slowly (2.15 secs).
+
 '''
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"

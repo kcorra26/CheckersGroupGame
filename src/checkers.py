@@ -27,16 +27,20 @@ class Board:
             n: number of rows in board
             a: number of columns in board
         """
+        #width of the board
         self.width = (2 * n) + 2
+        #number of rows of the board
         self._num_rows = (2 * n) + 2
+        #number of columns of the board
         self._num_columns = (2 * a) + 2
+        #the empty board
         self.board = self._create_board()
     def _create_board(self): 
         """
         Initializes an empty board, represented by a list of lists where every 
-        cell is filled with an Empty object
+        cell is filled with None objects
         Args: None
-        Returns: a board (list of lists) populated with Empty objects
+        Returns: a board (list of lists) populated with None obects
         """
         empty_board = []
         for i in range(self._num_rows):
@@ -49,7 +53,7 @@ class Board:
         """
         Returns a string representation of the Board.
         Parameters: None
-        Returns: str
+        Returns (str): string representation of the board
         """
         s = ""
         for row in self.board:
@@ -59,13 +63,29 @@ class Board:
         return s
     
     def add_piece(self,piece):
+        """
+        Adds a piece to the board.
+        Parameters (Piece): Piece being added
+        Returns: None
+        """
         self.board[piece.y_pos][piece.x_pos] = piece
         
     
     def get_piece(self,pos):
+        """
+        Returns the piece specified at the position.
+        Parameters(tup): Position of the Piece
+        Returns: None if there is not piece at the position or the piece at the
+        position
+        """
         return self.board[int(pos[0])][int(pos[1])]
     
     def remove_piece(self,pos):
+        """
+        Removes a piece at a position and replaces it with a None object
+        Parameters(pos): Position of the piece being removed
+        Returns: None
+        """
         self.board[pos[0]][pos[1]] = None
 
 class Game:
@@ -103,12 +123,14 @@ class Game:
 
         self.since_piece_removed_black = 0
         self.since_piece_removed_red = 0
+        self.red_wants_to_draw = False
+        self.black_wants_to_draw = False
   
     def __str__(self):
         """
         Returns a string representation of the Game.
         Parameters: None
-        Returns: str
+        Returns (str)
         """
         s = ""
         for row in self.game_board.board:
@@ -745,6 +767,8 @@ class Game:
             return True
         if self.since_piece_removed_black >= 40 or self.since_piece_removed_red >= 40: 
             return True
+        if self.red_wants_to_draw = True and self.black_wants_to_draw = True:
+            return True
         return False
 
     def piece_at_pos(self,pos):
@@ -763,7 +787,20 @@ class Game:
         Returns:
             None
         """
-        raise NotImplementedError
+        if team == "Red":
+            self.red_wants_to_draw = True
+        self.black_wants_to_draw = True
+    
+    def response_to_draw(self,team,wants_to_draw):
+        if team == "Red":
+            if wants_to_draw is True:
+                self.red_wants_to_draw = True
+        if team == "Black":
+            if wants_to_draw is True:
+                self.black_wants_to_draw = True
+        
+            
+
 
 
 class Piece(): 

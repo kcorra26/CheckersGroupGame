@@ -12,7 +12,6 @@ Resources Consulted:
 
     To do:
     IMKClient Stall detected, *please Report* your user scenario attaching a spindump (or sysdiagnose) that captures the problem - (imkxpc_bundleIdentifierWithReply:) block performed very slowly (2.15 secs).
-
 '''
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
@@ -32,6 +31,7 @@ BLACK = (0,0,0)
 RED = (170,0,20)
 YELLOW = (255, 204, 0)
 GREEN = (75, 139, 59)
+GOLD = (255, 215, 0)
 
 class CheckersPlayer():
     '''
@@ -278,7 +278,18 @@ class GUIPlayer():
                 if event.type == pygame.QUIT:
                     run = False
                 elif self.game.is_done():
-                    #add something to display who won
+                    font = pygame.font.Font('freesansbold.ttf', 45)
+                    if self.game.is_winner('Red'):
+                        text = font.render('RED WINS!!', True, RED, WHITE)
+                    elif self.game.is_winner('Black'):
+                        text = font.render('BLACK WINS!!', True, BLACK, WHITE)
+                    else:
+                        text = font.render('DRAW', True, GOLD, WHITE)
+                    textRect = text.get_rect()
+                    textRect.center = (WIDTH // 2, HEIGHT// 2)
+                    self.window.blit(text, textRect)
+                    pygame.display.update()
+                    pygame.time.wait(1000)
                     run = False
                 elif self.curr_player.is_bot:
                     self.bot_play_turn()

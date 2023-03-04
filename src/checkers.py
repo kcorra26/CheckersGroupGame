@@ -99,7 +99,8 @@ class Game:
             n (int): number of rows of pieces; this defaults to 2 such as in 
             Chess or Checkers
         
-        Note: A Checkers Game board is a square, and size is determined by 2n + 2
+        Note: A Checkers Game board is a square, and size is determined by 
+        2n + 2
         """
         # Color on board determined by even/odd position of x and y
         # n: number of rows of pieces; board length and width is calculated 
@@ -114,16 +115,26 @@ class Game:
         # the number of rows of pieces per team
         self._num_rows = n
         # Runs the create board function, creating a list of lists (grid) with
-        # Empty objects at each position in the grid
-        #self.game_board.board = Board().board
+        # None objects at each position in the grid
         self.game_board = Board(n,n)
+
+        #Starts the game of checkers and places all pieces
         self._initialize_checkers()
-        # Starts the game of checkers and places all pieces
+       
+        #Contains the winner of the game. It is none while there is no winner,
+        #and when there is one it is either "Red" or "Black"
         self.winner = None
 
+        #counts the number of moves since a black piece was removed
         self.since_piece_removed_black = 0
+
+        #counts the number of moves since a red piece was removed
         self.since_piece_removed_red = 0
+
+        #indicates if red wants to draw
         self.red_wants_to_draw = False
+
+        #indicates if black wants to draw
         self.black_wants_to_draw = False
   
     def __str__(self):
@@ -150,13 +161,15 @@ class Game:
         Returns:None
         """
         for spot in self.game_board.board[0]:
-            if spot is not None and spot.is_king is False and spot.team == "Red":
+            if spot is not None and spot.is_king is False and (
+                spot.team == "Red"):
                 self._remove_piece((spot.y_pos,spot.x_pos),"Red")
                 spot.is_king = True
                 self.red_pieces.add(spot)
                 
         for spot in self.game_board.board[self.width - 1]:
-            if spot is not None and spot.is_king is False and spot.team == "Black":
+            if (spot is not None and 
+                spot.is_king is False and spot.team == "Black"):
                 self._remove_piece((spot.y_pos,spot.x_pos),"Black")
                 spot.is_king = True
                 self.black_pieces.add(spot)
@@ -202,8 +215,10 @@ class Game:
         Parameters:
             old_pos(tup): original position
             new_pos(tup): new position
-            team_making: team of the piece at the original position making the move
-            team_would_win: team of the piece to check if it would win if the move was made
+            team_making: team of the piece at the original position making the 
+            move
+            team_would_win: team of the piece to check if it would win if the 
+            move was made
         Returns(bool): if this move will make the team win
         """
         original_set = None
@@ -257,17 +272,21 @@ class Game:
     def move_piece(self, old_pos, new_pos, team, checking_winner=False):
         """
         Ensures the piece is in play, moves the piece at the old position to 
-        the new position if the new position is valid, and notifies the player 
-        if invalid. If the Piece reaches the end of the board, it changes into
-        a King object. The piece can only be moved one space at a time
+        the new position if the move is valid, and notifies the player 
+        if invalid. If the Piece reaches the end of the board and is not 
+        already a king, it changes into a King object. The piece can only be 
+        moved one space at a time.
         Parameters:
             old_pos: tuple(int, int)
             new_pos: tuple(int, int)
+            team(str): team of piece being moved
+            checking_winner(bool): if the game is checking for a winner
         Returns: None
         """
         current_piece = self.game_board.get_piece(old_pos)
         if new_pos in self.list_moves(old_pos):
-            if abs(new_pos[0] - old_pos[0]) == 1 and abs(new_pos[1] - old_pos[1]) == 1: 
+            if abs(new_pos[0] - old_pos[0]) == 1 and (abs(new_pos[1] - old_pos[1])
+                == 1): 
                 self.game_board.board[new_pos[0]][new_pos[1]] = current_piece
                 self.game_board.board[new_pos[0]][new_pos[1]].update_position(new_pos)
                 self.game_board.board[old_pos[0]][old_pos[1]] = None
@@ -295,6 +314,8 @@ class Game:
                         self.since_piece_removed_red = 0
                     if team == "Black":
                         self.since_piece_removed_black = 0
+        else:
+            print("invalid move")
 
 
     def find_correct_sequence(self, old_pos,new_pos,team):
@@ -322,7 +343,8 @@ class Game:
         if current_piece.is_king is True:
             for sequence in self.jump_trail_king(old_pos, old_pos, None, [], team):
                 if len(sequence) > 0:
-                    if choose_sequence == None and sequence[len(sequence) - 1] == new_pos:
+                    if (choose_sequence == None and 
+                        sequence[len(sequence) - 1] == new_pos):
                         choose_sequence = sequence
                     elif choose_sequence != None and sequence[len(sequence) - 1] == new_pos:
                         if len(choose_sequence) < len(sequence):
@@ -399,18 +421,6 @@ class Game:
             team: team of the piece
         Returns: None
         """
-        """new_set = set()
-        if team == "Red":
-            for piece in self.red_pieces:
-                if pos != (piece.y_pos,piece.x_pos):
-                    new_set.add(piece)
-            self.red_pieces = new_set
-        if team == "Black":
-            for piece in self.black_pieces:
-                if pos != (piece.y_pos,piece.x_pos):
-                    new_set.add(piece)
-            self.black_pieces = new_set
-        """
         piece = self.game_board.get_piece(pos)
         if team == "Black":
             self.black_pieces.remove(piece)
@@ -423,16 +433,6 @@ class Game:
         Parameters: None
         Returns: None
         """
-        """"for i in range(3):
-            for j in range(self.width):
-                if (i + j) % 2 == 1:
-                    self.game_board.board[i][j] = Piece((i,j),"Black")
-                    self.black_pieces.add(Piece((i,j),"Black"))
-        for i in range(self.width - 3, self.width):
-            for j in range(self.width):
-                if (i + j) % 2 == 1:
-                    self.game_board.board[i][j] = Piece((i,j),"Red")
-                    self.red_pieces.add(Piece((i,j),"Red"))"""
         for i in range(self._num_rows):
             for j in range(self.width):
                 if (i + j) % 2 == 1:
@@ -674,6 +674,13 @@ class Game:
         return trails
    
     def list_moves_piece(self,pos,team):
+        """
+        Lists all the moves a piece can make
+        Parameters:
+            pos(tup): The position of the piece
+            team(str): The team of the piece
+        Returns(lst): List of all locations a piece can go to
+        """
         current_piece = self.game_board.get_piece(pos)
         positions = []
         if self.can_jump(pos,team,False):
@@ -688,6 +695,13 @@ class Game:
         return positions
         
     def list_moves_king(self,pos,team):
+        """
+        Lists all the moves a king can make
+        Parameters:
+            pos(tup): The position of the king
+            team(str): The team of the piece
+        Returns(lst): List of all locations a king can go to
+        """
         current_piece = self.game_board.board[pos[0]][pos[1]]
         positions = []
         directions = [-1,1]
@@ -767,7 +781,7 @@ class Game:
             return True
         if self.since_piece_removed_black >= 40 or self.since_piece_removed_red >= 40: 
             return True
-        if self.red_wants_to_draw = True and self.black_wants_to_draw = True:
+        if self.red_wants_to_draw is True and self.black_wants_to_draw is True:
             return True
         return False
 

@@ -5,7 +5,7 @@ import time
 from typing import Union, Dict, Optional
 
 import click
-from colorama import Fore, Style
+from colorama import Fore, Style, Back
 
 from checkers import Board, Game, Piece, GameType
 from mocks import MockGame, Piece, MockCheckerboard, StubCheckerboard
@@ -23,11 +23,11 @@ TOP_ROW_DARK = Fore.WHITE + "\u250f" + "\u2501" + "\u2513"
 MIDDLE_ROW_DARK = Fore.WHITE + "\u2503" + " " + "\u2503"
 BOTTOM_ROW_DARK = Fore.WHITE + "\u2517" + "\u2501" + "\u251b"
 
-BLACK_KING = Fore.BLACK + Style.BRIGHT + "¤"
-RED_KING = Fore.RED + Style.BRIGHT + "¤"
-BLACK_PIECE = Fore.BLACK + "●"
-RED_PIECE = Fore.RED + "●"
-VALID_SPACE = Fore.GREEN + "?"
+BLACK_KING = Fore.BLACK + Style.BRIGHT + "\u00A4"
+RED_KING = Fore.RED + Style.BRIGHT + "\u00A4"
+BLACK_PIECE = Fore.BLACK + "\u25CF"
+RED_PIECE = Fore.RED + "\u25CF"
+VALID_SPACE = Fore.GREEN + Back.GREEN + "?" + Style.RESET_ALL
 
 
 class TUIPlayer:
@@ -38,7 +38,6 @@ class TUIPlayer:
     """
     name: str
     bot: Union[None, RandomBot, SmartBot]
-    #board will change
     game: GameType
     team: str
     bot_delay: float
@@ -72,13 +71,11 @@ class TUIPlayer:
             self.bot = SmartBot(game, team, opponent_team)
 
 
-    def get_move(self) -> int:
+    def get_move(self) -> list:
         """
         Gets a move from the player
         If the player is a human player, prompt the player for a position to
         move to. If the player is a bot, ask the bot to suggest a move.
-        Args: 
-            team: the team making the move
         Returns: 
             list[tup(int, int), tup(int, int)]: A list of tuples where the first
             tuple is the position of the piece to be moved (x, y) and the second
@@ -96,25 +93,30 @@ class TUIPlayer:
             # a valid space is not provided)
             while True:
                 #Get the player's input on what piece they want to move where
-                cur_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the column of the piece you want to move > " 
-                              + Style.RESET_ALL)
-                cur_x = self._input_to_valid_move(cur_x, "x")
-
-                cur_y= input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the row of the piece you want to move > " 
+                cur_y= input(Style.BRIGHT + f"{self.name} " + f"({self.team}"
+                             +"): Select the row of the piece you want to move >" 
                              + Style.RESET_ALL)
-                cur_y = self._input_to_valid_move(cur_y, "y")
+                cur_y = self._input_is_valid(cur_y, "y")
 
+                cur_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}"
+                              +"): Select the column of the piece you want to" 
+                              + "move > " 
+                              + Style.RESET_ALL)
+                cur_x = self._input_is_valid(cur_x, "x")
+
+                #show the possible places to move to
                 if self.board.board[cur_y][cur_x] is not None:
-                    select_piece(self.game, (cur_x, cur_y), self.team)
+                    select_piece(self.game, (cur_x, cur_y))
 
-                dest_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the column you want to move to > " 
+                dest_y = input(Style.BRIGHT + f"{self.name} " + f"({self.team}"
+                               + "): Select the row you want to move to > " 
                                + Style.RESET_ALL)
-                dest_x = self._input_to_valid_move(dest_x, "x")
+                dest_y = self._input_is_valid(dest_y, "y")
 
-                dest_y = input(Style.BRIGHT + f"{self.name} " + f"({self.team}): Select the row you want to move to > " 
+                dest_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}"
+                               +"): Select the column you want to move to > " 
                                + Style.RESET_ALL)
-                dest_y = self._input_to_valid_move(dest_y, "y")
-                
+                dest_x = self._input_is_valid(dest_x, "x")
 
                 if self.game.is_valid_move((cur_y, cur_x), (dest_y, dest_x)):
                     return (cur_y, cur_x), (dest_y, dest_x)
@@ -122,27 +124,30 @@ class TUIPlayer:
                     print("Not a valid move. Please enter a valid move.")
                     return self.get_move()
 
-    def _input_to_valid_move(self, coord: str, dir:str) -> tuple:
+    def _input_is_valid(self, coord: str, dir:str) -> bool:
         """
         Turns the player input into a coordinate that can access the appropriate
         positions on the board. If player did not enter valid start/end 
         coordinates, re-prompts them until they do.
         Args:
-            game: the Game object being used
-            coord: the coordinate to be checked in a string format
+            coord: the coordinate to be checked in a string format; can also
+                be draw or resign; however the game logic for these may not be
+                fully implemented
             dir: if a coordinate is an x (column) or y-coordinate (row)
-            team: the team that's moving a place
         Returns: 
-            int: a coordinate converted into one that can correctly access board
-            positions
+            bool: True if the coordinate exists on the board
         Raises:
             ValueError: if direction is not x or y
         """
         if coord.lower() == "draw": 
             self.game.draw(self.team)
+            return -1
         if coord.lower() == "resign":
             self.game.resign(self.team)
-            return -1
+            return -2
+        # While this calls draw and resign, there is not a functional way to 
+        # draw or resign with the TUI. The only way to do so is with the 
+        # checkers.py   file/game logic.
         if dir == "x":
             while not (0 <= int(coord) <= self.width-1):      
                 coord = input(Style.BRIGHT + 
@@ -169,6 +174,7 @@ def print_game(game:GameType, poss_moves:Optional[list]=[]):
     board = game.game_board.board
     width = game.width
     num_pairs = int(width/2)
+    spacing = " " * len(str(width-1))
     even_line_top = Fore.WHITE + (
         (TOP_ROW_LIGHT + TOP_ROW_DARK) * (num_pairs) + "\n")
     even_line_bottom = Fore.WHITE + (
@@ -181,9 +187,9 @@ def print_game(game:GameType, poss_moves:Optional[list]=[]):
     for row in range(width):
         idx = Style.RESET_ALL + str(row)
         if row % 2 == 0:
-            line = " " + even_line_top
+            line = "  " + even_line_top
         else: 
-            line = " " + odd_line_top
+            line = "  " + odd_line_top
         for col in range(width):
             if (row + col) % 2 == 0:
                 wall = SIDE_WALL_LIGHT
@@ -207,28 +213,36 @@ def print_game(game:GameType, poss_moves:Optional[list]=[]):
                 else:
                     square_str = (wall+ RED_PIECE +wall)
             if col == 0:
-                square_str = idx + square_str
+                if row <= 9:
+                    square_str = idx + " " + square_str
+                else:
+                    square_str = idx + square_str
+
             line = line + square_str
         if row % 2 == 0:
-            line = line + "\n " + even_line_bottom
+            line = line + "\n " + " " + even_line_bottom
         else:
-            line = line + "\n " + odd_line_bottom
+            line = line + "\n " + " " + odd_line_bottom
         if row == width-1:
             print(line.rstrip("\n"))
         else:
             print(line)
-    bottom_idx = " "
-    for i in range(width):
-        bottom_idx = bottom_idx + " " + str((i)) + " "
-    print(Style.RESET_ALL +bottom_idx)
+    bottom_idx = "  "
+    if width <= 10:
+        for i in range(width):
+            bottom_idx = bottom_idx + " " + str(i) + " "
+    elif width > 10:
+        bottom_idx = "" + bottom_idx
+        for i in range(width):
+            bottom_idx = bottom_idx + " " + str(i) +  " "
+    print(Style.RESET_ALL + bottom_idx)
 
-def select_piece(game:GameType, pos:tuple, team:str) -> None:
+def select_piece(game:GameType, pos:tuple) -> None:
     """
     Selects a piece on the board and highlights the positions it can move to.
     Args:
         game: the game object being used
         pos: an (int, int) tuple with the position of the piece
-        team: the team to select a piece for
     Returns: None
     """
     col, row = pos
@@ -259,7 +273,7 @@ def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
             cur_space, new_space = current.get_move()
             game.move_piece(cur_space, new_space, current.team)
 
-            # Update the player
+            # Update the player team
             if current.team == "Black":
                 current = players["Red"]
             elif current.team == "Red":
@@ -310,9 +324,9 @@ def cmd(mode, num_piece_rows, player1, player2, bot_delay):
     players = {"Black": player1, "Red": player2}
 
     play_checkers(game, players)
+    
 
 
 if __name__ == "__main__":
     cmd()    
     pass
-

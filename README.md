@@ -50,16 +50,53 @@ player.play_checkers()
 Note: The `MockGame` class initializes some pieces at completly random locations and returns the random list of possible moves, as such the gui shown does not obey the rules of checkers, but will once it is integrated with `checkers.py` and utilizes an actual `Game` object. Similarly, because the bot is more attuned to the actual rules of checkers but the gui only runs `game.move_piece()` when a move is returned by `list_moves`(a predetermined set of locations that have been created for testing purposes), this creates errors that will be resolved by Milestone 3. 
 
 
-# Running the TUI
-To run the TUI in the terminal from the root of the repository, 
-```
-run python3 src/tui.py --mode mock
-```
-Other versions of the TUI have not been fully tested or implemented yet. When
-prompted for a team, enter either `"Red"` or `"Black"`.
+# TUI
 
-This will bring up a checkerboard with labels on the left and bottom of the board to signify square locations to move pieces to. While the pieces do not move, a set of locations marked as possible moves will be displayed as question marks.
+To run the TUI, run this from the root of the repository:
+```
+python3 src/tui.py
+```
+If this does not work, instead use:
+```
+python src/tui.py
+```
+    
+Due to the size and layout of the board, it's recommended you run in a terminal
+left or right-aligned, as it will appear taller than it is wide.
 
+The TUI shows the current board state and asks the player for the location of
+a piece to move with a text prompt. Rows are numbered 0 to width of the 
+board - 1 from the top to bottom, and columns are numbered left to right in the
+same way. There are indices showing the numbering of rows and columns on the 
+left and bottom of the board to help. (note: the bottom indices do not appear
+perfectly on boards of ``C > 4`` due to double-digit numbers- they will run off
+the side)
+
+Possible moves for the selected piece will be shown on the board with question
+marks in the appropriate spaces. If you enter a move that is not valid for any
+reason, you will be prompted to re-enter the move.
+
+To modify the number of rows of pieces on the board, run
+```
+python3 src/tui.py --num-piece-rows <num>
+```
+where ``<num>`` is the number of rows of checkers pieces the board will have.
+The default is ``num = 3`` (a standard checkerboard). This parameter must come 
+before bot parameters when running the TUI.
+
+To play against a bot, run
+```
+python3 src/tui.py --player2 <bot>
+```
+where ``<bot>`` is ``random-bot`` or ``smart-bot``.
+
+To have two bots play each other, run
+```
+python3 src/tui.py --player1 <bot> --player2 <bot>
+```
+The TUI inserts an artifical delay between each bot's move so you can see the 
+game more easily. You can modify this delay using the ``--bot-delay <seconds>``
+parameter.
 
 # Bots
 The `bots.py` file includes two classes:

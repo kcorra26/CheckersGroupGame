@@ -736,7 +736,7 @@ class Game:
         if new_pos not in self.list_moves(curr_pos): # why is current_piece necessary here?
             return False
         return True
-    def remove_pieces(self,pos,team):
+    """def remove_pieces(self,pos,team):
         self.red_pieces = set()
         self.black_pieces = set()
         for i in range(self.width):
@@ -750,14 +750,14 @@ class Game:
         if team == "Red":
             self.red_pieces.add(piece)
         if team == "Black":
-            self.black_pieces.add(piece)
+            self.black_pieces.add(piece)"""
     
-    def add_piece(self,pos,team):
+    """def add_piece(self,pos,team):
         self.game_board.board[pos[0]][pos[1]] = Piece((pos[0],pos[1]),team)
         if team == "Red":
             self.red_pieces.add(self.game_board.board[pos[0]][pos[1]])
         if team == "Black":
-            self.black_pieces.add(self.game_board.board[pos[0]][pos[1]])
+            self.black_pieces.add(self.game_board.board[pos[0]][pos[1]])"""
     def resign(self, team): 
         """
         Allows one team to resign and designates the other team as winner.
@@ -790,17 +790,25 @@ class Game:
         return False
 
     def piece_at_pos(self,pos):
+        """
+        Returns the piece at a position. Similar to the Board Class's get_piece
+        function, but this is for GUI purposes.
+
+        Parameters:
+            pos(tup):Position of piece
+        Returns (Piece): Piece at the position
+        """
+
         return self.game_board.get_piece(pos)
 
     def draw(self, team): 
         """
-        Allows one team to declare a draw if they believe they have no moves 
-        left. If the opposing player agrees then the game ends in a draw with 
-        no winner. The draw condition of no valid moves left for either team 
-        does not have to be met.
+        Allows one team to propose a draw if they believe they have no moves 
+        left. The draw condition of no valid moves left for either 
+        team does not have to be met. 
         
         Args:
-            team (TeamColor): the team that wishes to declare a draw
+            team (str): the team that wishes to declare a draw
         
         Returns:
             None
@@ -811,6 +819,13 @@ class Game:
             self.black_wants_to_draw = True
     
     def response_to_draw(self,team,wants_to_draw):
+        """
+        Allows a team to respond to a draw if the other team proposes to draw. 
+
+        Parameters:
+            team(str): team that is deciding whether to agree to a draw
+        Returns: None
+        """
         if team == "Red":
             if wants_to_draw is True:
                 self.red_wants_to_draw = True

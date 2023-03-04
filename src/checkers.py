@@ -455,6 +455,10 @@ class Game:
         """
         self.red_pieces = set()
         self.black_pieces = set()
+        self.red_wants_to_draw = False
+        self.black_wants_to_draw = False
+        self.since_piece_removed_black = 0
+        self.since_piece_removed_red = 0
         for i in range(self.width):
             for j in range(self.width):
                 if self.game_board.board[i][j] is not None:
@@ -781,7 +785,7 @@ class Game:
             return True
         if self.since_piece_removed_black >= 40 or self.since_piece_removed_red >= 40: 
             return True
-        if self.red_wants_to_draw is True and self.black_wants_to_draw is True:
+        if self.red_wants_to_draw and self.black_wants_to_draw: 
             return True
         return False
 
@@ -803,7 +807,8 @@ class Game:
         """
         if team == "Red":
             self.red_wants_to_draw = True
-        self.black_wants_to_draw = True
+        elif team == "Black":
+            self.black_wants_to_draw = True
     
     def response_to_draw(self,team,wants_to_draw):
         if team == "Red":

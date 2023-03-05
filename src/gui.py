@@ -107,7 +107,7 @@ class GUIPlayer():
         #ensures game can continue
         if player_1.can_play_checkers(player_2):
             self.players = [player_1, player_2]
-            self.curr_player = self.players[0]
+            self.curr_player = self.players[0] if self.players[0].color == 'Black' else self.players[1]
         else: 
             raise TypeError('These two bots have the same team and cannot play against each other')
 

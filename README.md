@@ -142,6 +142,8 @@ The TUI and GUI both accept a `--mode <mode>` parameter, where `<mode>` is one o
 - `stub`: Use the `StubCheckerboard`
 - `mock`: Use the `MockGame`
 
-*sam and jaslin's comment on the --mode parameter* TODO
-The GUI will print the board with some mock pieces if ```<mode> ``` is ```stub``. However, a piece cannot be seleced and an error will be thrown. 
+The GUI will print the board with some mock pieces if ```<mode> ``` is ```stub``. However, a piece cannot be selected and an error will be thrown. 
 The GUI will print the board with mock pieces if ```<mode>``` is ```mock``. However, the first player is red and not black. When you click a red piece, its possible moves will be highlighted. However, the mock cannot move a piece and will throw an error.
+
+The TUI does not work if `<mode>` is `stub` due to how stub is implemented.
+The TUI will print the board with mock pieces if in `<mode> mock`. The player can choose a piece to move and mock possible spaces to move to will be highlighted. However, the game will throw an error and crash after entering a destination space.

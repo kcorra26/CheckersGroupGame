@@ -2,6 +2,18 @@
 Bots for Checkers
 
 (and command for running simulations with bots)
+
+Smart Bot strategy and sources:
+strategy source #1: 
+https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win
+    - "two-for-one shot": if there is a move that would result in the most 
+      number of jumps or captures, take it
+    - "control the center": prioritize moves with an end column position 
+      closest to the center of the board
+strategy source #2: 
+https://www.thesprucecrafts.com/how-to-win-at-checkers-411170 
+    - "your goal should be getting a checker to the end of the board": 
+      prioritize king moves over moves with maximum captures
 """
 import random
 from typing import Union 
@@ -59,13 +71,6 @@ class SmartBot:
       center of the board (source #1). If there are multiple such moves, 
       choose one at random.
     - Otherwise, pick a move at random.
-
-    strategy source #1: 
-    https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win
-    
-    strategy source #2: 
-    https://www.thesprucecrafts.com/how-to-win-at-checkers-411170 
-    
     """
 
     def __init__(self, game, color, opponent_color):

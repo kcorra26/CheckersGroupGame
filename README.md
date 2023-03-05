@@ -168,9 +168,11 @@ Note: the 1000 game simulation should take about 2 minutes to run. For a faster 
 
 
 # Running with stubs and mocks
-Stub and mock implementations of the Game class are available in the mocks.py file.
+Stub and mock implementations of the Game class are available in the mocks.py file. After Milestone 2, we were focused on integration of the `Game` class with bots, GUI, and TUI. Because we were sucessful, there is no longer a need for stubs and mocks, and the `mocks.py` file is thus not up to date with our recent changes to other classes. 
 
 The TUI and GUI both accept a `--mode <mode>` parameter, where `<mode>` is one of:
 - `real`: Use the `Game`(default)
 - `stub`: Use the `StubCheckerboard`
 - `mock`: Use the `MockGame`
+
+*sam and jaslin's comment on the --mode parameter* TODO

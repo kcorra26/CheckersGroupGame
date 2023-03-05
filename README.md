@@ -66,7 +66,7 @@ To make two bots play a game, run
 ```
 python src/gui.py --black-type <bot> --red-type <bot>
 ```
-where <bot> is ``smart-bot`` or ``random-bot``. When making two bots play
+where ```<bot>``` is ``smart-bot`` or ``random-bot``. When making two bots play
 against it each other it is necessary to move your mouse around the pygame
 window, so that pygame can recognize an event occuring. Otherwise the bots
 will appear to 'freeze' and not move. 
@@ -75,7 +75,7 @@ To modify the number of rows and pieces on the board, run
 ```
 python src/gui.py --num-piece-rows <int>
 ```
-where <int> is the number of rows of pieces the checkerboard will have. 
+where ``<int>`` is the number of rows of pieces the checkerboard will have. 
 The default is set to ``int=3`` as in a classic checkers game.
 
 # TUI

@@ -13,7 +13,10 @@ This repository contains a design and implementation for Checkers. The existing 
 - got rid of ENUM for team color and instead used string `"Red"` and `"Black"` identifiers 
 
 ## Summary of changes we’ve made/missing functionality we’ve added since Milestone 2
-- Robert (Game Logic)
+- Robert (Game Logic) Changed the `list_moves_king` and `list_moves_piece` to be more concise.
+Also added `get piece`,`add piece`, and `remove piece` methods to the board class to make it
+transferable to other types of games. Also, methods that allow a team to request and accept
+a draw were added to the `Game` class. 
 - Kasey (Bot) updated the instructions for running the integrated bot more clearly in the README, as requested by the TA. Though she made little to no changes to the structure of her bot code after submitting for Milestone 2, she identified areas of `checkers.py` that needed to be corrected or implemented, and helped debug them in order to be able to run simulations on her bots using the `Game` class. 
 - Jaslin (GUI) integrated the GUI with the Game Logic and made necessary changes to the code. I added an endscreen which displays the winner or if the game was a draw. I updated the filepaths to ensure the sprites ran correctly when on the main root of the repository and updated my docstrings.
 - Sam (TUI) added functionality for showing all possible moves of a piece once selected and confirmed that piece and kings are shown differently. Also added support for board sizes between 6x6 and 20x20, integrated with game logic, and sanitized user input so that the program doesn't crash on an incorrect input.
@@ -140,3 +143,5 @@ The TUI and GUI both accept a `--mode <mode>` parameter, where `<mode>` is one o
 - `mock`: Use the `MockGame`
 
 *sam and jaslin's comment on the --mode parameter* TODO
+The GUI will print the board with some mock pieces if ```<mode> ``` is ```stub``. However, a piece cannot be seleced and an error will be thrown. 
+The GUI will print the board with mock pieces if ```<mode>``` is ```mock``. However, the first player is red and not black. When you click a red piece, its possible moves will be highlighted. However, the mock cannot move a piece and will throw an error.

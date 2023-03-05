@@ -14,6 +14,8 @@ strategy source #2:
 https://www.thesprucecrafts.com/how-to-win-at-checkers-411170 
     - "your goal should be getting a checker to the end of the board": 
       prioritize king moves over moves with maximum captures
+The order and implementation of these strategies is in the SmartBot class 
+docstring. 
 """
 import random
 from typing import Union 
@@ -22,6 +24,9 @@ import click
 from checkers import Board, Game, Piece
 from mocks import CheckersGameBotMock
 
+#
+# BOTS
+#
 
 class RandomBot: 
     """
@@ -37,13 +42,16 @@ class RandomBot:
             color: Bot's team color
             opponent_color: Opponent's color
         """
-        #self._game = game
+        self._game = game
         self._color = color
         self._opponent_color = opponent_color
     
     def suggest_move(self, game):
         """
         Suggests a move 
+
+        Args:
+            game (Game): the game to play, updated with each move
 
         Returns: tup(tup(int, int), tup(int, int)) -- suggested move
         """
@@ -78,18 +86,21 @@ class SmartBot:
         Constructor
 
         Args: 
-            board: Board the bot will play on
+            game: initial game the bot will play on
             color: Bot's team color
             opponent_color: Opponent's color
         """
 
-        #self._game = game
+        self._game = game
         self._color = color
         self._opponent_color = opponent_color
 
     def suggest_move(self, game): 
         """
         Suggests a move
+
+        Args:
+            game (Game): the game to play, updated with each move
 
         Returns: tup(tup(int, int), tup(int, int)) -- suggested move
         """
@@ -245,7 +256,7 @@ class BotPlayer:
 
         Args:
             name: Name of the bot
-            game: Game to play # idk if i need this TODO
+            game: Game to play 
             color: Bot's color
             opponent_color: Opponent's color
         """
@@ -305,6 +316,15 @@ def simulate(game, n, bots):
 
 
 def cmd(num_games, player1, player2, board_size):
+    """
+    Runs a simulation in the command line. 
+
+    Args: 
+        num_games (int): number of matches to play
+        player1 (str): type of bot (random or smart)
+        player2 (str): type of bot (random or smart)
+        board_size (int): number of rows in the board
+    """
     game = Game(board_size)
 
     bot1 = BotPlayer(player1, game, "Black", "Red")

@@ -16,13 +16,14 @@ This repository contains a design and implementation for Checkers. The existing 
 - Robert (Game Logic)
 - Kasey (Bot) updated the instructions for running the integrated bot more clearly in the README, as requested by the TA. Though she made little to no changes to the structure of her bot code after submitting for Milestone 2, she identified areas of `checkers.py` that needed to be corrected or implemented, and helped debug them in order to be able to run simulations on her bots using the `Game` class. 
 - Jaslin (GUI) integrated the GUI with the Game Logic and made necessary changes to the code. I added an endscreen which displays the winner or if the game was a draw. I updated the filepaths to ensure the sprites ran correctly when on the main root of the repository and updated my docstrings.
-- Sam (TUI)
+- Sam (TUI) added functionality for showing all possible moves of a piece once selected and confirmed that piece and kings are shown differently. Also added support for board sizes between 6x6 and 20x20, integrated with game logic, and sanitized user input so that the program doesn't crash on an incorrect input.
 
 
 ## How we implemented the feedback from milestones 1 and 2
 - We implemented a Game agnostic Board class and shifted all user interface calls to the Game class, as advised by the TA who reviewed our code after Milestone 1.
 - This TA also advised us to combine the `Piece`, `Empty`, and `King` classes, which we did. 
 - Robert (Game Logic) added `get_piece` and `remove_piece` functionality to the `Game` class after our Code Review meeting from Milestone 2
+- Sam (TUI) added support for different board sizes, updated `select_piece` function to correctly show possible moves, and verified that kings and pieces are shown with different characters.
 
 
 # Running the GUI

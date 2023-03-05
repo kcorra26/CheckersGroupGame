@@ -15,8 +15,6 @@ Examples:
     5) How to check whether there is a winner and, if so, who the winner is:
         board.is_winner(team)
 """
-from enum import Enum
-TeamColor = Enum("TeamColor",  ["RED", "BLACK", "EMPTY"]) 
 class Board:
     """Class for representing an empty board of any size"""
     def __init__(self, n=3, a=3):
@@ -205,7 +203,7 @@ class Game:
         Returns(int):Number of jumps a piece must make from one spot to another
         """
         if self.find_correct_sequence(old_pos,new_pos,team) is not None: 
-            return len(self.find_correct_sequence(old_pos,new_pos,team)) #- 1
+            return len(self.find_correct_sequence(old_pos,new_pos,team))
         return 0
 
 
@@ -274,8 +272,8 @@ class Game:
         Ensures the piece is in play, moves the piece at the old position to 
         the new position if the move is valid, and notifies the player 
         if invalid. If the Piece reaches the end of the board and is not 
-        already a king, it changes into a King object. The piece can only be 
-        moved one space at a time.
+        already a king, it changes into a King object. If the piece involves
+        jumps, the jump_piece method is called. 
         Parameters:
             old_pos: tuple(int, int)
             new_pos: tuple(int, int)
@@ -329,7 +327,7 @@ class Game:
         Returns(list): The best sequence a piece should go through to get to a
         destination
         """
-        choose_sequence = None # something about this is wrong
+        choose_sequence = None 
         current_piece = self.game_board.board[old_pos[0]][old_pos[1]]
         if current_piece.is_king is False:
             for sequence in self.jump_trail_piece(old_pos,team):
@@ -404,18 +402,11 @@ class Game:
                 if team == "Black":
                     self.black_pieces.add(self.game_board.board[int(new_pos[0])][int(new_pos[1])])
                 self.make_king()
-        
-        
-    def print_tuple_pairs(self):
-        tuple_pair = []
-        for piece in self.black_pieces:
-            tuple_pair.append((piece.y_pos,piece.x_pos))
-        return tuple_pair
-        
+
         
     def _remove_piece(self, pos,team):
         """
-        Removes a piece at a specific position. 
+        Removes a piece at a specific position.
         Parameters: 
             pos: tuple(int, int)
             team: team of the piece
@@ -536,11 +527,6 @@ class Game:
         Returns(list): returns a list of tuples of all the positions a piece can
         go to
         """
-        """current_piece = self.game_board.board[pos[0]][pos[1]]
-        if current_piece.is_king is False:
-            return self.list_moves_piece(pos,False,[],current_piece.team)
-        else:
-            return self.list_moves_king(pos,False,[],current_piece.team)"""
         current_piece = self.game_board.get_piece(pos)
         if current_piece.is_king is False:
             return self.list_moves_piece(pos,current_piece.team)
@@ -598,7 +584,7 @@ class Game:
             Parameters:
             pos(tup): position of the piece
             team: team of piece
-        Returns(list): A list of lists of all the sequences a piece can jump throuogh
+        Returns(list): A list of lists of all the sequences a piece can jump through
         """
         trails = []
         current_piece = self.game_board.board[pos[0]][pos[1]]
@@ -731,33 +717,10 @@ class Game:
         Returns(bool): If the piece at the current position can jump to the new
         position
         """
-        
-        current_piece = self.game_board.board[curr_pos[0]][curr_pos[1]]
-        if new_pos not in self.list_moves(curr_pos): # why is current_piece necessary here?
+        if new_pos not in self.list_moves(curr_pos):
             return False
         return True
-    """def remove_pieces(self,pos,team):
-        self.red_pieces = set()
-        self.black_pieces = set()
-        for i in range(self.width):
-            for j in range(self.width):
-                if self.game_board.board[i][j] is not None:
-                    if self.game_board.board[i][j].x_pos != pos[1] or self.game_board.board[i][j].y_pos != pos[0]:
-                        self.game_board.board[i][j] = None
-        self.game_board.board[pos[0]][pos[1]].is_king = True
-        self.game_board.board[pos[0]][pos[1]].team = "Black"
-        piece = self.game_board.board[pos[0]][pos[1]]
-        if team == "Red":
-            self.red_pieces.add(piece)
-        if team == "Black":
-            self.black_pieces.add(piece)"""
-    
-    """def add_piece(self,pos,team):
-        self.game_board.board[pos[0]][pos[1]] = Piece((pos[0],pos[1]),team)
-        if team == "Red":
-            self.red_pieces.add(self.game_board.board[pos[0]][pos[1]])
-        if team == "Black":
-            self.black_pieces.add(self.game_board.board[pos[0]][pos[1]])"""
+   
     def resign(self, team): 
         """
         Allows one team to resign and designates the other team as winner.
@@ -798,7 +761,6 @@ class Game:
             pos(tup):Position of piece
         Returns (Piece): Piece at the position
         """
-
         return self.game_board.get_piece(pos)
 
     def draw(self, team): 
@@ -837,9 +799,6 @@ class Game:
                 self.black_wants_to_draw = True
             else:
                 self.red_wants_to_draw = False
-        
-            
-
 
 
 class Piece(): 
@@ -862,10 +821,14 @@ class Piece():
         self.x_pos = pos[1]
         # Piece's y position or row
         self.y_pos = pos[0]
+        #The team's position, which depends on the x_pos and y_pos attributes
         self.pos = (self.y_pos,self.x_pos)
-        # TeamColor enum representing the Piece's team
+        # The team of the piece which is either "Red" or "Black"
         self.team = team_color
+        #The attribute that describes if the piece is a king or not. By default 
+        #it is false, but if the piece is a king the attribute is equal to True
         self.is_king = is_king
+        #The direction that the piece travels in on the board if it is not a king
         self.dir = None
         if self.team == "Red":
             self.dir = -1

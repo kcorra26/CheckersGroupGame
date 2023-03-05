@@ -18,7 +18,7 @@ Also added `get piece`,`add piece`, and `remove piece` methods to the board clas
 transferable to other types of games. Also, methods that allow a team to request and accept
 a draw were added to the `Game` class. 
 - Kasey (Bot) updated the instructions for running the integrated bot more clearly in the README, as requested by the TA. Though she made little to no changes to the structure of her bot code after submitting for Milestone 2, she identified areas of `checkers.py` that needed to be corrected or implemented, and helped debug them in order to be able to run simulations on her bots using the `Game` class. 
-- Jaslin (GUI)
+- Jaslin (GUI) integrated the GUI with the Game Logic and made necessary changes to the code. I added an endscreen which displays the winner or if the game was a draw. I updated the filepaths to ensure the sprites ran correctly when on the main root of the repository and updated my docstrings.
 - Sam (TUI)
 
 

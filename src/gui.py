@@ -36,7 +36,7 @@ class CheckersPlayer():
     simple class to store player information
     '''
     bot: Union[None, SmartBot, RandomBot]
-    
+
     def __init__(self, bot = None):
         '''
         initialization function for the Checkers Player
@@ -327,6 +327,17 @@ class GUIPlayer():
                               case_sensitive=False), default="smart-bot")
 
 def cmd(mode, num_piece_rows, black_type, red_type):
+    '''
+    allows checkers game to played from command line
+
+    inputs:
+        mode(str): whether game is running on real, stub, or mock
+        num_piece_rows(int): number of rows of pieces
+        black_type(str): whether black player is a human, random bot, or
+        smart bot
+        red_type(str):whether black player is a human, random bot, or
+        smart bot
+    '''
     if mode == "real":
         game = Game(num_piece_rows)
     elif mode == "stub":

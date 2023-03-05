@@ -26,14 +26,14 @@ class PieceSprite(pygame.sprite.Sprite):
         self.sq_size = sq_size
         if self.team == "Red":
             if self.is_king:
-                self.image = pygame.transform.scale(pygame.image.load('red_king.png'), (sq_size,sq_size))
+                self.image = pygame.transform.scale(pygame.image.load('src/red_king.png'), (sq_size,sq_size))
             else:
-                self.image = pygame.transform.scale(pygame.image.load('red.png'), (sq_size, sq_size))
+                self.image = pygame.transform.scale(pygame.image.load('src/red.png'), (sq_size, sq_size))
         else:
             if self.is_king:
-                self.image = pygame.transform.scale(pygame.image.load('black_king.png'), (sq_size, sq_size))
+                self.image = pygame.transform.scale(pygame.image.load('src/black_king.png'), (sq_size, sq_size))
             else:
-                self.image = pygame.transform.scale(pygame.image.load('black.png'), (sq_size,sq_size))
+                self.image = pygame.transform.scale(pygame.image.load('src/black.png'), (sq_size,sq_size))
         self.rect = self.image.get_rect()
 
     def update(self):  

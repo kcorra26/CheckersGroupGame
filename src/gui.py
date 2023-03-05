@@ -9,9 +9,6 @@ Resources Consulted:
     - this was helpful in setting up the sprite groups
     http://programarcadegames.com/python_examples/show_file.php?file=moving_sprites.py
     - this was helpful in initializing the sprite class
-
-    To do:
-    IMKClient Stall detected, *please Report* your user scenario attaching a spindump (or sysdiagnose) that captures the problem - (imkxpc_bundleIdentifierWithReply:) block performed very slowly (2.15 secs).
 '''
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
@@ -326,9 +323,8 @@ class GUIPlayer():
 @click.option('--red-type',
             type=click.Choice(['human', 'random-bot', 'smart-bot'], 
                               case_sensitive=False), default="smart-bot")
-@click.option('--bot-delay', type=click.FLOAT, default=0.5)
 
-def cmd(mode, num_piece_rows, black_type, red_type, bot_delay):
+def cmd(mode, num_piece_rows, black_type, red_type):
     if mode == "real":
         game = Game(num_piece_rows)
     elif mode == "stub":

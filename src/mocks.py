@@ -111,9 +111,9 @@ class Piece:
 
 class MockGame:
     def __init__(self, n=3):
-        self.board = MockCheckerboard(n)
+        self.game_board = MockCheckerboard(n)
         self.width = 2*n + 2
-        self.width = len(self.board.board)
+        self.width = len(self.game_board.board)
         self.is_winner = None
         self.red_pieces = set([Piece('Red', (1,0)), Piece('Red', (3,0), True),Piece('Red', (3,2)), Piece('Red', (4,6))])
         self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))])

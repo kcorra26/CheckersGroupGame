@@ -21,8 +21,6 @@ from bot import RandomBot, SmartBot
 import click
 from typing import Union
 
-BotType = Union[None, RandomBot, SmartBot]
-
 WIDTH = HEIGHT = 800
 
 #colors
@@ -37,7 +35,9 @@ class CheckersPlayer():
     '''
     simple class to store player information
     '''
-    def __init__(self, bot:BotType = None):
+    bot: Union[None, SmartBot, RandomBot]
+    
+    def __init__(self, bot = None):
         '''
         initialization function for the Checkers Player
 
@@ -96,7 +96,9 @@ class GUIPlayer():
         init function for GUI Player
 
         args: 
-            game: the game being played
+            game(GameType): the game being played
+            player_1(CheckersPlayer): A CheckersPlayer object
+            player_2(CheckersPlayer): A CheckersPlayer object
         """
         self.game = game
         self.ROWS = game.width

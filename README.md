@@ -18,7 +18,7 @@ Also added `get piece`,`add piece`, and `remove piece` methods to the board clas
 transferable to other types of games. Also, methods that allow a team to request and accept
 a draw were added to the `Game` class. 
 - Kasey (Bot) updated the instructions for running the integrated bot more clearly in the README, as requested by the TA. Though she made little to no changes to the structure of her bot code after submitting for Milestone 2, she identified areas of `checkers.py` that needed to be corrected or implemented, and helped debug them in order to be able to run simulations on her bots using the `Game` class. 
-- Jaslin (GUI) integrated the GUI with the Game Logic and made necessary changes to the code. I added an endscreen which displays the winner or if the game was a draw. I updated the filepaths to ensure the sprites ran correctly when on the main root of the repository and updated my docstrings.
+- Jaslin (GUI) integrated the GUI with the Game Logic and made necessary changes to the code. I added an endscreen which displays the winner or if the game was a draw. I updated the filepaths to ensure the sprites ran correctly when on the main root of the repository and updated my docstrings. Finally, board generalization to other sizes was correctly implemented. 
 - Sam (TUI) added functionality for showing all possible moves of a piece once selected and confirmed that piece and kings are shown differently. Also added support for board sizes between 6x6 and 20x20, integrated with game logic, and sanitized user input so that the program doesn't crash on an incorrect input.
 
 
@@ -61,7 +61,8 @@ To modify the number of rows and pieces on the board, run
 python src/gui.py --num-piece-rows <int>
 ```
 where ``<int>`` is the number of rows of pieces the checkerboard will have. 
-The default is set to ``int=3`` as in a classic checkers game.
+The default is set to ``int=3`` as in a classic checkers game. Please note that when the board
+gets big enough, the game is more likely to end in a draw because of the ```40-move-rule```.
 
 # TUI
 

@@ -28,7 +28,28 @@ a draw were added to the `Game` class.
 - Robert (Game Logic) added `get_piece` and `remove_piece` functionality to the `Game` class after our Code Review meeting from Milestone 2
 - Sam (TUI) added support for different board sizes, updated `select_piece` function to correctly show possible moves, and verified that kings and pieces are shown with different characters.
 
+# Setup
+Running the code in this repository requires using a number of Python libraries. We recommend creating a virtual environment before installing these libraries. To do so, run the following from the root of your local repository:
+```
+python3 -m venv venv
+```
+To activate your virtual environment, run the following:
+```
+source venv/bin/activate
+```
+You should now see `(venv)` in your terminal prompt, indicating that the virtual environment is active, e.g.:
+```
+(venv) student@linux1:~/repos/project-rukrainsky-kcorra-jaguirre3-sjdoepker$
+```
+To install the required Python libraries run the following:
 
+```
+pip3 install -r requirements.txt
+```
+To deactivate the virtual environment (e.g., because you're done working on or using the checkers code), just run the following:
+```
+deactivate
+```
 # Running the GUI
 To run the GUI, run this from the root of the repository
 ```
@@ -96,7 +117,9 @@ python3 src/tui.py --num-piece-rows <num>
 ```
 where ``<num>`` is the number of rows of checkers pieces the board will have.
 The default is ``num = 3`` (a standard checkerboard). This parameter must come 
-before bot parameters when running the TUI.
+before bot parameters when running the TUI. Please note that when the board
+gets big enough, the game is more likely to end in a draw because of the ```40-move-rule```.
+
 
 To play against a bot, run
 ```

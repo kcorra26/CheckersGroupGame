@@ -6,6 +6,14 @@ This repository contains a design and implementation for Checkers. The existing 
 - Jaslin Aguirre - GUI
 - Sam Doepker - TUI
 
+## Changes to design since Milestone 1
+- transferred almost all functionality in `Board` class to `Game` to make the game the center component of the user interfaces. 
+- 
+
+## Summary of changes we’ve made/missing functionality we’ve added since Milestone 2
+
+## How we implemented the feedback from milestones 1 and 2
+
 # Running the Game
 For running the Game Logic, no libraries will need to be used.
 In python3, to start a game of checkers in its initial state, run the following
@@ -79,10 +87,6 @@ where ``<int>`` is the number of rows of pieces the checkerboard will have.
 The default is set to ``int=3`` as in a classic checkers game.
 
 # TUI
-Important note: the TUI uses some special/uncommon unicode characters; if the
-TUI does not appear like a checkers board, make sure your python environment
-supports all Unicode characters. If this character does not show up: ¤ the TUI
-will not display properly and you need to adjust your environment.
 
 To run the TUI, run this from the root of the repository:
 ```
@@ -92,8 +96,7 @@ If this does not work, instead use:
 ```
 python src/tui.py
 ```
-If you do so, replace all instances of `python3` in these instructions with
-`python`.    
+    
 Due to the size and layout of the board, it's recommended you run in a terminal
 left or right-aligned, as it will appear taller than it is wide.
 
@@ -129,13 +132,7 @@ python3 src/tui.py --player1 <bot> --player2 <bot>
 ```
 The TUI inserts an artifical delay between each bot's move so you can see the 
 game more easily. You can modify this delay using the ``--bot-delay <seconds>``
-parameter (must come after the bot parameters).
-Sample command:
-```
-python3 src/tui.py --num-piece-rows 4 --player1 smart-bot --player2 random-bot --bot-delay 1
-```
-This will run a game on `C = 4` with one smart bot and one random bot with a 
-1 second delay inbetween moves.
+parameter.
 
 # Bots
 The `bots.py` file includes two classes:
@@ -145,7 +142,7 @@ The `bots.py` file includes two classes:
     - The bot then finds the move that would result in the most number of jumps, or captures. If there are multiple such moves, it makes the following selections considering only those moves. If there are no jumping moves, it makes the following selections considering all moves that were evaluated when looking for maximum jumps.
     - The bot then finds the move with an end column closest to the center of the board. If there are multiple such moves, it chooses one of these moves at random. If there are no such moves, it picks a move at random from the moves that were evaluated when looking for centermost jumps.
 
-These two classes are used in the TUI and GUI, but you can also run `bots.py` to run 1000 simulated games where two bots play each other (defaulted to one smart and one random), and see the percentage of wins and ties. For example:
+These two classes are used in the TUI and GUI, but you can also run `bot.py` to run 1000 simulated games where two bots play each other (defaulted to one smart and one random), and see the percentage of wins and ties. For example:
 ```
 $ python3 src/bot.py
 Bot 1 (smart) wins: 99.40%

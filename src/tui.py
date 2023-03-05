@@ -99,9 +99,8 @@ class TUIPlayer:
                 cur_y = self._input_is_valid(cur_y, "y")
 
                 cur_x = input(Style.BRIGHT + f"{self.name} " + f"({self.team}"
-                              +"): Select the column of the piece you want to" 
-                              + "move > " 
-                              + Style.RESET_ALL)
+                              +"): Select the column of the piece you want to " 
+                              + "move > " + Style.RESET_ALL)
                 cur_x = self._input_is_valid(cur_x, "x")
 
                 #show the possible places to move to
@@ -147,19 +146,14 @@ class TUIPlayer:
             return -2
         # While this calls draw and resign, there is not a functional way to 
         # draw or resign with the TUI. The only way to do so is with the 
-        # checkers.py   file/game logic.
-        if dir == "x":
-            while not (0 <= int(coord) <= self.width-1):      
-                coord = input(Style.BRIGHT + 
-                              f"{self.name}: Please enter a valid column >" + 
-                              Style.RESET_ALL)
-        elif dir == "y":
-            while not (0 <= int(coord) <= self.width-1):
-                coord = input(Style.BRIGHT + 
-                              f"{self.name}: Please enter a valid row >" + 
-                              Style.RESET_ALL)
-        else:
-            raise ValueError("Direction was not passed correctly")
+        # checkers.py file/game logic.
+        while not (coord.isdigit()) or not (0 <= int(coord) <= self.width-1):
+            if dir == "x":  
+                coord = input(Style.BRIGHT + f"{self.name}: " +
+                        " Please enter a valid column > " + Style.RESET_ALL)
+            elif dir == "y":
+                coord = input(Style.BRIGHT + f"{self.name}: " +
+                        "Please enter a valid row > " + Style.RESET_ALL)
         return int(coord)
 
 def print_game(game:GameType, poss_moves:Optional[list]=[]):

@@ -1,29 +1,34 @@
 """
 Examples:
     1) Make a new board:
-        board = Board()
+        game = Game(n)
+            n is the number of rows of pieces on the board, and it defaults to 3 
 
     2) Check whether a given move is feasible:
-        board.can_move((0, 1))
-        # if they want to just check to see if it can move at all
+        game.can_move((0, 1))
+            if they want to just check to see if it can move at all
+            where the position is the (row, col) on the board passed as a tuple
         board.is_valid_move((0, 1), (1, 2))
-        #if they want to check if they can move to a certain place
+            if they want to check if they can make a specific move 
+            from one position to another; the first parameter is the current
+            position of the piece, and the second is the intended destination
 
     3) How to obtain all the valid moves for a piece at a given position:
-        board.list_moves((0, 1))
+        game.list_moves((1,1))
 
     4) How to obtain the list of all possible moves a player can make on the 
         board:
-        board.all_team_moves(team)
+        game.all_team_moves(team)
 
     5) How to check whether there is a winner and, if so, who the winner is:
-        board.is_winner(team)
+        game.is_winner("Red")
+        game.is_winner("Black")
+            If both functions return False, there is no winner. If the first 
+            function returns True, the red team has won. If the second function
+            returns True, the black team has won. Both functions will not
+            return True.
 
 """
-
-from enum import Enum
-TeamColor = Enum("TeamColor",  ["RED", "BLACK", "EMPTY"]) 
-
 class Board:
     """
     Class for representing a board game; in this case, Checkers

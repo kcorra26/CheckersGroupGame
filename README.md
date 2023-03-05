@@ -88,7 +88,8 @@ If this does not work, instead use:
 ```
 python src/tui.py
 ```
-    
+If you do so, replace all instances of `python3` in these instructions with
+`python`.    
 Due to the size and layout of the board, it's recommended you run in a terminal
 left or right-aligned, as it will appear taller than it is wide.
 
@@ -124,7 +125,13 @@ python3 src/tui.py --player1 <bot> --player2 <bot>
 ```
 The TUI inserts an artifical delay between each bot's move so you can see the 
 game more easily. You can modify this delay using the ``--bot-delay <seconds>``
-parameter.
+parameter (must come after the bot parameters).
+Sample command:
+```
+python3 src/tui.py --num-piece-rows 4 --player1 smart-bot --player2 random-bot --bot-delay 1
+```
+This will run a game on `C = 4` with one smart bot and one random bot with a 
+1 second delay inbetween moves.
 
 # Bots
 The `bots.py` file includes two classes:

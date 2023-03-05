@@ -296,10 +296,11 @@ def simulate(game, n, bots):
               case_sensitive=False), default='smart')
 @click.option("--player2", type=click.Choice(['random', 'smart'], 
               case_sensitive=False), default='random')
+@click.option("-s", "--board-size", type=click.INT, default=3)
 
 
-def cmd(num_games, player1, player2):
-    game = Game()
+def cmd(num_games, player1, player2, board_size):
+    game = Game(board_size)
 
     bot1 = BotPlayer(player1, game, "Black", "Red")
     bot2 = BotPlayer(player2, game, "Red", "Black")

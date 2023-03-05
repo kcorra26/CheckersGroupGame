@@ -106,17 +106,25 @@ The `bots.py` file includes two classes:
     - The bot then finds the move that would result in the most number of jumps, or captures. If there are multiple such moves, it makes the following selections considering only those moves. If there are no jumping moves, it makes the following selections considering all moves that were evaluated when looking for maximum jumps.
     - The bot then finds the move with an end column closest to the center of the board. If there are multiple such moves, it chooses one of these moves at random. If there are no such moves, it picks a move at random from the moves that were evaluated when looking for centermost jumps.
 
-These two classes are used in the GUI and are integrated with the `CheckersGameBotMock` class in `mocks.py` (see instructions below). Due to the existing bugs in the `Game` class in `checkers.py`, the `simulate()` and `cmd()` functions do not yet operate as intended. 
+These two classes are used in the TUI and GUI, but you can also run `bots.py` to run 1000 simulated games where two bots play each other (defaulted to one smart and one random), and see the percentage of wins and ties. For example:
+```
+$ python3 src/bot.py
+Bot 1 (smart) wins: 99.40%
+Bot 2 (random) wins: 0.00%
+Ties: 0.60%
+
+$ python3 src/bot.py --player1 random
+Bot 1 (random) wins: 12.00%
+Bot 2 (random) wins: 11.40%
+Ties: 76.60%
+```
+Note: the 1000 game simulation should take about 2 minutes to run. For a faster result, run `python3 src/bot.py -n 100` or the like.
 
 
 # Running with stubs and mocks
-Stub and mock implementations of the Game class are available in the mocks.py file, and are used as explained above.
+Stub and mock implementations of the Game class are available in the mocks.py file.
 
-The bots have their own mock class (`CheckersGameBotMock`), which can be used in ipython3 to test the efficacy of the bot like this:
-```
-import bot
-import mocks
-game = mocks.CheckersGameBotMock()
-smart = bot.SmartBot(game, "Red", "Black")
-smart.suggest_move()
-```
+The TUI and GUI both accept a `--mode <mode>` parameter, where `<mode>` is one of:
+- `real`: Use the `Game`(default)
+- `stub`: Use the `StubCheckerboard`
+- `mock`: Use the `MockGame`

@@ -27,6 +27,7 @@ a draw were added to the `Game` class.
 - This TA also advised us to combine the `Piece`, `Empty`, and `King` classes, which we did. 
 - Robert (Game Logic) added `get_piece` and `remove_piece` functionality to the `Game` class after our Code Review meeting from Milestone 2
 - Sam (TUI) added support for different board sizes, updated `select_piece` function to correctly show possible moves, and verified that kings and pieces are shown with different characters.
+- Jaslin(GUI) added support for different board sizes. 
 
 # Setup
 Running the code in this repository requires using a number of Python libraries. We recommend creating a virtual environment before installing these libraries. To do so, run the following from the root of your local repository:

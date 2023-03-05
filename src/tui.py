@@ -305,6 +305,17 @@ def play_checkers(game:GameType, players: Dict[str, TUIPlayer]) -> None:
 @click.option('--bot-delay', type=click.FLOAT, default=0.5)
 
 def cmd(mode, num_piece_rows, player1, player2, bot_delay):
+    """
+    Allows function to run from command line.
+    Args:
+        mode(str): what mode the game should run in (full/stub/mock)
+        num-piece-rows(int): number of rows of pieces per team on the board
+        player1(str): player 1's type: either a human, smart bot, or random bot
+        player2(str): player 2's type: either a human, smart bot, or random bot
+        bot_delay(float): if using bots, the delay in seconds between each bot's
+            movements
+    """
+
     if mode == "real":
         game = Game(num_piece_rows)
     elif mode == "stub":
@@ -330,22 +341,8 @@ if __name__ == "__main__":
     pass
 
 """
-changes since milestone 2
-Sam - TUI
-    Since Milestone 2, functionality for showing all possible moves of a piece
-once selected has been added using the Colorama library. Note that this
-selection essentially employs the "touch-move" rule: once a piece has been
-selected, there is not a way to select another one except intentionally entering
-an invalid destination space.
-    The feedback about making pieces and kings distinct has also been included;
-pieces are represented with ● and kings with ¤ of the appropriate team color.
-    The board now has full support for board sizes from 6x6 to 20x20. (Indices
-on the bottom row on sizes greater than 10x10 do not display entirely
-correctly due to numbers having two digits-they will run off the side)
-    From feedback in Milestone 2, also sanitized user input so that the program
-will not crash if a non-integer is enter for a piece position; instead,
-users will be continually prompted until they enter a valid position.
-    The TUI has been fully integrated with both the bots and game logic and can
-play full games.
+
+- Sam (TUI) added functionality for showing all possible moves of a piece once selected and confirmed that piece and kings are shown differently. Also added support for board sizes between 6x6 and 20x20, integrated with game logic, and sanitized user input so that the program doesn't crash on an incorrect input.
+- Sam (TUI) added support for different board sizes, updated `select_piece` function to correctly show possible moves, and verified that kings and pieces are shown with different characters.
 
 """

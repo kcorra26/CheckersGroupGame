@@ -8,11 +8,21 @@ This repository contains a design and implementation for Checkers. The existing 
 
 ## Changes to design since Milestone 1
 - transferred almost all functionality in `Board` class to `Game` to make the game the center component of the user interfaces. 
-- 
+- instead of individual `Piece`, `Empty`, and `King` classes, we added a `is_king` attribute to the `Piece` class and set all empty spaces to `None`
+- added multiple functions to each component, including `checkers.py`, for the purposes of integration throughout both Milestones (see summary of changes below for details)
+- got rid of ENUM for team color and instead used string `"Red"` and `"Black"` identifiers 
 
 ## Summary of changes we’ve made/missing functionality we’ve added since Milestone 2
+- Robert (Game Logic)
+- Kasey (Bot) updated the instructions for running the integrated bot more clearly in the README, as requested by the TA. Though she made little to no changes to the structure of her bot code after submitting for Milestone 2, she identified areas of `checkers.py` that needed to be corrected or implemented, and helped debug them in order to be able to run simulations on her bots using the `Game` class. 
+- Jaslin (GUI)
+- Sam (TUI)
+
 
 ## How we implemented the feedback from milestones 1 and 2
+- We implemented a Game agnostic Board class and shifted all user interface calls to the Game class, as advised by the TA who reviewed our code after Milestone 1.
+- This TA also advised us to combine the `Piece`, `Empty`, and `King` classes, which we did. 
+- Robert (Game Logic) added `get_piece` and `remove_piece` functionality to the `Game` class after our Code Review meeting from Milestone 2
 
 # Running the Game
 For running the Game Logic, no libraries will need to be used.

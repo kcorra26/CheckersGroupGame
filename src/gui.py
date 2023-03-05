@@ -9,19 +9,19 @@ Resources Consulted:
     - this was helpful in setting up the sprite groups
     http://programarcadegames.com/python_examples/show_file.php?file=moving_sprites.py
     - this was helpful in initializing the sprite class
-
-    To do:
-    IMKClient Stall detected, *please Report* your user scenario attaching a spindump (or sysdiagnose) that captures the problem - (imkxpc_bundleIdentifierWithReply:) block performed very slowly (2.15 secs).
 '''
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame 
 
-from checkers import Board, Game, Piece
+from checkers import Board, Game, Piece, GameType
 from mocks import StubCheckerboard, MockGame
 from sprites import PieceSprite
 from bot import RandomBot, SmartBot
 import click
+from typing import Union
+
+BotType = Union[None, RandomBot, SmartBot]
 
 WIDTH = HEIGHT = 800
 
@@ -37,8 +37,13 @@ class CheckersPlayer():
     '''
     simple class to store player information
     '''
-    def __init__(self, bot = None):
+    def __init__(self, bot:BotType = None):
         '''
+        initialization function for the Checkers Player
+
+        args: 
+            bot: a bot object or None if player is not a
+            bot
         '''
         if bot == None:
             self.is_bot = False
@@ -85,19 +90,19 @@ class CheckersPlayer():
 
 class GUIPlayer():
 
-    def __init__(self, game:Game, player_1: CheckersPlayer, \
+    def __init__(self, game:GameType, player_1: CheckersPlayer, \
                  player_2:CheckersPlayer):
         """
         init function for GUI Player
 
         args: 
-            board: the board being played
+            game: the game being played
         """
         self.game = game
-        #self.board = game.game_board
         self.ROWS = game.width
         self.sq_size = WIDTH // game.width
 
+        #ensures game can continue
         if player_1.can_play_checkers(player_2):
             self.players = [player_1, player_2]
             self.curr_player = self.players[0]
@@ -132,7 +137,6 @@ class GUIPlayer():
             None
         '''
         all_pieces = self.game.red_pieces.union(self.game.black_pieces)
-
         for piece in all_pieces:
             sprite = PieceSprite(piece, self.sq_size)
             self.all_sprites_list.add(sprite)
@@ -170,7 +174,7 @@ class GUIPlayer():
     def __draw_highlighted_board(self):
         '''
         Draws checkerboard without pieces but with possible moves highlighted
-        and selected piece highlighted in green, helper function for draw_board
+        and selected piece highlighted in green, helper function for draw_board()
 
         Args:
             None
@@ -193,7 +197,8 @@ class GUIPlayer():
     
     def draw_board(self):
         '''
-        draws checkerboard with sprites
+        draws checkerboard with sprites, and highlighted mvoes if a piece
+        is currently selected
 
         Args: 
             None
@@ -220,13 +225,8 @@ class GUIPlayer():
             be moved to
 
         """
-        assert self.selected_piece.team == self.curr_player.color
         pos_moves = self.game.list_moves(self.selected_piece.pos)
-        #print(self.game)
-        #print('selected',self.selected_piece.pos)
-        #print(pos_moves, row, col)
         if (row, col) in pos_moves:
-            #print('move is possible')
             self.game.move_piece(self.selected_piece.pos, (row, col), self.curr_player.color)
             self.update_sprites() #changes locations and kills sprites
             self.switch_player()
@@ -258,14 +258,12 @@ class GUIPlayer():
         assert self.curr_player.is_bot
         pygame.time.wait(1000) #bot delay (edit later)
         org_pos, new_pos = self.curr_player.bot.suggest_move(self.game)
-        #print('org', org_pos, 'new', new_pos)
         self.selected_piece = self.game.piece_at_pos((org_pos[0], org_pos[1]))
-        #print(self.selected_piece.pos)
         self.move_selected_piece(new_pos[0], new_pos[1])
 
     def play_checkers(self):
         """
-        This function plays checkers.
+        This function plays checkers on a pygame window.
 
         Args: none
         """
@@ -289,12 +287,11 @@ class GUIPlayer():
                     textRect.center = (WIDTH // 2, HEIGHT// 2)
                     self.window.blit(text, textRect)
                     pygame.display.update()
-                    pygame.time.wait(1000)
+                    pygame.time.wait(2000)
                     run = False
                 elif self.curr_player.is_bot:
                     self.bot_play_turn()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    #print('MOUSEDOWN')
                     pos = pygame.mouse.get_pos() #this pos is in (x,y)
                     row = pos[1] // self.sq_size #y-pos
                     col = pos[0] //self.sq_size #x-pos
@@ -326,9 +323,8 @@ class GUIPlayer():
 @click.option('--red-type',
             type=click.Choice(['human', 'random-bot', 'smart-bot'], 
                               case_sensitive=False), default="smart-bot")
-@click.option('--bot-delay', type=click.FLOAT, default=0.5)
 
-def cmd(mode, num_piece_rows, black_type, red_type, bot_delay):
+def cmd(mode, num_piece_rows, black_type, red_type):
     if mode == "real":
         game = Game(num_piece_rows)
     elif mode == "stub":

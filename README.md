@@ -45,24 +45,38 @@ Note that team can either be `"Red"` or `"Black"`
 
 
 # Running the GUI
-To run the GUI you will need the pygame library. 
-In ipython 3, you should run the following commands:
+To run the GUI, run this from the root of the repository
 ```
-import gui
-import mocks
-player = gui.GUIPlayer(mocks.MockGame(), gui.CheckersPlayer(), gui.CheckersPlayer())
-player.play_checkers()
+python src/gui.py
 ```
-Once the pygame window opens, it is black's turn, so click on a black piece. The selected piece will be highlighted in green and all possible moves in yellow. To move click on a highlighted yellow spot. After black moves its red's turn.
+By default, this will begin a game where a human player plays against the smart
+bot. As the human player is Black, they must move first. 
 
-to run GUI with the bot run the following commands:
-```
-ex_game = mock.MockGame
-player = GUIPlayer(ex_game, gui.CheckersPlayer(), gui.CheckersPlayer(SmartBot(ex_game, 'Red', 'Black')))
-player.play_checkers()
-```
-Note: The `MockGame` class initializes some pieces at completly random locations and returns the random list of possible moves, as such the gui shown does not obey the rules of checkers, but will once it is integrated with `checkers.py` and utilizes an actual `Game` object. Similarly, because the bot is more attuned to the actual rules of checkers but the gui only runs `game.move_piece()` when a move is returned by `list_moves`(a predetermined set of locations that have been created for testing purposes), this creates errors that will be resolved by Milestone 3. 
+To select a piece to move, click the piece. Once it has been selected, it will be
+highlighted in green and the possible moves it can make will be highlighted in
+yellow. To make a move, click on one of the highlighted pieces. To deselect the
+piece simply click anywhere that's not highlighted in yellow.
 
+To play a game with two human players on the same computer, run
+```
+python src/gui.py --red-type human
+```
+
+To make two bots play a game, run
+```
+python src/gui.py --black-type <bot> --red-type <bot>
+```
+where ```<bot>``` is ``smart-bot`` or ``random-bot``. When making two bots play
+against it each other it is necessary to move your mouse around the pygame
+window, so that pygame can recognize an event occuring. Otherwise the bots
+will appear to 'freeze' and not move. 
+
+To modify the number of rows and pieces on the board, run
+```
+python src/gui.py --num-piece-rows <int>
+```
+where ``<int>`` is the number of rows of pieces the checkerboard will have. 
+The default is set to ``int=3`` as in a classic checkers game.
 
 # TUI
 
@@ -74,7 +88,8 @@ If this does not work, instead use:
 ```
 python src/tui.py
 ```
-    
+If you do so, replace all instances of `python3` in these instructions with
+`python`.    
 Due to the size and layout of the board, it's recommended you run in a terminal
 left or right-aligned, as it will appear taller than it is wide.
 
@@ -110,7 +125,13 @@ python3 src/tui.py --player1 <bot> --player2 <bot>
 ```
 The TUI inserts an artifical delay between each bot's move so you can see the 
 game more easily. You can modify this delay using the ``--bot-delay <seconds>``
-parameter.
+parameter (must come after the bot parameters).
+Sample command:
+```
+python3 src/tui.py --num-piece-rows 4 --player1 smart-bot --player2 random-bot --bot-delay 1
+```
+This will run a game on `C = 4` with one smart bot and one random bot with a 
+1 second delay inbetween moves.
 
 # Bots
 The `bots.py` file includes two classes:

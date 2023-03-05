@@ -5,8 +5,8 @@ class StubCheckerboard:
     def __init__(self, n=3):
         self.n = n
         self.width = 2*n + 2
-        self.red_pieces = [Piece('Red', (1,0)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (4,6))]
-        self.black_pieces = [Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))]
+        self.red_pieces = set([Piece('Red', (1,0)), Piece('Red', (3,0), True), Piece('Red', (3,2)), Piece('Red', (4,6))])
+        self.black_pieces = set([Piece('Black', (4,5), True), Piece('Black', (7,0)), Piece('Black', (2,3))])
         self.is_winner = None
 
     def __str__(self):
@@ -18,7 +18,7 @@ class StubCheckerboard:
         piece.update_pos(new_pos)
     
     def get_piece(self, row, col):
-        for piece in self.red_pieces + self.black_pieces:
+        for piece in self.red_pieces.union(self.black_pieces):
             if piece.pos == (row, col):
                 return piece
         return None
@@ -30,6 +30,8 @@ class StubCheckerboard:
         self.is_winner = team
     def is_winner(self):
         return self.is_winner
+    def is_done(self):
+        return False
 
 # used for bot both in bot.py and in gui.py
 class CheckersGameBotMock: 
@@ -97,13 +99,13 @@ class Piece:
         '''
         self.team = team
         self.is_king = is_king
-        self.col = pos[1]
-        self.row = pos[0]
+        self.y_pos = pos[1]
+        self.x_pos = pos[0]
         self.pos = pos
     
     def update_pos(self, new_pos):
-        self.col = new_pos[1]
-        self.row = new_pos[0]
+        self.y_pos = new_pos[1]
+        self.x_pos = new_pos[0]
         self.pos = new_pos
 
 
@@ -142,6 +144,8 @@ class MockGame:
             old_item.update_pos(new_pos)
         if new_item is not None:
             new_item.update_pos(old_pos)
+    def is_done(self):
+        return False
 
 
 class MockCheckerboard:

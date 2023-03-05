@@ -333,16 +333,8 @@ def cmd(mode, num_piece_rows, player1, player2, bot_delay):
     players = {"Black": player1, "Red": player2}
 
     play_checkers(game, players)
-    
 
 
 if __name__ == "__main__":
     cmd()    
     pass
-
-"""
-
-- Sam (TUI) added functionality for showing all possible moves of a piece once selected and confirmed that piece and kings are shown differently. Also added support for board sizes between 6x6 and 20x20, integrated with game logic, and sanitized user input so that the program doesn't crash on an incorrect input.
-- Sam (TUI) added support for different board sizes, updated `select_piece` function to correctly show possible moves, and verified that kings and pieces are shown with different characters.
-
-"""

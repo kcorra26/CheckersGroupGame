@@ -847,7 +847,7 @@ class Game:
 
 class Piece(): 
     """
-    Class representing playable pieces on the board that are not kings
+    Class representing playable pieces on the board
     """
     def __init__(self, pos, team_color, is_king = False):
         """
@@ -918,7 +918,7 @@ class Piece():
     def is_king(self):
         """
         Determines if a Piece object is a king or not
-        Returns (bool): a Piece object is always a king so this will return True
+        Returns (bool): whether or not its a king piece
         """
         return self.is_king
     def can_move(self, new_pos):

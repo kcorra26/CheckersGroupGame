@@ -15,7 +15,7 @@ This repository contains a design and implementation for Checkers. The existing 
 ## Summary of changes we’ve made/missing functionality we’ve added since Milestone 2
 - Robert (Game Logic)
 - Kasey (Bot) updated the instructions for running the integrated bot more clearly in the README, as requested by the TA. Though she made little to no changes to the structure of her bot code after submitting for Milestone 2, she identified areas of `checkers.py` that needed to be corrected or implemented, and helped debug them in order to be able to run simulations on her bots using the `Game` class. 
-- Jaslin (GUI)
+- Jaslin (GUI) integrated the GUI with the Game Logic. I updated the filepaths to ensure the sprites ran correctly when on the main root of the repository. 
 - Sam (TUI)
 
 

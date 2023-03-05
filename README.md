@@ -79,6 +79,10 @@ where ``<int>`` is the number of rows of pieces the checkerboard will have.
 The default is set to ``int=3`` as in a classic checkers game.
 
 # TUI
+Important note: the TUI uses some special/uncommon unicode characters; if the
+TUI does not appear like a checkers board, make sure your python environment
+supports all Unicode characters. If this character does not show up: ¤ the TUI
+will not display properly and you need to adjust your environment.
 
 To run the TUI, run this from the root of the repository:
 ```

@@ -24,43 +24,6 @@ This repository contains a design and implementation for Checkers. The existing 
 - This TA also advised us to combine the `Piece`, `Empty`, and `King` classes, which we did. 
 - Robert (Game Logic) added `get_piece` and `remove_piece` functionality to the `Game` class after our Code Review meeting from Milestone 2
 
-# Running the Game
-For running the Game Logic, no libraries will need to be used.
-In python3, to start a game of checkers in its initial state, run the following
-commands.
-```
-import checkers
-game = checkers.Game()
-```
-To move a piece.call the `move_piece` method. If the piece move involves jumping,
-the function will automatically call 'jump piece.' Alternatively, the the `jump_piece` 
-method can be called. Call these functions by running game.move_piece(old_pos,new_pos,team)
-and game.jump_piece(old_pos,new_pos,team). Their arguments are defined in their 
-respective doc strings.Note, these methods work for any kind of piece regardless 
-of if it's king.
-
-
-To find a list of spots a piece can go to at a specific location, run the 
-`list_moves` method (to find all moves, run `all_team_moves()`). To check if a 
-move is valid, run the `is_valid_move` method. To find which argmuents each 
-function takes and what they mean, refer to the code written for them and their
-doc strings.
-
-The `__str__` method will return a visual representation of the board at each 
-iteration of the game. A regular red piece is represennted by 'r' and a king red 
-piece is represented by 'R'. A regular black piece is represented by 'b' and a
-king black piece is represented by 'B'.
-
-The classes are the following:
-`Piece`, which represents a checkers piece, has a team atttribute and an 
-`is_king` attribute
-`Board`, which represents a board of an arbitrary size, and will be an 8 by 8 
-for the checkers game
-`Game`, which represents the game itself and uses piece objects as well as a  
-`Board` object to represent the board the game is being played on
-
-Note that team can either be `"Red"` or `"Black"`
-
 
 # Running the GUI
 To run the GUI, run this from the root of the repository

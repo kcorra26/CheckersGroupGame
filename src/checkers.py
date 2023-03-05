@@ -819,32 +819,6 @@ class Game:
             else:
                 self.red_wants_to_draw = False
 
-
-
-    def remove_pieces(self,pos,team):
-       self.red_pieces = set()
-       self.black_pieces = set()
-       for i in range(self.width):
-           for j in range(self.width):
-               if self.game_board.board[i][j] is not None:
-                   if self.game_board.board[i][j].x_pos != pos[1] or self.game_board.board[i][j].y_pos != pos[0]:
-                       self.game_board.board[i][j] = None
-       self.game_board.board[pos[0]][pos[1]].is_king = True
-       self.game_board.board[pos[0]][pos[1]].team = "Black"
-       piece = self.game_board.board[pos[0]][pos[1]]
-       if team == "Red":
-           self.red_pieces.add(piece)
-       if team == "Black":
-           self.black_pieces.add(piece)
-           
-    def add_piece(self,pos,team):
-       self.game_board.board[pos[0]][pos[1]] = Piece((pos[0],pos[1]),team)
-       if team == "Red":
-           self.red_pieces.add(self.game_board.board[pos[0]][pos[1]])
-       if team == "Black":
-           self.black_pieces.add(self.game_board.board[pos[0]][pos[1]])
-
-
 class Piece(): 
     """
     Class representing playable pieces on the board that are not kings

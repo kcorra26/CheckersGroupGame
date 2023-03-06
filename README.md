@@ -156,7 +156,7 @@ Bot 1 (random) wins: 12.00%
 Bot 2 (random) wins: 11.40%
 Ties: 76.60%
 ```
-Note: the 1000 game simulation should take about 2 minutes to run. For a faster result, run `python3 src/bot.py -n 100` or the like.
+Note: the 1000 game simulation should take about 2 minutes to run. For a faster result, control the number of games with the commend `python3 src/bot.py -n <num-games>`.
 
 
 # Running with stubs and mocks

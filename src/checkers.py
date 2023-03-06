@@ -270,6 +270,8 @@ class Game:
             return True
         if self.red_wants_to_draw is True and self.black_wants_to_draw is True:
             return True
+        if self.winner is not None:
+            return True
         return False
                 
     def move_piece(self, old_pos, new_pos, team, checking_winner=False):

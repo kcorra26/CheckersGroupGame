@@ -467,6 +467,7 @@ class Game:
                 if self.game_board.board[i][j] is not None:
                     self.game_board.board[i][j] = None
         self._initialize_checkers()
+        self.winner = None
         
     
     def all_team_moves(self, team): 

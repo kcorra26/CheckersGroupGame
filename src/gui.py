@@ -270,8 +270,13 @@ class GUIPlayer():
         Args: none
         """
         self.init_game()
-
         run = True
+
+        #time interval ensures that if two bots play against each other
+        timer_interval = 500
+        timer_event_id = pygame.USEREVENT+1
+        pygame.time.set_timer(timer_event_id, timer_interval)
+
         while run:
             for event in pygame.event.get():
                 self.draw_board()
@@ -291,6 +296,7 @@ class GUIPlayer():
                     pygame.display.update()
                     pygame.time.wait(2000)
                     run = False
+                    break
                 elif self.curr_player.is_bot:
                     self.bot_play_turn()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -304,8 +310,10 @@ class GUIPlayer():
                         self.draw_board() #draws possible moves
                     else:
                         self.move_selected_piece(row, col) #moves if valid move
-            else:
-                continue
+                elif event.type == timer_event_id and self.curr_player.is_bot:
+                    self.bot_play_turn()
+            #else:
+                #continue
                 
         pygame.display.quit()
         pygame.quit()

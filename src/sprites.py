@@ -2,6 +2,10 @@
 sprites
 
 a file to hold the sprite class, for gui purposes
+
+Sources:
+    the piece images are from Adobe Stock
+    link: https://stock.adobe.com/nz/images/checkers-board-game-pieces-vector-illustration-icon-symbol-graphic/249920338?start-checkout=1&content-id=249920338
 '''
 import pygame
 from mocks import Piece

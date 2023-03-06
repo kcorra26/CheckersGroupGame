@@ -268,6 +268,9 @@ class GUIPlayer():
         This function plays checkers on a pygame window.
 
         Args: none
+
+        Sources: the code for writing the time_interval event which allows two
+        bot players to play a game without any unexpected freezes - https://github.com/Rabbid76/PyGameExamplesAndAnswers/blob/master/documentation/pygame/pygame_time_and_timer_event.md
         """
         self.init_game()
         run = True
